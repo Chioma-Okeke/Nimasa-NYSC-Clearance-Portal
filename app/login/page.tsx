@@ -1,85 +1,84 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 
+// Role type
 type UserRole = "CORPS_MEMBER" | "SUPERVISOR" | "HOD" | "ADMIN"
 
-interface LoginForm {
-  name: string
-  department: string
-  role: UserRole | ""
-  password: string
-}
+// Zod schema
+const loginFormSchema = z.object({
+  name: z.string().min(1, "Full name is required"),
+  department: z.string().min(1, "Department is required"),
+  role: z.enum(["CORPS_MEMBER", "SUPERVISOR", "HOD", "ADMIN"], {
+    required_error: "Role is required",
+  }),
+  password: z.string().optional(),
+}).refine(
+  (data) => {
+    if (data.role !== "CORPS_MEMBER" && !data.password) return false
+    return true
+  },
+  {
+    message: "Password is required for employees",
+    path: ["password"],
+  }
+)
 
 export default function LoginPage() {
-  const [form, setForm] = useState<LoginForm>({
-    name: "",
-    department: "",
-    role: "",
-    password: "",
-  })
-  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      name: "",
+      department: "",
+      role: undefined,
+      password: "",
+    },
+  })
 
-    if (!form.name || !form.department || !form.role) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    // Only require password for employees (not corps members)
-    if (form.role !== "CORPS_MEMBER" && !form.password) {
-      toast({
-        title: "Password Required",
-        description: "Password is required for employees.",
-        variant: "destructive",
-      })
-      return
-    }
-
+  const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
     setIsLoading(true)
 
     try {
-      // const response = await fetch("/api/unified-auth/login", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(form),
-      // })
-
-      // if (response.ok) {
-      //   const data = await response.json()
-
-      // Store user data in localStorage (in production, use secure storage)
+      // Mock login logic
       localStorage.setItem(
         "user",
         JSON.stringify({
-          name: form.name,
-          department: form.department,
-          role: form.role,
-          token: "mock-token", // Mock token for frontend testing
+          name: values.name,
+          department: values.department,
+          role: values.role,
+          token: "mock-token",
         }),
       )
 
       // Route based on role
-      switch (form.role) {
+      switch (values.role) {
         case "CORPS_MEMBER":
           router.push("/corps-member")
           break
@@ -93,13 +92,6 @@ export default function LoginPage() {
           router.push("/admin")
           break
       }
-      // } else {
-      //   toast({
-      //     title: "Login Failed",
-      //     description: "Invalid credentials. Please try again.",
-      //     variant: "destructive",
-      //   })
-      // }
     } catch (error) {
       toast({
         title: "Connection Error",
@@ -111,74 +103,109 @@ export default function LoginPage() {
     }
   }
 
-  const showPasswordField = form.role && form.role !== "CORPS_MEMBER"
+  // Watch role to conditionally show password
+  const role = form.watch("role")
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-primary">NIMASA NYSC Clearance System</CardTitle>
+          <CardTitle className="text-2xl font-bold text-primary">
+            NIMASA NYSC Clearance System
+          </CardTitle>
           <CardDescription>Sign in to access your dashboard</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                required
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Full Name */}
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="department">Department</Label>
-              <Input
-                id="department"
-                type="text"
-                placeholder="Enter your department"
-                value={form.department}
-                onChange={(e) => setForm({ ...form, department: e.target.value })}
-                required
+              {/* Department */}
+              <FormField
+                control={form.control}
+                name="department"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Department</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your department" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select value={form.role} onValueChange={(value: UserRole) => setForm({ ...form, role: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CORPS_MEMBER">Corps Member</SelectItem>
-                  <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
-                  <SelectItem value="HOD">Head of Department</SelectItem>
-                  <SelectItem value="ADMIN">Administrator</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Role */}
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="CORPS_MEMBER">Corps Member</SelectItem>
+                        <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
+                        <SelectItem value="HOD">Head of Department</SelectItem>
+                        <SelectItem value="ADMIN">Administrator</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {showPasswordField && (
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required
+              {/* Password (conditionally visible) */}
+              {role && role !== "CORPS_MEMBER" && (
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter your password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            )}
+              )}
 
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
+              <Button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary/90"
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>

@@ -44,7 +44,7 @@ export function Header({ title, userRole, userName }: HeaderProps) {
               variant="outline"
               size="sm"
               onClick={handleLogout}
-              className="flex items-center gap-2 bg-transparent"
+              className="flex items-center gap-2 bg-transparent hover:bg-red-500"
             >
               <LogOut className="h-4 w-4" />
               Logout
