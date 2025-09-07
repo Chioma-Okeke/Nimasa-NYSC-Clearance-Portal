@@ -22,6 +22,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FileText, Clock, CheckCircle, XCircle, Trash2, UserPlus, Users, Shield, AlertTriangle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import EmployeeService from "@/services/employee-service"
 
 interface ClearanceForm {
   id: string
@@ -201,6 +202,8 @@ export default function AdminPage() {
     setIsSubmitting(true)
 
     try {
+      const employeeService = await new EmployeeService()
+      await employeeService.addEmployee(newEmployee)
       // Mock employee addition for frontend testing
       setNewEmployee({
         name: "",
@@ -503,8 +506,9 @@ export default function AdminPage() {
                                 <SelectValue placeholder="Select role" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
+                                <SelectItem value="ADMIN">Admin</SelectItem>
                                 <SelectItem value="HOD">Head of Department</SelectItem>
+                                <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>

@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import EmployeeService from "@/services/employee-service"
 
 // Role type
 type UserRole = "CORPS_MEMBER" | "SUPERVISOR" | "HOD" | "ADMIN"
@@ -76,9 +77,15 @@ export default function LoginPage() {
           token: "mock-token",
         }),
       )
+      const employeeService = new EmployeeService()
+      const response = await employeeService.login({
+        ...values,
+        password: values.password ?? "",
+      })
+      console.log('Login response:', response);
 
       // Route based on role
-      switch (values.role) {
+      switch (response.role) {
         case "CORPS_MEMBER":
           router.push("/corps-member")
           break
