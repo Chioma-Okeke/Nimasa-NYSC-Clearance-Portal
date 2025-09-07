@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { LogOut, User } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import UserProfileCard from "../shared/user-profile-card"
+import Image from "next/image"
 
 interface HeaderProps {
   title: string
@@ -28,14 +29,19 @@ export function Header({ title, userRole, userName }: HeaderProps) {
   return (
     <header className="bg-card border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-xl font-bold text-primary">NIMASA NYSC Clearance System</h1>
-            <p className="text-sm text-muted-foreground">{title}</p>
+        <div className="flex justify-between items-center gap-4">
+          <div className="flex items-center gap-3.5 xl:gap-5 flex-1">
+            <div className="w-full aspect-[181/201] max-w-[50px] md:max-w-[80px] relative overflow-hidden">
+              <Image src={"/company_logo.png"} alt="Logo" fill sizes="100vw" className="object-cover object-center"/>
+            </div>
+            <div>
+              <h1 className="xl:text-xl font-bold text-primary">NIMASA NYSC Clearance System</h1>
+              <p className="text-sm text-muted-foreground">{title}</p>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <UserProfileCard userName={userName} userRole={userRole} handleLogout={handleLogout}/>
+            <UserProfileCard userName={userName} userRole={userRole} handleLogout={handleLogout} />
             <Button
               variant="outline"
               size="sm"
