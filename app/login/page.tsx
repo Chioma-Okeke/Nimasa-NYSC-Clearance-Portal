@@ -77,15 +77,15 @@ export default function LoginPage() {
           token: "mock-token",
         }),
       )
-      // const employeeService = new EmployeeService()
-      // const response = await employeeService.login({
-      //   ...values,
-      //   password: values.password ?? "",
-      // })
-      // console.log('Login response:', response);
+      const employeeService = new EmployeeService()
+      const response = await employeeService.login({
+        ...values,
+        password: values.password ?? "",
+      })
+      console.log('Login response:', response);
 
       // Route based on role
-      switch (values.role) {
+      switch (response.role) {
         case "CORPS_MEMBER":
           router.push("/corps-member")
           break

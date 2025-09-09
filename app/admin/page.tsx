@@ -23,6 +23,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FileText, Clock, CheckCircle, XCircle, Trash2, UserPlus, Users, Shield, AlertTriangle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import EmployeeService from "@/services/employee-service"
+import { useMutation } from "@tanstack/react-query"
+import { IEmployee } from "@/types"
+import AddEmployeeForm from "@/forms/add-employee-form"
 
 interface ClearanceForm {
   id: string
@@ -54,7 +57,7 @@ export default function AdminPage() {
   const [allForms, setAllForms] = useState<ClearanceForm[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [newEmployee, setNewEmployee] = useState<NewEmployeeData>({
+  const [newEmployee, setNewEmployee] = useState<IEmployee>({
     name: "",
     department: "",
     role: "SUPERVISOR",
@@ -184,47 +187,6 @@ export default function AdminPage() {
         description: "Unable to delete form. Please try again.",
         variant: "destructive",
       })
-    }
-  }
-
-  const handleAddEmployee = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!newEmployee.name || !newEmployee.department || !newEmployee.password) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsSubmitting(true)
-
-    try {
-      const employeeService = await new EmployeeService()
-      await employeeService.addEmployee(newEmployee)
-      // Mock employee addition for frontend testing
-      setNewEmployee({
-        name: "",
-        department: "",
-        role: "SUPERVISOR",
-        password: "",
-      })
-      setIsAddEmployeeDialogOpen(false)
-
-      toast({
-        title: "Employee Added",
-        description: `${newEmployee.role} has been added successfully.`,
-      })
-    } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Unable to add employee. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -457,94 +419,7 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    <Dialog open={isAddEmployeeDialogOpen} onOpenChange={setIsAddEmployeeDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button className="bg-primary hover:bg-primary/90">
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Add Employee
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                          <DialogTitle>Add New Employee</DialogTitle>
-                          <DialogDescription>Add a new supervisor or HOD to the system</DialogDescription>
-                        </DialogHeader>
-                        <form onSubmit={handleAddEmployee} className="space-y-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="employeeName">Full Name</Label>
-                            <Input
-                              id="employeeName"
-                              type="text"
-                              placeholder="Enter full name"
-                              value={newEmployee.name}
-                              onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
-                              required
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="employeeDepartment">Department</Label>
-                            <Input
-                              id="employeeDepartment"
-                              type="text"
-                              placeholder="Enter department"
-                              value={newEmployee.department}
-                              onChange={(e) => setNewEmployee({ ...newEmployee, department: e.target.value })}
-                              required
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="employeeRole">Role</Label>
-                            <Select
-                              value={newEmployee.role}
-                              onValueChange={(value: "SUPERVISOR" | "HOD") =>
-                                setNewEmployee({ ...newEmployee, role: value })
-                              }
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select role" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="ADMIN">Admin</SelectItem>
-                                <SelectItem value="HOD">Head of Department</SelectItem>
-                                <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="employeePassword">Password</Label>
-                            <Input
-                              id="employeePassword"
-                              type="password"
-                              placeholder="Enter password"
-                              value={newEmployee.password}
-                              onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
-                              required
-                            />
-                          </div>
-
-                          <div className="flex gap-2 pt-4">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => setIsAddEmployeeDialogOpen(false)}
-                              className="flex-1"
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              type="submit"
-                              className="flex-1 bg-primary hover:bg-primary/90"
-                              disabled={isSubmitting}
-                            >
-                              {isSubmitting ? "Adding..." : "Add Employee"}
-                            </Button>
-                          </div>
-                        </form>
-                      </DialogContent>
-                    </Dialog>
+                    <AddEmployeeForm isAddEmployeeDialogOpen={isAddEmployeeDialogOpen} setIsAddEmployeeDialogOpen={setIsAddEmployeeDialogOpen}/>
 
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <div className="flex items-start gap-3">
