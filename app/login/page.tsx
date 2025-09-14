@@ -23,68 +23,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
 import EmployeeService from "@/services/employee-service"
-
-// Role type
-type UserRole = "CORPS_MEMBER" | "SUPERVISOR" | "HOD" | "ADMIN"
-
-// Zod schema
-const loginFormSchema = z.object({
-  name: z.string().min(1, "Full name is required"),
-  department: z.string().min(1, "Department is required"),
-  role: z.enum(["CORPS_MEMBER", "SUPERVISOR", "HOD", "ADMIN"], {
-    required_error: "Role is required",
-  }),
-  password: z.string().optional(),
-}).refine(
-  (data) => {
-    if (data.role !== "CORPS_MEMBER" && !data.password) return false
-    return true
-  },
-  {
-    message: "Password is required for employees",
-    path: ["password"],
-  }
-)
+import { useMutation } from "@tanstack/react-query"
+import { IEmployee } from "@/types"
+import { toast } from "sonner"
+import { loginFormSchema } from "@/lib/schema"
 
 export default function LoginPage() {
   const router = useRouter()
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  const employeeService = new EmployeeService()
 
-  const form = useForm<z.infer<typeof loginFormSchema>>({
-    resolver: zodResolver(loginFormSchema),
-    defaultValues: {
-      name: "",
-      department: "",
-      role: undefined,
-      password: "",
+  const { mutate: logUserIn, isPending } = useMutation({
+    mutationFn: async (data: IEmployee) => {
+      return await employeeService.login(data)
     },
-  })
-
-  const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
-    setIsLoading(true)
-
-    try {
-      // Mock login logic
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: values.name,
-          department: values.department,
-          role: values.role,
-          token: "mock-token",
-        }),
-      )
-      const employeeService = new EmployeeService()
-      const response = await employeeService.login({
-        ...values,
-        password: values.password ?? "",
-      })
-      console.log('Login response:', response);
-
-      // Route based on role
+    onSuccess: (response) => {
       switch (response.role) {
         case "CORPS_MEMBER":
           router.push("/corps-member")
@@ -99,19 +52,42 @@ export default function LoginPage() {
           router.push("/admin")
           break
       }
-    } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Unable to connect to server. Please try again.",
-        variant: "destructive",
+      form.reset()
+      toast.success("Login Successful", {
+        description: " User successfully logged in."
       })
-    } finally {
-      setIsLoading(false)
+    },
+    onError: (error) => {
+      toast.error("Login Failed", {
+        description: error ? error.message : "There was an error while logging user."
+      })
     }
-  }
+  });
 
-  // Watch role to conditionally show password
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      name: "",
+      department: "",
+      role: undefined,
+      password: "",
+    },
+  })
   const role = form.watch("role")
+
+  const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
+    const payload: any = {
+      name: values.name,
+      department: values.department,
+      role: values.role,
+    }
+
+    if (values.password) {
+      payload.password = values.password
+    }
+
+    logUserIn(payload)
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -207,9 +183,9 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 className="w-full bg-primary hover:bg-primary/90"
-                disabled={isLoading}
+                disabled={isPending}
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isPending ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           </Form>

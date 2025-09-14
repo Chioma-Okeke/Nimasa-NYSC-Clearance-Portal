@@ -7,7 +7,7 @@ import {
 } from "@/types";
 import { BaseService } from "./base-service";
 
-class ClearanceService extends BaseService {
+export class ClearanceService extends BaseService {
     constructor() {
         super("/clearance-forms");
     }
@@ -39,7 +39,7 @@ class ClearanceService extends BaseService {
     }
 
     public async submitClearanceForm(data: ICorperForm) {
-        return this.post("", data);
+        return this.post<ICorperForm, ICorperForm>("", data);
     }
 
     public async supervisorReview(id: string, data: ISupervisorReview) {

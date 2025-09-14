@@ -26,7 +26,6 @@ export const createAxiosInstance = (
     const axiosInstance = axios.create({
         timeout: 60000,
         baseURL,
-        withCredentials: true,
         headers: {
             "Content-Type": "application/json",
             ...headers,
@@ -37,10 +36,9 @@ export const createAxiosInstance = (
         (config) => {
             if (!isServer) {
                 const token = getCookie();
-                if (token) {
+                if (token && !config.url?.includes("/login")) {
                     config.headers.Authorization = `Bearer ${token}`;
                 }
-                console.log(token, "here is the token coming in");
             }
             return config;
         },

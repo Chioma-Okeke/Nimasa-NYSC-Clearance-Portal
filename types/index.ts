@@ -1,7 +1,7 @@
 export interface IEmployee {
     id?: string;
     name: string;
-    password: string;
+    password?: string;
     department: string;
     role: "CORPS_MEMBER" | "SUPERVISOR" | "HOD" | "ADMIN";
 }
@@ -38,7 +38,7 @@ export interface IHodReview {
 }
 
 export interface IReviewResponse {
-    id: number;
+    id: string;
     corpsName: string;
     stateCode: string;
     department: string;

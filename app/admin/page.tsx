@@ -6,43 +6,30 @@ import { useState, useEffect } from "react"
 import { AuthGuard } from "@/components/auth-guard"
 import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FileText, Clock, CheckCircle, XCircle, Trash2, UserPlus, Users, Shield, AlertTriangle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import EmployeeService from "@/services/employee-service"
-import { useMutation } from "@tanstack/react-query"
-import { IEmployee } from "@/types"
+import { IEmployee, IReviewResponse } from "@/types"
 import AddEmployeeForm from "@/forms/add-employee-form"
 
-interface ClearanceForm {
-  id: string
-  corpsName: string
-  stateCode: string
-  department: string
-  status: "PENDING_SUPERVISOR" | "PENDING_HOD" | "PENDING_ADMIN" | "APPROVED" | "REJECTED"
-  createdAt: string
-  updatedAt: string
-  supervisorName?: string
-  daysAbsent?: number
-  conductRemark?: string
-  supervisorReviewDate?: string
-  hodName?: string
-  hodRemark?: string
-  hodReviewDate?: string
-}
+// interface ClearanceForm {
+//   id: string
+//   corpsName: string
+//   stateCode: string
+//   department: string
+//   status: "PENDING_SUPERVISOR" | "PENDING_HOD" | "PENDING_ADMIN" | "APPROVED" | "REJECTED"
+//   createdAt: string
+//   updatedAt: string
+//   supervisorName?: string
+//   dayAbsent?: number
+//   conductRemark?: string
+//   supervisorDate?: string
+//   hodName?: string
+//   hodRemark?: string
+//   hodDate?: string
+// }
 
 interface NewEmployeeData {
   name: string
@@ -53,8 +40,8 @@ interface NewEmployeeData {
 
 export default function AdminPage() {
   const [user, setUser] = useState<any | null>(null)
-  const [pendingForms, setPendingForms] = useState<ClearanceForm[]>([])
-  const [allForms, setAllForms] = useState<ClearanceForm[]>([])
+  const [pendingForms, setPendingForms] = useState<IReviewResponse[]>([])
+  const [allForms, setAllForms] = useState<IReviewResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [newEmployee, setNewEmployee] = useState<IEmployee>({
@@ -79,7 +66,7 @@ export default function AdminPage() {
     setIsLoading(true)
     try {
       // Mock data for frontend testing
-      const mockPendingForms: ClearanceForm[] = [
+      const mockPendingForms: IReviewResponse[] = [
         {
           id: "CF001",
           corpsName: "John Doe",
@@ -89,17 +76,22 @@ export default function AdminPage() {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           supervisorName: "Jane Smith",
-          daysAbsent: 2,
+          dayAbsent: 2,
           conductRemark: "Good conduct throughout the service year",
-          supervisorReviewDate: new Date().toISOString(),
+          supervisorDate: new Date().toISOString(),
           hodName: "Dr. Johnson",
           hodRemark: "Excellent performance and dedication",
-          hodReviewDate: new Date().toISOString(),
+          hodDate: new Date().toISOString(),
+          supervisorSignaturePath: "",
+          hodSignaturePath: "",
+          adminName: "",
+          approvalDate: "",
+          approved: true
         },
       ]
       setPendingForms(mockPendingForms)
 
-      const mockAllForms: ClearanceForm[] = [
+      const mockAllForms: IReviewResponse[] = [
         ...mockPendingForms,
         {
           id: "CF002",
@@ -109,6 +101,18 @@ export default function AdminPage() {
           status: "APPROVED",
           createdAt: new Date(Date.now() - 86400000).toISOString(),
           updatedAt: new Date().toISOString(),
+          dayAbsent: 0,
+          conductRemark: "",
+          supervisorName: "",
+          supervisorSignaturePath: "",
+          supervisorDate: "",
+          hodRemark: "",
+          hodName: "",
+          hodSignaturePath: "",
+          hodDate: "",
+          adminName: "",
+          approvalDate: "",
+          approved: true
         },
       ]
       setAllForms(mockAllForms)
@@ -190,7 +194,7 @@ export default function AdminPage() {
     }
   }
 
-  const getStatusBadge = (status: ClearanceForm["status"]) => {
+  const getStatusBadge = (status: IReviewResponse["status"]) => {
     switch (status) {
       case "PENDING_SUPERVISOR":
         return (
@@ -300,8 +304,8 @@ export default function AdminPage() {
                                   <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
                                     <h4 className="text-sm font-medium text-orange-800 mb-2">Supervisor Review:</h4>
                                     <p className="text-sm text-orange-700">Reviewed by: {form.supervisorName}</p>
-                                    {form.daysAbsent !== undefined && (
-                                      <p className="text-sm text-orange-700">Days Absent: {form.daysAbsent}</p>
+                                    {form.dayAbsent !== undefined && (
+                                      <p className="text-sm text-orange-700">Days Absent: {form.dayAbsent}</p>
                                     )}
                                     {form.conductRemark && (
                                       <p className="text-sm text-orange-700">

@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Search, Plus, FileText, Clock, CheckCircle, XCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import ClearanceForm from "@/forms/clearance-form"
 
 interface User {
   name: string
@@ -224,7 +225,7 @@ export default function CorpsMemberPage() {
                   <CardDescription>Submit a new clearance form for processing</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmitForm} className="space-y-4">
+                  {/* <form onSubmit={handleSubmitForm} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="corpsName">Corps Member Name</Label>
                       <Input
@@ -263,7 +264,8 @@ export default function CorpsMemberPage() {
                     <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>
                       {isSubmitting ? "Submitting..." : "Submit Form"}
                     </Button>
-                  </form>
+                  </form> */}
+                  <ClearanceForm/>
                 </CardContent>
               </Card>
             </div>
