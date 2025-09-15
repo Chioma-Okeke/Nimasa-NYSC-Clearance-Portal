@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search, Plus, FileText, Clock, CheckCircle, XCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import ClearanceForm from "@/forms/clearance-form"
+import { useAuth } from "@/context/auth-context"
 
 interface User {
   name: string
@@ -38,25 +39,17 @@ interface NewFormData {
 }
 
 export default function CorpsMemberPage() {
-  const [user, setUser] = useState<User | null>(null)
   const [forms, setForms] = useState<ClearanceForm[]>([])
   const [filteredForms, setFilteredForms] = useState<ClearanceForm[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [newForm, setNewForm] = useState<NewFormData>({
-    corpsName: "",
-    stateCode: "",
-    department: "",
-  })
+  const {employee} = useAuth()
   const { toast } = useToast()
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
     if (userData) {
       const parsedUser = JSON.parse(userData)
-      setUser(parsedUser)
-      setNewForm((prev) => ({ ...prev, department: parsedUser.department }))
       fetchForms(parsedUser)
     }
   }, [])
@@ -112,51 +105,6 @@ export default function CorpsMemberPage() {
     }
   }
 
-  const handleSubmitForm = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!newForm.corpsName || !newForm.stateCode || !newForm.department) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsSubmitting(true)
-
-    try {
-      // Mock form creation for frontend testing
-      const createdForm: ClearanceForm = {
-        id: `CF${Date.now()}`,
-        ...newForm,
-        status: "PENDING_SUPERVISOR",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
-      setForms((prev) => [createdForm, ...prev])
-
-      setNewForm({
-        corpsName: "",
-        stateCode: "",
-        department: user?.department || "",
-      })
-      toast({
-        title: "Form Submitted",
-        description: "Your clearance form has been submitted successfully.",
-      })
-    } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Unable to submit form. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   const getStatusBadge = (status: ClearanceForm["status"]) => {
     switch (status) {
       case "PENDING_SUPERVISOR":
@@ -205,12 +153,12 @@ export default function CorpsMemberPage() {
     })
   }
 
-  if (!user) return null
+  if (!employee) return null
 
   return (
     <AuthGuard allowedRoles={["CORPS_MEMBER"]}>
       <div className="min-h-screen bg-background">
-        <Header title="Corps Member Dashboard" userRole="Corps Member" userName={user.name} />
+        <Header title="Corps Member Dashboard" userRole="Corps Member" userName={employee.name} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -265,7 +213,7 @@ export default function CorpsMemberPage() {
                       {isSubmitting ? "Submitting..." : "Submit Form"}
                     </Button>
                   </form> */}
-                  <ClearanceForm/>
+                  {employee && <ClearanceForm employee={employee} />}
                 </CardContent>
               </Card>
             </div>

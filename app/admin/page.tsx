@@ -13,6 +13,7 @@ import { FileText, Clock, CheckCircle, XCircle, Trash2, UserPlus, Users, Shield,
 import { useToast } from "@/hooks/use-toast"
 import { IEmployee, IReviewResponse } from "@/types"
 import AddEmployeeForm from "@/forms/add-employee-form"
+import { useAuth } from "@/context/auth-context"
 
 // interface ClearanceForm {
 //   id: string
@@ -39,7 +40,6 @@ interface NewEmployeeData {
 }
 
 export default function AdminPage() {
-  const [user, setUser] = useState<any | null>(null)
   const [pendingForms, setPendingForms] = useState<IReviewResponse[]>([])
   const [allForms, setAllForms] = useState<IReviewResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -52,15 +52,16 @@ export default function AdminPage() {
   })
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const { toast } = useToast()
+  const {employee} = useAuth()
 
-  useEffect(() => {
-    const userData = localStorage.getItem("user")
-    if (userData) {
-      const parsedUser = JSON.parse(userData)
-      setUser(parsedUser)
-      fetchForms(parsedUser)
-    }
-  }, [])
+  // useEffect(() => {
+  //   const userData = localStorage.getItem("user")
+  //   if (userData) {
+  //     const parsedUser = JSON.parse(userData)
+  //     setUser(parsedUser)
+  //     fetchForms(parsedUser)
+  //   }
+  // }, [])
 
   const fetchForms = async (userData: any) => {
     setIsLoading(true)
@@ -242,12 +243,12 @@ export default function AdminPage() {
     })
   }
 
-  if (!user) return null
+  // if (!user) return null
 
   return (
     <AuthGuard allowedRoles={["ADMIN"]}>
       <div className="min-h-screen bg-background">
-        <Header title="Administrator Dashboard" userRole="Admin" userName={user.name} />
+        <Header title="Administrator Dashboard" userRole="Admin" userName={employee ? employee.name : ""} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs defaultValue="pending" className="space-y-6">

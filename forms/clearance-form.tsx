@@ -1,10 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { clearanceFormSchema } from '@/lib/schema'
 import { ClearanceService } from '@/services/clearance-service';
-import { ICorperForm } from '@/types';
+import { ICorperForm, IEmployeeCreationResponse } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import React from 'react'
@@ -14,15 +13,17 @@ import { z } from 'zod';
 
 type FormValues = z.infer<typeof clearanceFormSchema>;
 
-function ClearanceForm() {
+function ClearanceForm({employee} : {
+    employee: IEmployeeCreationResponse
+}) {
     const clearanceService = new ClearanceService();
 
     const form = useForm<FormValues>({
         resolver: zodResolver(clearanceFormSchema),
         defaultValues: {
-            corpsName: "",
+            corpsName: employee ? employee.name : "",
             stateCode: "",
-            department: ""
+            department: employee ? employee.department : ""
         }
     })
 

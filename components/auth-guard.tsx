@@ -23,7 +23,8 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
   const router = useRouter()
 
   useEffect(() => {
-    const userData = localStorage.getItem("user")
+    const userData = localStorage.getItem("employee")
+    console.log("AuthGuard userData:", userData)
 
     if (!userData) {
       router.push("/login")

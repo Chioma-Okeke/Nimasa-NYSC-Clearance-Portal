@@ -7,13 +7,7 @@ class EmployeeService extends BaseService {
     }
 
     public async addEmployee(data: IEmployee) {
-        const query = new URLSearchParams(
-            Object.entries(data).reduce((acc, [key, value]) => {
-                acc[key] = String(value);
-                return acc;
-            }, {} as Record<string, string>)
-        ).toString();
-        const res = await this.post(`/employee/add?${query}`);
+        const res = await this.post(`/employee/add`, data);
         return res;
     }
 

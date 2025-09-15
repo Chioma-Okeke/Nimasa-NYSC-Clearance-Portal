@@ -39,7 +39,7 @@ export class ClearanceService extends BaseService {
     }
 
     public async submitClearanceForm(data: ICorperForm) {
-        return this.post<ICorperForm, ICorperForm>("", data);
+        return this.post<ICorperForm, ICorperForm>("/submission", data);
     }
 
     public async supervisorReview(id: string, data: ISupervisorReview) {

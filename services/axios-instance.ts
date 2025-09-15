@@ -2,8 +2,8 @@
 import axios, { AxiosInstance, RawAxiosRequestHeaders } from "axios";
 
 function getCookie() {
-  const authToken = localStorage.getItem("token")
-  return authToken;
+    const authToken = localStorage.getItem("token");
+    return authToken;
 }
 
 export const createAxiosInstance = (
@@ -36,9 +36,17 @@ export const createAxiosInstance = (
         (config) => {
             if (!isServer) {
                 const token = getCookie();
-                if (token && !config.url?.includes("/login")) {
+                if (
+                    token &&
+                    !(
+                        config.url?.includes("/login") ||
+                        config.url?.includes("/logout") ||
+                        config.url?.includes("/submission")
+                    )
+                ) {
                     config.headers.Authorization = `Bearer ${token}`;
                 }
+                console.log("I ran");
             }
             return config;
         },

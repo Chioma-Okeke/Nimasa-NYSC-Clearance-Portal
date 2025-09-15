@@ -59,7 +59,7 @@ export default function HODPage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    const userData = localStorage.getItem("user")
+    const userData = localStorage.getItem("employee")
     if (userData) {
       const parsedUser = JSON.parse(userData)
       setUser(parsedUser)
@@ -202,12 +202,12 @@ export default function HODPage() {
     })
   }
 
-  if (!user) return null
+  // if (!user) return null
 
   return (
     <AuthGuard allowedRoles={["HOD"]}>
       <div className="min-h-screen bg-background">
-        <Header title="Head of Department Dashboard" userRole="HOD" userName={user.name} />
+        <Header title="Head of Department Dashboard" userRole="HOD" userName={user?.name} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

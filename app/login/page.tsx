@@ -28,9 +28,12 @@ import { useMutation } from "@tanstack/react-query"
 import { IEmployee } from "@/types"
 import { toast } from "sonner"
 import { loginFormSchema } from "@/lib/schema"
+import { useAuth } from "@/context/auth-context"
+import Image from "next/image"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { login } = useAuth()
   const employeeService = new EmployeeService()
 
   const { mutate: logUserIn, isPending } = useMutation({
@@ -53,6 +56,7 @@ export default function LoginPage() {
           break
       }
       form.reset()
+      login(response)
       toast.success("Login Successful", {
         description: " User successfully logged in."
       })
@@ -92,7 +96,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+        <CardHeader className="text-center flex flex-col items-center">
+          <div className="w-full aspect-[181/201] max-w-[50px] md:max-w-[80px] relative overflow-hidden">
+            <Image src={"/company_logo.png"} alt="Logo" fill sizes="100vw" className="object-cover object-center" />
+          </div>
           <CardTitle className="text-2xl font-bold text-primary">
             NIMASA NYSC Clearance System
           </CardTitle>
