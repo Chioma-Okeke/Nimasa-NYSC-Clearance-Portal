@@ -1,7 +1,9 @@
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -29,7 +31,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { UserPlus } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { employeeSchema } from "@/lib/schema";
 import { useMutation } from "@tanstack/react-query";
 import { IEmployee } from "@/types";
@@ -38,16 +40,8 @@ import { toast } from "sonner";
 
 type FormValues = z.infer<typeof employeeSchema>;
 
-interface AddEmployeeFormProps {
-    isAddEmployeeDialogOpen: boolean;
-    setIsAddEmployeeDialogOpen: (open: boolean) => void;
-}
-
-const AddEmployeeForm = ({
-    isAddEmployeeDialogOpen,
-    setIsAddEmployeeDialogOpen,
-}: AddEmployeeFormProps) => {
-
+const AddEmployeeForm = () => {
+    const [isOpen, setIsOpen] = useState(false)
     const employeeService = new EmployeeService();
 
     const { mutate: createEmployee, isPending } = useMutation({
@@ -57,7 +51,7 @@ const AddEmployeeForm = ({
         onSuccess: (res) => {
             form.reset()
             console.log(res)
-            setIsAddEmployeeDialogOpen(false)
+            setIsOpen(false)
             toast.success("Employee Creation Successful", {
                 description: "Employee was successfully created."
             })
@@ -87,7 +81,7 @@ const AddEmployeeForm = ({
     };
 
     return (
-        <Dialog open={isAddEmployeeDialogOpen} onOpenChange={setIsAddEmployeeDialogOpen}>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button className="bg-primary hover:bg-primary/90">
                     <UserPlus className="h-4 w-4 mr-2" />
@@ -175,15 +169,16 @@ const AddEmployeeForm = ({
                             )}
                         />
 
-                        <div className="flex gap-2 pt-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="flex-1"
-                                onClick={() => setIsAddEmployeeDialogOpen(false)}
-                            >
-                                Cancel
-                            </Button>
+                        <DialogFooter className="flex gap-2 pt-4">
+                            <DialogClose>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="flex-1"
+                                >
+                                    Cancel
+                                </Button>
+                            </DialogClose>
                             <Button
                                 type="submit"
                                 className="flex-1 bg-primary hover:bg-primary/90"
@@ -191,7 +186,7 @@ const AddEmployeeForm = ({
                             >
                                 {form.formState.isSubmitting ? "Adding..." : "Add Employee"}
                             </Button>
-                        </div>
+                        </DialogFooter>
                     </form>
                 </Form>
             </DialogContent>

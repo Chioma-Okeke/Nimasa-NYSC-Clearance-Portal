@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { LogOut, User } from "lucide-react"
+import { LogOut, User, User2 } from "lucide-react"
 import UserProfileCard from "../shared/user-profile-card"
 import Image from "next/image"
 import { useMutation } from "@tanstack/react-query"
@@ -13,7 +13,7 @@ import { useAuth } from "@/context/auth-context"
 interface HeaderProps {
   title: string
   userRole: string
-  userName: string
+  userName: string | undefined
 }
 
 export function Header({ title, userRole, userName }: HeaderProps) {
@@ -59,7 +59,7 @@ export function Header({ title, userRole, userName }: HeaderProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <UserProfileCard userName={userName} userRole={userRole} handleLogout={handleLogout} />
+            { userName ?<UserProfileCard userName={userName} userRole={userRole} handleLogout={handleLogout} /> : <User2/>}
             <Button
               variant="outline"
               size="sm"

@@ -12,15 +12,14 @@ import CorperFormList from "@/components/corper/corper-form-list"
 export default function CorpsMemberPage() {
   const {employee} = useAuth()
 
-  if (!employee) return null
-
   return (
     <AuthGuard allowedRoles={["CORPS_MEMBER"]}>
       <div className="min-h-screen bg-background">
-        <Header title="Corps Member Dashboard" userRole="Corps Member" userName={employee.name} />
+        <Header title="Corps Member Dashboard" userRole="Corps Member" userName={employee?.name} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
             {/* Create New Form Section */}
             <div className="lg:col-span-1">
               <Card>
@@ -38,7 +37,7 @@ export default function CorpsMemberPage() {
             </div>
 
             {/* Forms List and Search Section */}
-            <CorperFormList employee={employee}/>
+            {employee && <CorperFormList employee={employee}/>}
           </div>
         </main>
       </div>

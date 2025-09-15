@@ -4,6 +4,9 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { IEmployeeCreationResponse } from "@/types"
+import NotAuthorized from "./shared/not-authorized"
 
 interface User {
   name: string
@@ -18,27 +21,30 @@ interface AuthGuardProps {
 }
 
 export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<IEmployeeCreationResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    const userData = localStorage.getItem("employee")
-    console.log("AuthGuard userData:", userData)
+    const employeeData = localStorage.getItem("employee")
 
-    if (!userData) {
+    if (!employeeData) {
       router.push("/login")
+      toast.warning("Please Log in to Continue", {
+        description: "You need to be logged in to access this page."
+      })
       return
     }
 
     try {
-      const parsedUser = JSON.parse(userData)
-
+      const parsedUser = JSON.parse(employeeData)
       if (!allowedRoles.includes(parsedUser.role)) {
         router.push("/login")
+        toast.error("Access Denied", {
+          description: " You do not have permission to access this page."
+        })
         return
       }
-
       setUser(parsedUser)
     } catch (error) {
       router.push("/login")
@@ -59,9 +65,9 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
     )
   }
 
-  // if (!user) {
-  //   return null
-  // }
+  if (!user) {
+    return <NotAuthorized/>
+  }
 
   return <>{children}</>
 }
