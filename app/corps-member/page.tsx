@@ -170,46 +170,6 @@ export default function CorpsMemberPage() {
                   <CardDescription>Submit a new clearance form for processing</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {/* <form onSubmit={handleSubmitForm} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="corpsName">Corps Member Name</Label>
-                      <Input
-                        id="corpsName"
-                        type="text"
-                        placeholder="Enter full name"
-                        value={newForm.corpsName}
-                        onChange={(e) => setNewForm({ ...newForm, corpsName: e.target.value })}
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="stateCode">State Code</Label>
-                      <Input
-                        id="stateCode"
-                        type="text"
-                        placeholder="e.g., LA/23A/1234"
-                        value={newForm.stateCode}
-                        onChange={(e) => setNewForm({ ...newForm, stateCode: e.target.value })}
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="department">Department</Label>
-                      <Input
-                        id="department"
-                        type="text"
-                        value={newForm.department}
-                        onChange={(e) => setNewForm({ ...newForm, department: e.target.value })}
-                        required
-                      />
-                    </div>
-
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>
-                      {isSubmitting ? "Submitting..." : "Submit Form"}
-                    </Button>
-                  </form> */}
                   {employee && <ClearanceForm employee={employee} />}
                 </CardContent>
               </Card>

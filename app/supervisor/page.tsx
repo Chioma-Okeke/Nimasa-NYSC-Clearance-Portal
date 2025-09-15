@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { FileText, Clock, CheckCircle, Eye } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/context/auth-context"
 
 interface ClearanceForm {
   id: string
@@ -43,7 +44,6 @@ interface SupervisorReviewData {
 }
 
 export default function SupervisorPage() {
-  const [user, setUser] = useState<any | null>(null)
   const [pendingForms, setPendingForms] = useState<ClearanceForm[]>([])
   const [reviewedForms, setReviewedForms] = useState<ClearanceForm[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -56,12 +56,12 @@ export default function SupervisorPage() {
   })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { toast } = useToast()
+  const {employee} = useAuth()
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
     if (userData) {
       const parsedUser = JSON.parse(userData)
-      setUser(parsedUser)
       setReviewData((prev) => ({ ...prev, supervisorName: parsedUser.name }))
       fetchForms(parsedUser)
     }
@@ -127,7 +127,7 @@ export default function SupervisorPage() {
 
       // Reset form and close dialog
       setReviewData({
-        supervisorName: user?.name || "",
+        supervisorName: employee?.name || "",
         daysAbsent: 0,
         conductRemark: "",
       })
@@ -152,7 +152,7 @@ export default function SupervisorPage() {
   const openReviewDialog = (form: ClearanceForm) => {
     setSelectedForm(form)
     setReviewData({
-      supervisorName: user?.name || "",
+      supervisorName: employee?.name || "",
       daysAbsent: 0,
       conductRemark: "",
     })
@@ -207,12 +207,12 @@ export default function SupervisorPage() {
     })
   }
 
-  if (!user) return null
+  // if (!user) return null
 
   return (
     <AuthGuard allowedRoles={["SUPERVISOR"]}>
       <div className="min-h-screen bg-background">
-        <Header title="Supervisor Dashboard" userRole="Supervisor" userName={user.name} />
+        <Header title="Supervisor Dashboard" userRole="Supervisor" userName={employee ? employee?.name : ""} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
