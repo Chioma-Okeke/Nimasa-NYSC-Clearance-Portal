@@ -13,7 +13,7 @@ export class ClearanceService extends BaseService {
     }
 
     public async getClearanceForms(role: string) {
-        return this.get("", { role });
+        return this.get<IClearanceFormResponse[]>("", { role });
     }
 
     public async getClearanceForm(id: string, role: string) {
@@ -28,7 +28,7 @@ export class ClearanceService extends BaseService {
         return this.get<number>(`count/${status}`);
     }
 
-    public async deleteClearanceForm(id: string) {
+    public async deleteClearanceForm(id: number) {
         return this.delete(`/${id}`);
     } // he need to explain what the request body is for. And if it is to confirm if that ia an admin, teach him how to better do it
 

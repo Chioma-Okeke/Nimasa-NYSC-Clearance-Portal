@@ -11,9 +11,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Search, Plus, FileText, Clock, CheckCircle, XCircle } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
 import ClearanceForm from "@/forms/clearance-form"
 import { useAuth } from "@/context/auth-context"
+import { toast } from "sonner"
 
 interface User {
   name: string
@@ -44,7 +44,6 @@ export default function CorpsMemberPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const {employee} = useAuth()
-  const { toast } = useToast()
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -95,10 +94,8 @@ export default function CorpsMemberPage() {
       ]
       setForms(mockForms)
     } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Unable to fetch forms. Please try again.",
-        variant: "destructive",
+      toast.error("Failed to fetch forms", {
+        description: error instanceof Error ? error.message : "An unexpected error occurred.",
       })
     } finally {
       setIsLoading(false)

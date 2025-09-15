@@ -2,131 +2,31 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { AuthGuard } from "@/components/auth-guard"
 import { Header } from "@/components/layout/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileText, Clock, CheckCircle, XCircle, Trash2, UserPlus, Users, Shield, AlertTriangle } from "lucide-react"
+import { Clock, CheckCircle, XCircle, Users, Shield, AlertTriangle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { IEmployee, IReviewResponse } from "@/types"
+import { IReviewResponse } from "@/types"
 import AddEmployeeForm from "@/forms/add-employee-form"
 import { useAuth } from "@/context/auth-context"
-
-// interface ClearanceForm {
-//   id: string
-//   corpsName: string
-//   stateCode: string
-//   department: string
-//   status: "PENDING_SUPERVISOR" | "PENDING_HOD" | "PENDING_ADMIN" | "APPROVED" | "REJECTED"
-//   createdAt: string
-//   updatedAt: string
-//   supervisorName?: string
-//   dayAbsent?: number
-//   conductRemark?: string
-//   supervisorDate?: string
-//   hodName?: string
-//   hodRemark?: string
-//   hodDate?: string
-// }
-
-interface NewEmployeeData {
-  name: string
-  department: string
-  role: "SUPERVISOR" | "HOD"
-  password: string
-}
+import { useQuery } from "@tanstack/react-query"
+import { getClearanceFormsQueryOpt } from "@/lib/query-options/clearance"
+import AllFormsCard from "@/components/admin/all-forms-card"
 
 export default function AdminPage() {
   const [pendingForms, setPendingForms] = useState<IReviewResponse[]>([])
   const [allForms, setAllForms] = useState<IReviewResponse[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [newEmployee, setNewEmployee] = useState<IEmployee>({
-    name: "",
-    department: "",
-    role: "SUPERVISOR",
-    password: "",
-  })
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
   const { toast } = useToast()
-  const {employee} = useAuth()
-
-  // useEffect(() => {
-  //   const userData = localStorage.getItem("user")
-  //   if (userData) {
-  //     const parsedUser = JSON.parse(userData)
-  //     setUser(parsedUser)
-  //     fetchForms(parsedUser)
-  //   }
-  // }, [])
-
-  const fetchForms = async (userData: any) => {
-    setIsLoading(true)
-    try {
-      // Mock data for frontend testing
-      const mockPendingForms: IReviewResponse[] = [
-        {
-          id: "CF001",
-          corpsName: "John Doe",
-          stateCode: "LA/23A/1234",
-          department: "IT Department",
-          status: "PENDING_ADMIN",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          supervisorName: "Jane Smith",
-          dayAbsent: 2,
-          conductRemark: "Good conduct throughout the service year",
-          supervisorDate: new Date().toISOString(),
-          hodName: "Dr. Johnson",
-          hodRemark: "Excellent performance and dedication",
-          hodDate: new Date().toISOString(),
-          supervisorSignaturePath: "",
-          hodSignaturePath: "",
-          adminName: "",
-          approvalDate: "",
-          approved: true
-        },
-      ]
-      setPendingForms(mockPendingForms)
-
-      const mockAllForms: IReviewResponse[] = [
-        ...mockPendingForms,
-        {
-          id: "CF002",
-          corpsName: "Jane Smith",
-          stateCode: "LA/23A/5678",
-          department: "HR Department",
-          status: "APPROVED",
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          updatedAt: new Date().toISOString(),
-          dayAbsent: 0,
-          conductRemark: "",
-          supervisorName: "",
-          supervisorSignaturePath: "",
-          supervisorDate: "",
-          hodRemark: "",
-          hodName: "",
-          hodSignaturePath: "",
-          hodDate: "",
-          adminName: "",
-          approvalDate: "",
-          approved: true
-        },
-      ]
-      setAllForms(mockAllForms)
-    } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Unable to fetch forms. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const { employee } = useAuth()
+  const { data: clearanceForms } = useQuery(getClearanceFormsQueryOpt)
 
   const handleApproveForm = async (formId: string) => {
     setIsSubmitting(true)
@@ -169,29 +69,6 @@ export default function AdminPage() {
       })
     } finally {
       setIsSubmitting(false)
-    }
-  }
-
-  const handleDeleteForm = async (formId: string) => {
-    if (!confirm("Are you sure you want to delete this form? This action cannot be undone.")) {
-      return
-    }
-
-    try {
-      // Mock deletion for frontend testing
-      setAllForms((prev) => prev.filter((form) => form.id !== formId))
-      setPendingForms((prev) => prev.filter((form) => form.id !== formId))
-
-      toast({
-        title: "Form Deleted",
-        description: "The clearance form has been deleted successfully.",
-      })
-    } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Unable to delete form. Please try again.",
-        variant: "destructive",
-      })
     }
   }
 
@@ -253,9 +130,9 @@ export default function AdminPage() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs defaultValue="pending" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="pending">Forms to Approve ({pendingForms.length})</TabsTrigger>
-              <TabsTrigger value="all">All Forms ({allForms.length})</TabsTrigger>
-              <TabsTrigger value="manage">Manage People</TabsTrigger>
+              <TabsTrigger value="pending" className="cursor-pointer">Forms to Approve ({pendingForms.length})</TabsTrigger>
+              <TabsTrigger value="all" className="cursor-pointer">All Forms ({clearanceForms?.length})</TabsTrigger>
+              <TabsTrigger value="manage" className="cursor-pointer">Manage People</TabsTrigger>
             </TabsList>
 
             {/* Forms to Approve/Reject Section */}
@@ -364,52 +241,7 @@ export default function AdminPage() {
 
             {/* All Forms Section */}
             <TabsContent value="all">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-primary" />
-                    All Clearance Forms
-                  </CardTitle>
-                  <CardDescription>Complete overview of all forms in the system</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {allForms.length === 0 ? (
-                    <div className="text-center py-8">
-                      <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No forms in the system.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {allForms.map((form) => (
-                        <div
-                          key={form.id}
-                          className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                                {getStatusBadge(form.status)}
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                Form ID: {form.id} • State Code: {form.stateCode}
-                              </p>
-                              <p className="text-sm text-muted-foreground">Department: {form.department}</p>
-                              <p className="text-sm text-muted-foreground">
-                                Submitted: {formatDate(form.createdAt)} • Updated: {formatDate(form.updatedAt)}
-                              </p>
-                            </div>
-                            <Button size="sm" variant="destructive" onClick={() => handleDeleteForm(form.id)}>
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              Delete
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <AllFormsCard clearanceForms={clearanceForms} />
             </TabsContent>
 
             {/* Manage People Section */}
@@ -424,7 +256,7 @@ export default function AdminPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
-                    <AddEmployeeForm isAddEmployeeDialogOpen={isAddEmployeeDialogOpen} setIsAddEmployeeDialogOpen={setIsAddEmployeeDialogOpen}/>
+                    <AddEmployeeForm isAddEmployeeDialogOpen={isAddEmployeeDialogOpen} setIsAddEmployeeDialogOpen={setIsAddEmployeeDialogOpen} />
 
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <div className="flex items-start gap-3">
