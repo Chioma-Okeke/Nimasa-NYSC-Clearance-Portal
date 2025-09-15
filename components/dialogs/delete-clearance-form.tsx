@@ -8,9 +8,11 @@ import { ClearanceService } from '@/services/clearance-service'
 import { toast } from 'sonner'
 import { getClearanceFormsQueryOpt } from '@/lib/query-options/clearance'
 import LoadingSpinner from '../shared/loading-spinner'
+import { useAuth } from '@/context/auth-context'
 
 function DeleteClearanceForm({ form }: { form: IClearanceFormResponse }) {
     const [isOpen, setIsOpen] = useState(false)
+    const {employee} = useAuth()
     const queryClient = useQueryClient()
     const { mutate: deleteForm, isPending } = useMutation({
         mutationFn: async (id: number) => {
@@ -20,7 +22,7 @@ function DeleteClearanceForm({ form }: { form: IClearanceFormResponse }) {
             toast.success("Form Deleted Successfully", {
                 description: "The clearance form has been deleted."
             })
-            queryClient.invalidateQueries(getClearanceFormsQueryOpt)
+            queryClient.invalidateQueries(getClearanceFormsQueryOpt(employee?.role || ""))
             setIsOpen(false)
         },
         onError: (error) => {

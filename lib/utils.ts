@@ -14,3 +14,11 @@ export const generateUserInitials = (name: string) => {
         .join("");
     return initials.slice(0, 2);
 };
+
+export const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-NG", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  }

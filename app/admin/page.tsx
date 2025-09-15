@@ -5,72 +5,23 @@ import type React from "react"
 import { useState } from "react"
 import { AuthGuard } from "@/components/auth-guard"
 import { Header } from "@/components/layout/header"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Clock, CheckCircle, XCircle, Users, Shield, AlertTriangle } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { Clock, CheckCircle, XCircle, Users, AlertTriangle } from "lucide-react"
 import { IReviewResponse } from "@/types"
 import AddEmployeeForm from "@/forms/add-employee-form"
 import { useAuth } from "@/context/auth-context"
 import { useQuery } from "@tanstack/react-query"
-import { getClearanceFormsQueryOpt } from "@/lib/query-options/clearance"
+import { getClearanceFormsQueryOpt, getPendingApprovalFormsQueryOpt } from "@/lib/query-options/clearance"
 import AllFormsCard from "@/components/admin/all-forms-card"
+import PendingApprovalForms from "@/components/admin/pending-approval-forms"
 
 export default function AdminPage() {
-  const [pendingForms, setPendingForms] = useState<IReviewResponse[]>([])
-  const [allForms, setAllForms] = useState<IReviewResponse[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
-  const { toast } = useToast()
   const { employee } = useAuth()
-  const { data: clearanceForms } = useQuery(getClearanceFormsQueryOpt)
-
-  const handleApproveForm = async (formId: string) => {
-    setIsSubmitting(true)
-    try {
-      // Mock approval for frontend testing
-      setPendingForms((prev) => prev.filter((form) => form.id !== formId))
-      setAllForms((prev) => prev.map((form) => (form.id === formId ? { ...form, status: "APPROVED" as const } : form)))
-
-      toast({
-        title: "Form Approved",
-        description: "The clearance form has been approved successfully.",
-      })
-    } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Unable to approve form. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleRejectForm = async (formId: string) => {
-    setIsSubmitting(true)
-    try {
-      // Mock rejection for frontend testing
-      setPendingForms((prev) => prev.filter((form) => form.id !== formId))
-      setAllForms((prev) => prev.map((form) => (form.id === formId ? { ...form, status: "REJECTED" as const } : form)))
-
-      toast({
-        title: "Form Rejected",
-        description: "The clearance form has been rejected.",
-      })
-    } catch (error) {
-      toast({
-        title: "Connection Error",
-        description: "Unable to reject form. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false)
+  const { data: clearanceForms } = useQuery(getClearanceFormsQueryOpt(employee?.role || ""))
+  const { data: pendingClearanceForms, isLoading } = useQuery(getPendingApprovalFormsQueryOpt(employee?.role || ""))
 
   const getStatusBadge = (status: IReviewResponse["status"]) => {
     switch (status) {
@@ -112,14 +63,6 @@ export default function AdminPage() {
     }
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
-  }
-
   // if (!user) return null
 
   return (
@@ -130,113 +73,14 @@ export default function AdminPage() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Tabs defaultValue="pending" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="pending" className="cursor-pointer">Forms to Approve ({pendingForms.length})</TabsTrigger>
+              <TabsTrigger value="pending" className="cursor-pointer">Forms to Approve ({pendingClearanceForms?.length})</TabsTrigger>
               <TabsTrigger value="all" className="cursor-pointer">All Forms ({clearanceForms?.length})</TabsTrigger>
               <TabsTrigger value="manage" className="cursor-pointer">Manage People</TabsTrigger>
             </TabsList>
 
             {/* Forms to Approve/Reject Section */}
             <TabsContent value="pending">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-primary" />
-                    Forms Awaiting Final Approval
-                  </CardTitle>
-                  <CardDescription>Review and make final decisions on clearance forms</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                      <p className="text-muted-foreground">Loading forms...</p>
-                    </div>
-                  ) : pendingForms.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No forms pending final approval.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {pendingForms.map((form) => (
-                        <div
-                          key={form.id}
-                          className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                            <div className="space-y-3 flex-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                                {getStatusBadge(form.status)}
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                Form ID: {form.id} • State Code: {form.stateCode}
-                              </p>
-                              <p className="text-sm text-muted-foreground">Department: {form.department}</p>
-                              <p className="text-sm text-muted-foreground">Submitted: {formatDate(form.createdAt)}</p>
-
-                              {/* Complete Review Chain */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                {/* Supervisor Review */}
-                                {form.supervisorName && (
-                                  <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
-                                    <h4 className="text-sm font-medium text-orange-800 mb-2">Supervisor Review:</h4>
-                                    <p className="text-sm text-orange-700">Reviewed by: {form.supervisorName}</p>
-                                    {form.dayAbsent !== undefined && (
-                                      <p className="text-sm text-orange-700">Days Absent: {form.dayAbsent}</p>
-                                    )}
-                                    {form.conductRemark && (
-                                      <p className="text-sm text-orange-700">
-                                        Conduct: {form.conductRemark.substring(0, 60)}
-                                        {form.conductRemark.length > 60 ? "..." : ""}
-                                      </p>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* HOD Review */}
-                                {form.hodName && (
-                                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                                    <h4 className="text-sm font-medium text-blue-800 mb-2">HOD Review:</h4>
-                                    <p className="text-sm text-blue-700">Reviewed by: {form.hodName}</p>
-                                    {form.hodRemark && (
-                                      <p className="text-sm text-blue-700">
-                                        Remark: {form.hodRemark.substring(0, 60)}
-                                        {form.hodRemark.length > 60 ? "..." : ""}
-                                      </p>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                                onClick={() => handleApproveForm(form.id)}
-                                disabled={isSubmitting}
-                              >
-                                <CheckCircle className="h-4 w-4 mr-1" />
-                                Approve
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => handleRejectForm(form.id)}
-                                disabled={isSubmitting}
-                              >
-                                <XCircle className="h-4 w-4 mr-1" />
-                                Reject
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <PendingApprovalForms pendingClearanceForms={pendingClearanceForms} isLoading={isLoading} />
             </TabsContent>
 
             {/* All Forms Section */}

@@ -2,8 +2,54 @@ import { CheckCircle, Shield, XCircle } from 'lucide-react'
 import React from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { IClearanceFormResponse } from '@/types'
+import { formatDate } from '@/lib/utils'
+import StatusBadge from '../shared/status-badge'
+import { useMutation } from '@tanstack/react-query'
+import { ClearanceService } from '@/services/clearance-service'
+import { toast } from 'sonner'
+import LoadingSpinner from '../shared/loading-spinner'
 
-function PendingApprovalForms() {
+function PendingApprovalForms({ pendingClearanceForms, isLoading }: { pendingClearanceForms: IClearanceFormResponse[] | undefined, isLoading: boolean }) {
+    const { mutate: approveForm, isPending: approvalInProgress } = useMutation({
+        mutationFn: async (id: number) => {
+            await new ClearanceService().approveClearanceForm(id)
+        },
+        onSuccess: () => {
+            toast.success("Form Approved", {
+                description: "The clearance form has been approved."
+            })
+        },
+        onError: (error) => {
+            toast.error("Form Approval Failed", {
+                description: error ? error.message : "There was an error while approving the clearance form."
+            })
+        }
+    })
+    const { mutate: rejectForm, isPending: rejectionInProgress } = useMutation({
+        mutationFn: async (id: number) => {
+            await new ClearanceService().rejectClearanceForm(id)
+        },
+        onSuccess: () => {
+            toast.success("Form Approved", {
+                description: "The clearance form has been approved."
+            })
+        },
+        onError: (error) => {
+            toast.error("Form Approval Failed", {
+                description: error ? error.message : "There was an error while approving the clearance form."
+            })
+        }
+    })
+
+    const handleApproveForm = (id: number) => {
+        approveForm(id)
+    }
+
+    const handleRejectForm = (id: number) => {
+        rejectForm(id)
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -19,14 +65,14 @@ function PendingApprovalForms() {
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
                         <p className="text-muted-foreground">Loading forms...</p>
                     </div>
-                ) : pendingForms.length === 0 ? (
+                ) : pendingClearanceForms?.length === 0 ? (
                     <div className="text-center py-8">
                         <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                         <p className="text-muted-foreground">No forms pending final approval.</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {pendingForms.map((form) => (
+                        {pendingClearanceForms?.map((form) => (
                             <div
                                 key={form.id}
                                 className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
@@ -35,7 +81,7 @@ function PendingApprovalForms() {
                                     <div className="space-y-3 flex-1">
                                         <div className="flex items-center gap-2">
                                             <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                                            {getStatusBadge(form.status)}
+                                            <StatusBadge status={form.status} />
                                         </div>
                                         <p className="text-sm text-muted-foreground">
                                             Form ID: {form.id} • State Code: {form.stateCode}
@@ -83,19 +129,27 @@ function PendingApprovalForms() {
                                             size="sm"
                                             className="bg-green-600 hover:bg-green-700 text-white"
                                             onClick={() => handleApproveForm(form.id)}
-                                            disabled={isSubmitting}
+                                            disabled={approvalInProgress || rejectionInProgress}
                                         >
-                                            <CheckCircle className="h-4 w-4 mr-1" />
-                                            Approve
+                                            {approvalInProgress ? <LoadingSpinner /> : (
+                                                <>
+                                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                                    Approve
+                                                </>
+                                            )}
                                         </Button>
                                         <Button
                                             size="sm"
                                             variant="destructive"
                                             onClick={() => handleRejectForm(form.id)}
-                                            disabled={isSubmitting}
+                                            disabled={approvalInProgress || rejectionInProgress}
                                         >
-                                            <XCircle className="h-4 w-4 mr-1" />
-                                            Reject
+                                            {rejectionInProgress ? <LoadingSpinner /> : (
+                                                <>
+                                                    <XCircle className="h-4 w-4 mr-1" />
+                                                    Reject
+                                                </>
+                                            )}
                                         </Button>
                                     </div>
                                 </div>

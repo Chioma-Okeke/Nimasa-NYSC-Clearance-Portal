@@ -1,59 +1,12 @@
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { CheckCircle, Clock, FileText, XCircle } from 'lucide-react'
-import { IClearanceFormResponse, IReviewResponse } from '@/types'
-import { Badge } from '../ui/badge'
+import { FileText } from 'lucide-react'
+import { IClearanceFormResponse } from '@/types'
 import DeleteClearanceForm from '../dialogs/delete-clearance-form'
+import StatusBadge from '../shared/status-badge'
+import { formatDate } from '@/lib/utils'
 
 function AllFormsCard({ clearanceForms }: { clearanceForms: IClearanceFormResponse[] | undefined}) {
-
-    const getStatusBadge = (status: IReviewResponse["status"]) => {
-        switch (status) {
-            case "PENDING_SUPERVISOR":
-                return (
-                    <Badge variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200">
-                        <Clock className="h-3 w-3 mr-1" />
-                        Pending Supervisor
-                    </Badge>
-                )
-            case "PENDING_HOD":
-                return (
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
-                        <Clock className="h-3 w-3 mr-1" />
-                        Pending HOD
-                    </Badge>
-                )
-            case "PENDING_ADMIN":
-                return (
-                    <Badge variant="secondary" className="bg-purple-100 text-purple-800 border-purple-200">
-                        <Clock className="h-3 w-3 mr-1" />
-                        Pending Admin
-                    </Badge>
-                )
-            case "APPROVED":
-                return (
-                    <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Approved
-                    </Badge>
-                )
-            case "REJECTED":
-                return (
-                    <Badge variant="destructive">
-                        <XCircle className="h-3 w-3 mr-1" />
-                        Rejected
-                    </Badge>
-                )
-        }
-    }
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        })
-    }
 
     return (
         <Card>
@@ -81,7 +34,7 @@ function AllFormsCard({ clearanceForms }: { clearanceForms: IClearanceFormRespon
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
                                             <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                                            {getStatusBadge(form.status)}
+                                            <StatusBadge status={form.status}/>
                                         </div>
                                         <p className="text-sm text-muted-foreground">
                                             Form ID: {form.id} • State Code: {form.stateCode}

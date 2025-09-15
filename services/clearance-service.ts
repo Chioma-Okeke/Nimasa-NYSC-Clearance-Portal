@@ -50,12 +50,12 @@ export class ClearanceService extends BaseService {
         return this.post(`/${id}/hod-review`, data);
     }
 
-    public async rejectClearanceForm(id: string, adminName: string) {
-        return this.post(`/${id}/reject`, { adminName });
+    public async rejectClearanceForm(id: number) {
+        return this.post(`/${id}/reject`);
     }
 
-    public async approveClearanceForm(id: string, adminName: string) {
-        return this.post(`/${id}/approve`, { adminName });
+    public async approveClearanceForm(id: number) {
+        return this.post(`/${id}/approve`);
     }
 
     public async supervisorsList() {
@@ -66,16 +66,8 @@ export class ClearanceService extends BaseService {
         this.get("/admin/hod");
     } //teach Ebus how to handle this better
 
-    public async pendingSupervisorApproval(role: string) {
-        this.get<IClearanceFormResponse[]>("supervisor/pending", { role });
-    } //teach him how to better handle this that he wont all these separate end points
-
-    public async pendingHodApproval(role: string) {
-        this.get<IClearanceFormResponse[]>("hod/pending", { role });
-    } //teach him how to better handle this that he wont all these separate end points
-
-    public async pendingAdminApproval(role: string) {
-        this.get<IClearanceFormResponse[]>("admin/pending", { role });
+    public async pendingApproval(role: string) {
+        return this.get<IClearanceFormResponse[]>("/pending", { role });
     } //teach him how to better handle this that he wont all these separate end points
 
     public async clearanceFormStatus(role: string, status: string) {
