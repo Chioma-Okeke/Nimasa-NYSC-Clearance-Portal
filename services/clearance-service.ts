@@ -16,8 +16,8 @@ export class ClearanceService extends BaseService {
         return this.get<IClearanceFormResponse[]>("", { role });
     }
 
-    public async getClearanceForm(id: string, role: string) {
-        return this.get<IClearanceFormResponse>(`/${id}`, { role });
+    public async getClearanceForm(id: number, role: string) {
+        return this.get<IClearanceFormResponse[]>(`/${id}`, { role });
     }
 
     public async approvedCorperForms(corpsName: string) {
@@ -42,8 +42,8 @@ export class ClearanceService extends BaseService {
         return this.post<ICorperForm, ICorperForm>("/submission", data);
     }
 
-    public async supervisorReview(id: string, data: ISupervisorReview) {
-        return this.post(`/${id}/supervisor-review`);
+    public async supervisorReview(id: string, data: ISupervisorReview, role?: string) {
+        return this.post(`/${id}/supervisor-review?${role}`, data);
     }
 
     public async hodReview(id: string, data: IHodReview) {

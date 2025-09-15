@@ -9,3 +9,8 @@ export const getClearanceFormsQueryOpt = (role: string) => ({
     queryKey: ["clearanceForms", role],
     queryFn: () => new ClearanceService().getClearanceForms("ADMIN"),
 });
+
+export const getIndividualClearanceFormQueryOpt = (id: number, role: string) => ({
+    queryKey: ["clearanceForm", id, role],
+    queryFn: () => new ClearanceService().getClearanceForm(id, role)
+})

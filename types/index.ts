@@ -7,6 +7,7 @@ export interface IEmployee {
 }
 
 export interface IEmployeeCreationResponse {
+    id: number;
     department: string;
     message: string;
     name: string;
@@ -28,7 +29,7 @@ export interface ISupervisorReview {
     supervisorName: string;
     daysAbsent: number;
     conductRemark: string;
-    role?: string;
+    signatureFile?: string
 }
 
 export interface IHodReview {

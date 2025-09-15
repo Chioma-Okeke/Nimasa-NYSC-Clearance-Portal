@@ -22,6 +22,7 @@ import {
 import { FileText, Clock, CheckCircle, Eye } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/context/auth-context"
+import PendingApprovalForms from "@/components/supervisor/pending-approval-forms"
 
 interface ClearanceForm {
   id: string
@@ -218,136 +219,7 @@ export default function SupervisorPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Forms to Review Section */}
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-primary" />
-                    Forms to Review ({pendingForms.length})
-                  </CardTitle>
-                  <CardDescription>Review and approve corps member clearance forms</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                      <p className="text-muted-foreground">Loading forms...</p>
-                    </div>
-                  ) : pendingForms.length === 0 ? (
-                    <div className="text-center py-8">
-                      <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No forms pending review.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {pendingForms.map((form) => (
-                        <div
-                          key={form.id}
-                          className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                                {getStatusBadge(form.status)}
-                              </div>
-                              <p className="text-sm text-muted-foreground">
-                                Form ID: {form.id} • State Code: {form.stateCode}
-                              </p>
-                              <p className="text-sm text-muted-foreground">Department: {form.department}</p>
-                              <p className="text-sm text-muted-foreground">Submitted: {formatDate(form.createdAt)}</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                                <DialogTrigger asChild>
-                                  <Button
-                                    size="sm"
-                                    className="bg-primary hover:bg-primary/90"
-                                    onClick={() => openReviewDialog(form)}
-                                  >
-                                    <Eye className="h-4 w-4 mr-1" />
-                                    Review
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-md">
-                                  <DialogHeader>
-                                    <DialogTitle>Review Clearance Form</DialogTitle>
-                                    <DialogDescription>
-                                      Review and provide feedback for {selectedForm?.corpsName}'s clearance form
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  <form onSubmit={handleReviewSubmit} className="space-y-4">
-                                    <div className="space-y-2">
-                                      <Label htmlFor="supervisorName">Supervisor Name</Label>
-                                      <Input
-                                        id="supervisorName"
-                                        type="text"
-                                        value={reviewData.supervisorName}
-                                        onChange={(e) =>
-                                          setReviewData({ ...reviewData, supervisorName: e.target.value })
-                                        }
-                                        required
-                                      />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <Label htmlFor="daysAbsent">Days Absent</Label>
-                                      <Input
-                                        id="daysAbsent"
-                                        type="number"
-                                        min="0"
-                                        value={reviewData.daysAbsent}
-                                        onChange={(e) =>
-                                          setReviewData({
-                                            ...reviewData,
-                                            daysAbsent: Number.parseInt(e.target.value) || 0,
-                                          })
-                                        }
-                                        required
-                                      />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <Label htmlFor="conductRemark">Conduct Remark</Label>
-                                      <Textarea
-                                        id="conductRemark"
-                                        placeholder="Enter your remarks about the corps member's conduct..."
-                                        value={reviewData.conductRemark}
-                                        onChange={(e) =>
-                                          setReviewData({ ...reviewData, conductRemark: e.target.value })
-                                        }
-                                        rows={4}
-                                        required
-                                      />
-                                    </div>
-
-                                    <div className="flex gap-2 pt-4">
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => setIsDialogOpen(false)}
-                                        className="flex-1"
-                                      >
-                                        Cancel
-                                      </Button>
-                                      <Button
-                                        type="submit"
-                                        className="flex-1 bg-primary hover:bg-primary/90"
-                                        disabled={isSubmitting}
-                                      >
-                                        {isSubmitting ? "Submitting..." : "Submit Review"}
-                                      </Button>
-                                    </div>
-                                  </form>
-                                </DialogContent>
-                              </Dialog>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              {employee && <PendingApprovalForms employee={employee}/>}
             </div>
 
             {/* Forms I've Reviewed Section */}

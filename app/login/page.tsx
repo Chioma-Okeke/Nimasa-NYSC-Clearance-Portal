@@ -1,7 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { useState } from "react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -29,7 +27,8 @@ import { IEmployee } from "@/types"
 import { toast } from "sonner"
 import { loginFormSchema } from "@/lib/schema"
 import { useAuth } from "@/context/auth-context"
-import Image from "next/image"
+import Logo from "@/components/shared/logo"
+import { useRouter } from "@bprogress/next"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -97,9 +96,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center flex flex-col items-center">
-          <div className="w-full aspect-[181/201] max-w-[50px] md:max-w-[80px] relative overflow-hidden">
-            <Image src={"/company_logo.png"} alt="Logo" fill sizes="100vw" className="object-cover object-center" />
-          </div>
+          <Logo />
           <CardTitle className="text-2xl font-bold text-primary">
             NIMASA NYSC Clearance System
           </CardTitle>

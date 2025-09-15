@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dialog"
 import { FileText, Clock, CheckCircle, Eye, UserCheck } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import StatusBadge from "@/components/shared/status-badge"
+import { formatDate } from "@/lib/utils"
 
 interface ClearanceForm {
   id: string
@@ -161,47 +163,6 @@ export default function HODPage() {
     setIsDialogOpen(true)
   }
 
-  const getStatusBadge = (status: ClearanceForm["status"]) => {
-    switch (status) {
-      case "PENDING_HOD":
-        return (
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
-            <Clock className="h-3 w-3 mr-1" />
-            Pending Review
-          </Badge>
-        )
-      case "PENDING_ADMIN":
-        return (
-          <Badge variant="secondary" className="bg-purple-100 text-purple-800 border-purple-200">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Sent to Admin
-          </Badge>
-        )
-      case "APPROVED":
-        return (
-          <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Approved
-          </Badge>
-        )
-      case "REJECTED":
-        return (
-          <Badge variant="destructive">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Rejected
-          </Badge>
-        )
-    }
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
-  }
-
   // if (!user) return null
 
   return (
@@ -243,7 +204,7 @@ export default function HODPage() {
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
                                 <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                                {getStatusBadge(form.status)}
+                                <StatusBadge status={form.status} />
                               </div>
                               <p className="text-sm text-muted-foreground">
                                 Form ID: {form.id} • State Code: {form.stateCode}
@@ -372,7 +333,7 @@ export default function HODPage() {
                           <div className="space-y-2">
                             <div className="flex items-center gap-2">
                               <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                              {getStatusBadge(form.status)}
+                              <StatusBadge status={form.status} />
                             </div>
                             <p className="text-sm text-muted-foreground">
                               Form ID: {form.id} • State Code: {form.stateCode}

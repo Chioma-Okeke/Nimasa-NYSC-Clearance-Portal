@@ -30,3 +30,9 @@ export const loginFormSchema = z.object({
     path: ["password"],
   }
 )
+
+export const supervisorReviewSchema = z.object({
+    supervisorName: z.string().min(1, "Supervisor name is required"),
+    daysAbsent: z.number().min(0, "Days absent cannot be negative"),
+    conductRemark: z.string().min(1, "Conduct remark is required"),
+})
