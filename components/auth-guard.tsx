@@ -59,9 +59,9 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
     )
   }
 
-  if (!user) {
-    return null
-  }
+  // if (!user) {
+  //   return null
+  // }
 
   return <>{children}</>
 }
