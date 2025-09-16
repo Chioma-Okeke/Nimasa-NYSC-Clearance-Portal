@@ -60,7 +60,7 @@ export default function LoginPage() {
         description: " User successfully logged in."
       })
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error("Login Failed", {
         description: error ? error.message : "There was an error while logging user."
       })

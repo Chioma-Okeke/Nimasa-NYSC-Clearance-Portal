@@ -24,36 +24,41 @@ export const createAxiosInstance = (
         "https://nimasa-nysc-clearance-app1.onrender.com/api" + clientUrl;
 
     const axiosInstance = axios.create({
-        timeout: 60000,
         baseURL,
+        timeout: 60000,
+        withCredentials: true,
         headers: {
             "Content-Type": "application/json",
             ...headers,
         },
     });
 
-    axiosInstance.interceptors.request.use(
-        (config) => {
-            if (!isServer) {
-                const token = getCookie();
-                if (
-                    token &&
-                    !(
-                        config.url?.includes("/login") ||
-                        config.url?.includes("/logout") ||
-                        config.url?.includes("/submission")
-                    )
-                ) {
-                    config.headers.Authorization = `Bearer ${token}`;
-                }
-                console.log("I ran");
-            }
-            return config;
-        },
-        (error) => {
-            return Promise.reject(error);
+    axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      if (
+        error.response?.status === 401 &&
+        !originalRequest._retry // prevent infinite loop
+      ) {
+        originalRequest._retry = true;
+        try {
+          // Call refresh endpoint
+          await axiosInstance.post("/unified-auth/refresh", {}, { withCredentials: true });
+
+          // Retry original request after refreshing
+          return axiosInstance(originalRequest);
+        } catch (refreshError) {
+          console.error("Refresh token failed:", refreshError);
+          // Optionally clear user session and redirect
+          window.location.href = "/login";
         }
-    );
+      }
+
+      return Promise.reject(error);
+    }
+  );
 
     return axiosInstance;
 };

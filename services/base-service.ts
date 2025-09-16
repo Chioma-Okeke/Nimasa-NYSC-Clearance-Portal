@@ -22,7 +22,7 @@ export abstract class BaseService {
             return response.data;
         } catch (e) {
             if (e instanceof AxiosError) {
-                throw new Error(e.response?.data?.message || e.message);
+                throw new Error(e.response?.data?.error || e.message);
             }
             throw new Error(
                 "Something went wrong while processing your request"

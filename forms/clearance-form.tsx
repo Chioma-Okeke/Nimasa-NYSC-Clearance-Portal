@@ -34,7 +34,7 @@ function ClearanceForm({employee} : {
         onSuccess: () => {
             form.reset()
             toast.success("Form Submitted Successfully", {
-                description: "Clearance FOrm successfully submitted."
+                description: "Clearance Form successfully submitted."
             })
         },
         onError: (error) => {

@@ -6,6 +6,10 @@ class EmployeeService extends BaseService {
         super("/unified-auth");
     }
 
+    public async getCurrentUser() {
+        return this.get("/me")
+    }
+
     public async addEmployee(data: IEmployee) {
         const res = await this.post(`/employee/add`, data);
         return res;
