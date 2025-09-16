@@ -5,24 +5,15 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { AuthGuard } from "@/components/auth-guard"
 import { Header } from "@/components/layout/header"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { FileText, Clock, CheckCircle, Eye } from "lucide-react"
+import { Eye } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/context/auth-context"
 import PendingApprovalForms from "@/components/supervisor/pending-approval-forms"
+import StatusBadge from "@/components/shared/status-badge"
+import { formatDate } from "@/lib/utils"
+import ReviewedForms from "@/components/supervisor/reviewed-forms"
 
 interface ClearanceForm {
   id: string
@@ -45,7 +36,6 @@ interface SupervisorReviewData {
 }
 
 export default function SupervisorPage() {
-  const [pendingForms, setPendingForms] = useState<ClearanceForm[]>([])
   const [reviewedForms, setReviewedForms] = useState<ClearanceForm[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -57,7 +47,7 @@ export default function SupervisorPage() {
   })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { toast } = useToast()
-  const {employee} = useAuth()
+  const { employee } = useAuth()
 
   useEffect(() => {
     const userData = localStorage.getItem("user")
@@ -83,7 +73,6 @@ export default function SupervisorPage() {
           updatedAt: new Date().toISOString(),
         },
       ]
-      setPendingForms(mockPendingForms)
       setReviewedForms([])
     } catch (error) {
       toast({
@@ -123,7 +112,6 @@ export default function SupervisorPage() {
       }
 
       // Remove from pending and add to reviewed
-      setPendingForms((prev) => prev.filter((form) => form.id !== selectedForm.id))
       setReviewedForms((prev) => [updatedForm, ...prev])
 
       // Reset form and close dialog
@@ -160,54 +148,6 @@ export default function SupervisorPage() {
     setIsDialogOpen(true)
   }
 
-  const getStatusBadge = (status: ClearanceForm["status"]) => {
-    switch (status) {
-      case "PENDING_SUPERVISOR":
-        return (
-          <Badge variant="secondary" className="bg-orange-100 text-orange-800 border-orange-200">
-            <Clock className="h-3 w-3 mr-1" />
-            Pending Review
-          </Badge>
-        )
-      case "PENDING_HOD":
-        return (
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Sent to HOD
-          </Badge>
-        )
-      case "PENDING_ADMIN":
-        return (
-          <Badge variant="secondary" className="bg-purple-100 text-purple-800 border-purple-200">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Sent to Admin
-          </Badge>
-        )
-      case "APPROVED":
-        return (
-          <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Approved
-          </Badge>
-        )
-      case "REJECTED":
-        return (
-          <Badge variant="destructive">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Rejected
-          </Badge>
-        )
-    }
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
-  }
-
   // if (!user) return null
 
   return (
@@ -218,64 +158,16 @@ export default function SupervisorPage() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Forms to Review Section */}
-            <div className="space-y-6">
-              {employee && <PendingApprovalForms employee={employee}/>}
-            </div>
+            {employee && (
+              <div className="space-y-6">
+                <PendingApprovalForms employee={employee} />
+              </div>
+            )}
 
             {/* Forms I've Reviewed Section */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Eye className="h-5 w-5 text-primary" />
-                    Forms I've Reviewed ({reviewedForms.length})
-                  </CardTitle>
-                  <CardDescription>Track forms you have already reviewed</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {reviewedForms.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Eye className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">No forms reviewed yet.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {reviewedForms.map((form) => (
-                        <div
-                          key={form.id}
-                          className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                              {getStatusBadge(form.status)}
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              Form ID: {form.id} • State Code: {form.stateCode}
-                            </p>
-                            <p className="text-sm text-muted-foreground">Department: {form.department}</p>
-                            {form.supervisorReviewDate && (
-                              <p className="text-sm text-muted-foreground">
-                                Reviewed: {formatDate(form.supervisorReviewDate)}
-                              </p>
-                            )}
-                            {form.daysAbsent !== undefined && (
-                              <p className="text-sm text-muted-foreground">Days Absent: {form.daysAbsent}</p>
-                            )}
-                            {form.conductRemark && (
-                              <p className="text-sm text-muted-foreground">
-                                Remark: {form.conductRemark.substring(0, 100)}
-                                {form.conductRemark.length > 100 ? "..." : ""}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+            {employee && <div className="space-y-6">
+              <ReviewedForms employee={employee} />
+            </div>}
           </div>
         </main>
       </div>

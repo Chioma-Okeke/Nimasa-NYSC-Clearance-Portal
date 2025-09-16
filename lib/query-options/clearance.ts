@@ -14,3 +14,8 @@ export const getIndividualClearanceFormQueryOpt = (id: number, role: string) => 
     queryKey: ["clearanceForm", id, role],
     queryFn: () => new ClearanceService().getClearanceForm(id, role)
 })
+
+export const getClearanceFormsByStatusQueryOpt = (role: string, status: string) => ({
+    queryKey: ["clearanceForms", role, status],
+    queryFn: () => new ClearanceService().getClearanceFormsByStatus(role, status)
+})

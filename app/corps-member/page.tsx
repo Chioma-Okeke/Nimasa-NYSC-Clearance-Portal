@@ -13,7 +13,7 @@ export default function CorpsMemberPage() {
   const {employee} = useAuth()
 
   return (
-    <AuthGuard allowedRoles={["CORPS_MEMBER"]}>
+    <AuthGuard allowedRoles={[employee?.role || ""]}>
       <div className="min-h-screen bg-background">
         <Header title="Corps Member Dashboard" userRole="Corps Member" userName={employee?.name} />
 

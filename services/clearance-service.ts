@@ -70,7 +70,7 @@ export class ClearanceService extends BaseService {
         return this.get<IClearanceFormResponse[]>("/pending", { role });
     } //teach him how to better handle this that he wont all these separate end points
 
-    public async clearanceFormStatus(role: string, status: string) {
-        this.get<IClearanceFormResponse[]>(`/status/${status}`, { role });
-    } //ask about the use for this
+    public async getClearanceFormsByStatus(role: string, status: string) {
+        return this.get<IClearanceFormResponse[]>(`/status/${status}`, { role });
+    }
 }
