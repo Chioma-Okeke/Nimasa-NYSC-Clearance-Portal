@@ -20,6 +20,7 @@ interface HeaderProps {
 export function Header({ title, userRole, userName }: HeaderProps) {
   const router = useRouter()
   const { logoutUser, isLoggingOut } = useAuth()
+  console.log(userName, "name coming in")
 
   return (
     <header className="bg-card border-b border-border">

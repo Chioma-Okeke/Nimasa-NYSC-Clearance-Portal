@@ -1,34 +1,41 @@
-import React, { useEffect, useState } from 'react'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import React from 'react'
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { Button } from '../ui/button'
-import { Eye, Upload, X } from 'lucide-react'
+import { Upload, UserCheck, X } from 'lucide-react'
+import { IClearanceFormResponse, IEmployeeCreationResponse, IHodReview } from '@/types'
+import { hodReviewSchema } from '@/lib/schema'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { supervisorReviewSchema } from '@/lib/schema'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
+import { Textarea } from '../ui/textarea'
 import { useMutation } from '@tanstack/react-query'
 import { ClearanceService } from '@/services/clearance-service'
-import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
-import { fileToBase64 } from '@/lib/utils'
 import { toast } from 'sonner'
+import LoadingSpinner from '../shared/loading-spinner'
 
-type FormValues = z.infer<typeof supervisorReviewSchema>;
+type ReviewFormValues = z.infer<typeof hodReviewSchema>;
 
 function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormResponse, employee: IEmployeeCreationResponse }) {
-    const [fileList, setFileList] = useState<File | null>(null)
     const [isDialogOpen, setIsDialogOpen] = React.useState(false)
-    const { mutate: reviewForm, isPending } = useMutation({
+    const [fileList, setFileList] = React.useState<File | null>(null)
+    const { mutate: hodReview, isPending } = useMutation({
         mutationFn: async (data: FormData) => {
-            for (const [key, value] of data.entries()) {
-            console.log(`${key}:`, value, "in mutation");
-        }
-            await new ClearanceService().supervisorReview(selectedForm.id ?? "", data, employee.role)
+            await new ClearanceService().hodReview(employee.id ?? "", data)
         },
         onSuccess: (res) => {
             toast.success("Review submitted successfully", {
-                description: "Moved to HOD for review"
+                description: "Moved to Admin for final approval"
             })
         },
         onError: (error) => {
@@ -38,94 +45,76 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
         }
     })
 
-    const form = useForm<FormValues>({
-        resolver: zodResolver(supervisorReviewSchema),
+    const form = useForm<ReviewFormValues>({
+        resolver: zodResolver(hodReviewSchema),
         defaultValues: {
-            supervisorName: employee ? employee.name : "",
-            daysAbsent: 0,
-            conductRemark: ""
-        }
-    })
+            hodName: "",
+            hodRemark: "",
+        },
+    });
 
-    useEffect(() => {
-        console.log(fileList, "on pcik")
-    }, [fileList])
-
-    const handleReviewSubmit = async (values: FormValues) => {
+    const onSubmit = (values: ReviewFormValues) => {
         const formData = new FormData();
-        formData.append("supervisorName", values.supervisorName);
-        formData.append("daysAbsent", String(values.daysAbsent));
-        formData.append("conductRemark", values.conductRemark)
+        formData.append("hodName", values.hodName);
+        formData.append("hodRemark", values.hodRemark);
         if (fileList) {
-            formData.append("signatureFile", fileList);
+            formData.append("signatureFile", fileList)
         }
         console.log(values, formData)
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}:`, value);
-        }
-        reviewForm(formData)
+        hodReview(formData)
     }
 
     return (
-        <Dialog open={isDialogOpen} onOpenChange={() => {
-            setIsDialogOpen(!isDialogOpen)
-            form.reset();
-            setFileList(null)
-        }}>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
                 <Button
                     size="sm"
                     className="bg-primary hover:bg-primary/90"
                 >
-                    <Eye className="h-4 w-4 mr-1" />
+                    <UserCheck className="h-4 w-4 mr-1" />
                     Review
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Review Clearance Form</DialogTitle>
+                    <DialogTitle>HOD Review</DialogTitle>
                     <DialogDescription>
-                        Review and provide feedback for {selectedForm?.corpsName}'s clearance form
+                        Provide your review for {selectedForm?.corpsName}'s clearance form
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleReviewSubmit)} className="space-y-4">
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-4"
+                    >
+                        {/* HOD Name */}
                         <FormField
                             control={form.control}
-                            name='supervisorName'
+                            name="hodName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Supervisor Name <span className='text-red-600 text-sm'>*</span></FormLabel>
+                                    <FormLabel>HOD Name</FormLabel>
                                     <FormControl>
-                                        <Input disabled placeholder="Enter supervisor name" {...field} />
+                                        <Input placeholder="Enter HOD name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
+                        {/* HOD Remark */}
                         <FormField
                             control={form.control}
-                            name='daysAbsent'
+                            name="hodRemark"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Days Absent <span className='text-red-600 text-sm'>*</span></FormLabel>
+                                    <FormLabel>HOD Remark</FormLabel>
                                     <FormControl>
-                                        <Input type='number' placeholder='Enter number of absent days' {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name='conductRemark'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Conduct Remark <span className='text-red-600 test-sm'>*</span></FormLabel>
-                                    <FormControl>
-                                        <Input placeholder='Enter conduct remark' {...field} />
+                                        <Textarea
+                                            placeholder="Enter your remarks and recommendations..."
+                                            rows={4}
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -155,7 +144,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                     Attach Image
                                 </Button>
                                 {fileList && <div className='space-y-2'>
-                                    <img src={URL.createObjectURL(fileList)} alt='preview' className='size-16 object-cover rounded-md' />
+                                    <img src={URL.createObjectURL(fileList)} alt='preview' className='object-cover rounded-md' />
                                     <div className='flex items-center gap-1'>
                                         <p>{fileList.name}</p>
                                         <button onClick={() => setFileList(null)} aria-label='Remove attached file' title='Remove attached file' className='hover:scale-125 transition-all ease-in-out duration-300'>
@@ -166,6 +155,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                             </div>
                         </div>
 
+                        {/* Buttons */}
                         <DialogFooter className="flex gap-2 pt-4">
                             <DialogClose asChild>
                                 <Button
@@ -181,7 +171,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                 className="flex-1 bg-primary hover:bg-primary/90"
                                 disabled={isPending}
                             >
-                                {isPending ? "Submitting..." : "Submit Review"}
+                                {isPending ? <LoadingSpinner/> : "Submit Review"}
                             </Button>
                         </DialogFooter>
                     </form>

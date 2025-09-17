@@ -37,6 +37,7 @@ import { useMutation } from "@tanstack/react-query";
 import { IEmployee } from "@/types";
 import EmployeeService from "@/services/employee-service";
 import { toast } from "sonner";
+import LoadingSpinner from "@/components/shared/loading-spinner";
 
 type FormValues = z.infer<typeof employeeSchema>;
 
@@ -182,9 +183,9 @@ const AddEmployeeForm = () => {
                             <Button
                                 type="submit"
                                 className="flex-1 bg-primary hover:bg-primary/90"
-                                disabled={form.formState.isSubmitting}
+                                disabled={isPending}
                             >
-                                {form.formState.isSubmitting ? "Adding..." : "Add Employee"}
+                                {isPending ? <LoadingSpinner/> : "Add Employee"}
                             </Button>
                         </DialogFooter>
                     </form>

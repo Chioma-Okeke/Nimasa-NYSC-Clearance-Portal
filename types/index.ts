@@ -27,7 +27,7 @@ export interface ICorperForm {
 
 export interface ISupervisorReview {
     supervisorName: string;
-    daysAbsent: number;
+    daysAbsent: string;
     conductRemark: string;
     signatureFile?: string
 }
@@ -35,7 +35,6 @@ export interface ISupervisorReview {
 export interface IHodReview {
     hodName: string;
     hodRemark: string;
-    role: string;
 }
 
 export interface IReviewResponse {
@@ -64,7 +63,7 @@ export interface ICorperPrintableForm {
     corpsName: string;
     stateCode: string;
     department: string;
-    daysAbsent: number;
+    daysAbsent: string;
     conductRemark: string;
     supervisorName: string;
     supervisorSignatureUrl: string;

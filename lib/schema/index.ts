@@ -37,3 +37,8 @@ export const supervisorReviewSchema = z.object({
     conductRemark: z.string().min(1, "Conduct remark is required"),
     // signatureFile: z.any().refine((file) => file instanceof File && file.size > 0, "Signature image is required")
 })
+
+export const hodReviewSchema = z.object({
+  hodName: z.string().min(1, "HOD name is required"),
+  hodRemark: z.string().min(1, "Remark is required"),
+});

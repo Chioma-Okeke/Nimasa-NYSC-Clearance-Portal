@@ -48,7 +48,7 @@ export class ClearanceService extends BaseService {
 
     public async supervisorReview(id: number, data: FormData, role?: string) {
         return this.makeRawRequest({
-            url: `/${id}/supervisor-review?${role}`,
+            url: `/${id}/supervisor-review?role=${role}`,
             method: "post",
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -57,7 +57,7 @@ export class ClearanceService extends BaseService {
         })
     }
 
-    public async hodReview(id: string, data: IHodReview) {
+    public async hodReview(id: number, data: FormData) {
         return this.post(`/${id}/hod-review`, data);
     }
 
