@@ -5,3 +5,5 @@ export const FORM_STATUSES = {
     APPROVED: "APPROVED",
     REJECTED: "REJECTED"
 }
+
+export const ALLOWED_ROLES = ["CORPS_MEMBER", "SUPERVISOR", "HOD", "ADMIN"];

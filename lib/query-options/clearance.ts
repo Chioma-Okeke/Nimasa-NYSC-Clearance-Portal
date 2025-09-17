@@ -7,7 +7,7 @@ export const getPendingApprovalFormsQueryOpt = (role: string) => ({
 
 export const getClearanceFormsQueryOpt = (role: string) => ({
     queryKey: ["clearanceForms", role],
-    queryFn: () => new ClearanceService().getClearanceForms("ADMIN"),
+    queryFn: () => new ClearanceService().getClearanceForms(role),
 });
 
 export const getIndividualClearanceFormQueryOpt = (id: number, role: string) => ({

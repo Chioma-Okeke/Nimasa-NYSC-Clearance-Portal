@@ -17,8 +17,17 @@ export const generateUserInitials = (name: string) => {
 
 export const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-NG", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
-  }
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    });
+};
+
+export async function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+  });
+}

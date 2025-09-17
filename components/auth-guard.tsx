@@ -6,17 +6,17 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import useAuth from "@/providers/use-auth"
 import Logo from "./shared/logo"
+import { ALLOWED_ROLES } from "@/lib/constants"
 
 interface AuthGuardProps {
   children: React.ReactNode
-  allowedRoles: string[]
 }
 
-export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
+export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter()
-  const { isLoggingOut, employee } = useAuth()
+  const { isLoggingOut, employee, isLoading } = useAuth()
 
-  if (isLoggingOut) {
+  if (isLoading || isLoggingOut) {
     return (
       <div className="animate-pulse h-screen flex items-center justify-center w-full">
         <Logo />
@@ -26,15 +26,16 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
 
   if (!employee) {
     router.push("/login")
+    console.log("No employee found, redirecting to login.")
     return null;
   }
 
-  if (!allowedRoles.includes(employee?.role)) {
-    router.push("/login")
+  if (!ALLOWED_ROLES.includes(employee?.role)) {
     toast.error("Access Denied", {
       description: " You do not have permission to access this page."
     })
-    return
+    router.push("/login")
+    return null
   }
 
   return <>{children}</>

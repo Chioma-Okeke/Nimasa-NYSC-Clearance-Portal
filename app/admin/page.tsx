@@ -18,7 +18,7 @@ export default function AdminPage() {
   const { data: pendingClearanceForms, isLoading } = useQuery(getPendingApprovalFormsQueryOpt(employee?.role || ""))
 
   return (
-    <AuthGuard allowedRoles={[employee?.role || ""]}>
+    <AuthGuard>
       <div className="min-h-screen bg-background">
         <Header title="Administrator Dashboard" userRole="Admin" userName={employee ? employee.name : ""} />
 

@@ -166,7 +166,7 @@ export default function HODPage() {
   // if (!user) return null
 
   return (
-    <AuthGuard allowedRoles={["HOD"]}>
+    <AuthGuard>
       <div className="min-h-screen bg-background">
         <Header title="Head of Department Dashboard" userRole="HOD" userName={user?.name} />
 

@@ -42,8 +42,19 @@ export class ClearanceService extends BaseService {
         return this.post<ICorperForm, ICorperForm>("/submission", data);
     }
 
-    public async supervisorReview(id: string, data: ISupervisorReview, role?: string) {
-        return this.post(`/${id}/supervisor-review?${role}`, data);
+    // public async supervisorReview(id: number, data: FormData, role?: string) {
+    //     return this.post(`/${id}/supervisor-review?${role}`, data);
+    // }
+
+    public async supervisorReview(id: number, data: FormData, role?: string) {
+        return this.makeRawRequest({
+            url: `/${id}/supervisor-review?${role}`,
+            method: "post",
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            data
+        })
     }
 
     public async hodReview(id: string, data: IHodReview) {

@@ -22,37 +22,43 @@ export const createAxiosInstance = (
         timeout: 60000,
         withCredentials: true,
         headers: {
-            "Content-Type": "application/json",
+            // "Content-Type": "application/json",
             ...headers,
         },
     });
 
-  //   axiosInstance.interceptors.response.use(
-  //   (response) => response,
-  //   async (error) => {
-  //     const originalRequest = error.config;
+    axiosInstance.interceptors.request.use((config) => {
+        console.log("DATA TYPE:", config.data instanceof FormData); // should be true
+        console.log("HEADERS SENT:", config.headers);
+        return config;
+    });
 
-  //     if (
-  //       error.response?.status === 401 &&
-  //       !originalRequest._retry // prevent infinite loop
-  //     ) {
-  //       originalRequest._retry = true;
-  //       try {
-  //         // Call refresh endpoint
-  //         await axiosInstance.post("/unified-auth/refresh", {}, { withCredentials: true });
+    //   axiosInstance.interceptors.response.use(
+    //   (response) => response,
+    //   async (error) => {
+    //     const originalRequest = error.config;
 
-  //         // Retry original request after refreshing
-  //         return axiosInstance(originalRequest);
-  //       } catch (refreshError) {
-  //         console.error("Refresh token failed:", refreshError);
-  //         // Optionally clear user session and redirect
-  //         window.location.href = "/login";
-  //       }
-  //     }
+    //     if (
+    //       error.response?.status === 401 &&
+    //       !originalRequest._retry // prevent infinite loop
+    //     ) {
+    //       originalRequest._retry = true;
+    //       try {
+    //         // Call refresh endpoint
+    //         await axiosInstance.post("/unified-auth/refresh", {}, { withCredentials: true });
 
-  //     return Promise.reject(error);
-  //   }
-  // );
+    //         // Retry original request after refreshing
+    //         return axiosInstance(originalRequest);
+    //       } catch (refreshError) {
+    //         console.error("Refresh token failed:", refreshError);
+    //         // Optionally clear user session and redirect
+    //         window.location.href = "/login";
+    //       }
+    //     }
+
+    //     return Promise.reject(error);
+    //   }
+    // );
 
     return axiosInstance;
 };

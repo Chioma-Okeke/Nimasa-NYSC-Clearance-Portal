@@ -22,23 +22,26 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import EmployeeService from "@/services/employee-service"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { IEmployee } from "@/types"
 import { toast } from "sonner"
 import { loginFormSchema } from "@/lib/schema"
 import Logo from "@/components/shared/logo"
 import { useRouter } from "@bprogress/next"
 import LoadingSpinner from "@/components/shared/loading-spinner"
+import { getCurrentUserQueryOpt } from "@/lib/query-options/employee"
 
 export default function LoginPage() {
   const router = useRouter()
   const employeeService = new EmployeeService()
+  const queryClient = useQueryClient()
 
   const { mutate: logUserIn, isPending } = useMutation({
     mutationFn: async (data: IEmployee) => {
       return await employeeService.login(data)
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
+      await queryClient.invalidateQueries(getCurrentUserQueryOpt)
       switch (response.role) {
         case "CORPS_MEMBER":
           router.push("/corps-member")

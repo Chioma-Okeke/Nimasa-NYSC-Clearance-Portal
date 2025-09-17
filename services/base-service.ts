@@ -14,6 +14,8 @@ export abstract class BaseService {
         this.apiInstance = createAxiosInstance(this.clientUrl, headers);
     }
 
+    
+
     protected async handleRequest<TData>(
         request: Promise<AxiosResponse<TData>>
     ): Promise<TData> {
@@ -72,4 +74,51 @@ export abstract class BaseService {
     ): Promise<TData> {
         return this.handleRequest(this.apiInstance.delete(url, { params }));
     }
+
+    protected async addAuthorizationHeader(config?: Record<string, unknown>) {
+    // const { accessToken } = await getAccessRefreshTokens()
+
+    // if (!accessToken) {
+    //   return config
+    // }
+
+    return {
+      ...config,
+      headers: {
+        ...(config?.headers as object),
+        // Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  }
+
+    public async makeRawRequest<TData>(args: {
+    url: string
+    method: 'get' | 'post' | 'put' | 'delete' | 'patch'
+    params?: Record<string, unknown>
+    headers?: Record<string, unknown>
+    responseType?: 'json' | 'blob' | 'text' | 'arraybuffer'
+    data?: unknown
+  }): Promise<TData> {
+    const { url, params, headers, responseType, method, data } = args
+    try {
+      const newHeaders = await this.addAuthorizationHeader({
+        headers,
+        params,
+        responseType,
+      })
+      const response = await this.apiInstance.request({
+        url,
+        method,
+        data,
+        // ...newHeaders,
+      })
+      return response.data
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        // Logger.log(e.response?.data)
+        throw new Error(e.response?.data?.message || e.message)
+      }
+      throw new Error('Something went wrong while processing your request')
+    }
+  }
 }

@@ -33,6 +33,7 @@ export const loginFormSchema = z.object({
 
 export const supervisorReviewSchema = z.object({
     supervisorName: z.string().min(1, "Supervisor name is required"),
-    daysAbsent: z.number().min(0, "Days absent cannot be negative"),
+    daysAbsent: z.coerce.number().min(0, "Days absent cannot be negative"),
     conductRemark: z.string().min(1, "Conduct remark is required"),
+    // signatureFile: z.any().refine((file) => file instanceof File && file.size > 0, "Signature image is required")
 })
