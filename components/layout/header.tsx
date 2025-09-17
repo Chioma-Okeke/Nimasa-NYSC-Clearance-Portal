@@ -8,7 +8,8 @@ import Image from "next/image"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import EmployeeService from "@/services/employee-service"
-import { useAuth } from "@/context/auth-context"
+import useAuth from "@/providers/use-auth"
+import LoadingSpinner from "../shared/loading-spinner"
 
 interface HeaderProps {
   title: string
@@ -18,31 +19,7 @@ interface HeaderProps {
 
 export function Header({ title, userRole, userName }: HeaderProps) {
   const router = useRouter()
-  const { logout } = useAuth()
-  const {
-    mutate: logUserOut,
-    isPending
-  } = useMutation({
-    mutationFn: () => new EmployeeService().logout(),
-    onSuccess: () => {
-      logout()
-      toast.success(
-        "Logged Out", {
-        description: "You have been successfully logged out."
-      }
-      )
-      router.push("/login")
-    },
-    onError: (error) => {
-      toast.error('error', {
-        description: error.message ? error.message : "There was an error when trying to log user out"
-      })
-    },
-  })
-
-  const handleLogout = () => {
-    logUserOut();
-  }
+  const { logoutUser, isLoggingOut } = useAuth()
 
   return (
     <header className="bg-card border-b border-border">
@@ -59,15 +36,15 @@ export function Header({ title, userRole, userName }: HeaderProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            { userName ?<UserProfileCard userName={userName} userRole={userRole} handleLogout={handleLogout} /> : <User2/>}
+            { userName ?<UserProfileCard userName={userName} userRole={userRole} handleLogout={logoutUser} /> : <User2/>}
             <Button
               variant="outline"
               size="sm"
-              onClick={handleLogout}
+              onClick={() => logoutUser()}
               className="items-center gap-2 bg-transparent hover:bg-red-500 hidden xl:flex"
             >
               <LogOut className="h-4 w-4" />
-              {isPending ? "...logging out" : "Logout"}
+              {isLoggingOut ? <LoadingSpinner/> : "Logout"}
             </Button>
           </div>
         </div>

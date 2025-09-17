@@ -26,13 +26,12 @@ import { useMutation } from "@tanstack/react-query"
 import { IEmployee } from "@/types"
 import { toast } from "sonner"
 import { loginFormSchema } from "@/lib/schema"
-import { useAuth } from "@/context/auth-context"
 import Logo from "@/components/shared/logo"
 import { useRouter } from "@bprogress/next"
+import LoadingSpinner from "@/components/shared/loading-spinner"
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login } = useAuth()
   const employeeService = new EmployeeService()
 
   const { mutate: logUserIn, isPending } = useMutation({
@@ -55,7 +54,6 @@ export default function LoginPage() {
           break
       }
       form.reset()
-      login(response)
       toast.success("Login Successful", {
         description: " User successfully logged in."
       })
@@ -189,7 +187,7 @@ export default function LoginPage() {
                 className="w-full bg-primary hover:bg-primary/90"
                 disabled={isPending}
               >
-                {isPending ? "Signing in..." : "Sign In"}
+                {isPending ? <LoadingSpinner/> : "Sign In"}
               </Button>
             </form>
           </Form>

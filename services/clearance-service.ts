@@ -32,7 +32,7 @@ export class ClearanceService extends BaseService {
         return this.delete(`/${id}`);
     } // he need to explain what the request body is for. And if it is to confirm if that ia an admin, teach him how to better do it
 
-    public async printClearanceForm(id: string, corpsName: string) {
+    public async printClearanceForm(id: number, corpsName: string) {
         return this.get<ICorperPrintableForm>(`/${id}/printable`, {
             corpsName,
         });

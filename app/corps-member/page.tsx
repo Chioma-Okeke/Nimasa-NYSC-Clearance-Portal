@@ -6,8 +6,8 @@ import { Header } from "@/components/layout/header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus } from "lucide-react"
 import ClearanceForm from "@/forms/clearance-form"
-import { useAuth } from "@/context/auth-context"
 import CorperFormList from "@/components/corper/corper-form-list"
+import useAuth from "@/providers/use-auth"
 
 export default function CorpsMemberPage() {
   const {employee} = useAuth()

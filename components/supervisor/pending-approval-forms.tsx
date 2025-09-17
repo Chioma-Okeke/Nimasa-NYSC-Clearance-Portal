@@ -8,6 +8,7 @@ import { formatDate } from '@/lib/utils'
 import StatusBadge from '../shared/status-badge'
 import { useQuery } from '@tanstack/react-query'
 import { getPendingApprovalFormsQueryOpt } from '@/lib/query-options/clearance'
+import { ClearanceService } from '@/services/clearance-service'
 
 type PendingApprovalFormsProps = {
     employee: IEmployeeCreationResponse
@@ -16,6 +17,9 @@ type PendingApprovalFormsProps = {
 function PendingApprovalForms({employee}: PendingApprovalFormsProps) {
 
     const {data: pendingForms, isLoading} = useQuery(getPendingApprovalFormsQueryOpt(employee.role || ""))
+    const handleClick = async (id: number, corpsName: string) => {
+        await new ClearanceService().printClearanceForm(id, corpsName)
+    }
 
     return (
         <Card>
@@ -58,6 +62,7 @@ function PendingApprovalForms({employee}: PendingApprovalFormsProps) {
                                     </div>
                                     <div className="flex gap-2">
                                         <ReviewForm employee={employee} selectedForm={form}/>
+                                        <Button onClick={() => handleClick(form.id, form.corpsName)}>Print</Button>
                                     </div>
                                 </div>
                             </div>

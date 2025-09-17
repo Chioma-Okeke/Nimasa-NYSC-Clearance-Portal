@@ -1,10 +1,4 @@
-// import { getCookie } from "@/actions/utils-actions";
 import axios, { AxiosInstance, RawAxiosRequestHeaders } from "axios";
-
-function getCookie() {
-    const authToken = localStorage.getItem("token");
-    return authToken;
-}
 
 export const createAxiosInstance = (
     clientUrl: string,
@@ -33,32 +27,32 @@ export const createAxiosInstance = (
         },
     });
 
-    axiosInstance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const originalRequest = error.config;
+  //   axiosInstance.interceptors.response.use(
+  //   (response) => response,
+  //   async (error) => {
+  //     const originalRequest = error.config;
 
-      if (
-        error.response?.status === 401 &&
-        !originalRequest._retry // prevent infinite loop
-      ) {
-        originalRequest._retry = true;
-        try {
-          // Call refresh endpoint
-          await axiosInstance.post("/unified-auth/refresh", {}, { withCredentials: true });
+  //     if (
+  //       error.response?.status === 401 &&
+  //       !originalRequest._retry // prevent infinite loop
+  //     ) {
+  //       originalRequest._retry = true;
+  //       try {
+  //         // Call refresh endpoint
+  //         await axiosInstance.post("/unified-auth/refresh", {}, { withCredentials: true });
 
-          // Retry original request after refreshing
-          return axiosInstance(originalRequest);
-        } catch (refreshError) {
-          console.error("Refresh token failed:", refreshError);
-          // Optionally clear user session and redirect
-          window.location.href = "/login";
-        }
-      }
+  //         // Retry original request after refreshing
+  //         return axiosInstance(originalRequest);
+  //       } catch (refreshError) {
+  //         console.error("Refresh token failed:", refreshError);
+  //         // Optionally clear user session and redirect
+  //         window.location.href = "/login";
+  //       }
+  //     }
 
-      return Promise.reject(error);
-    }
-  );
+  //     return Promise.reject(error);
+  //   }
+  // );
 
     return axiosInstance;
 };

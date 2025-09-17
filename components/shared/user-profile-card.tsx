@@ -36,7 +36,7 @@ function UserProfileCard({ userName, userRole, handleLogout }: UserProfileCardPr
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={handleLogout}
+                        onClick={() => handleLogout()}
                         className="items-center gap-2 bg-transparent hover:bg-red-500 flex"
                     >
                         <LogOut className="h-4 w-4" />

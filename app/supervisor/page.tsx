@@ -9,11 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Eye } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useAuth } from "@/context/auth-context"
 import PendingApprovalForms from "@/components/supervisor/pending-approval-forms"
 import StatusBadge from "@/components/shared/status-badge"
 import { formatDate } from "@/lib/utils"
 import ReviewedForms from "@/components/supervisor/reviewed-forms"
+import useAuth from "@/providers/use-auth"
 
 interface ClearanceForm {
   id: string

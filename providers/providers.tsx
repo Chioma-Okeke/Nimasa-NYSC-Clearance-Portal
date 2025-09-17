@@ -1,7 +1,6 @@
 "use client"
 
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { AuthProvider } from "@/context/auth-context";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { defaultShouldDehydrateQuery, isServer, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
@@ -47,9 +46,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         options={{ showSpinner: false }}
         shallowRouting
       >
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
       </ProgressProvider>
       <Sonner richColors expand={true} position="top-right" />
     </QueryClientProvider>

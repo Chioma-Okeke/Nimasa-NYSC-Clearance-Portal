@@ -7,7 +7,7 @@ class EmployeeService extends BaseService {
     }
 
     public async getCurrentUser() {
-        return this.get("/me")
+        return this.get<IEmployeeCreationResponse>("/me")
     }
 
     public async addEmployee(data: IEmployee) {

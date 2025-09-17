@@ -8,11 +8,11 @@ import { ClearanceService } from '@/services/clearance-service'
 import { toast } from 'sonner'
 import { getClearanceFormsQueryOpt } from '@/lib/query-options/clearance'
 import LoadingSpinner from '../shared/loading-spinner'
-import { useAuth } from '@/context/auth-context'
+import useAuth from '@/providers/use-auth'
 
 function DeleteClearanceForm({ form }: { form: IClearanceFormResponse }) {
     const [isOpen, setIsOpen] = useState(false)
-    const {employee} = useAuth()
+    const { employee } = useAuth()
     const queryClient = useQueryClient()
     const { mutate: deleteForm, isPending } = useMutation({
         mutationFn: async (id: number) => {
