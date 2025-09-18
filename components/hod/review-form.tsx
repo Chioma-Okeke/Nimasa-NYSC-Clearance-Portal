@@ -19,21 +19,29 @@ import { z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ClearanceService } from '@/services/clearance-service'
 import { toast } from 'sonner'
 import LoadingSpinner from '../shared/loading-spinner'
+import { FORM_STATUSES } from '@/lib/constants'
 
 type ReviewFormValues = z.infer<typeof hodReviewSchema>;
 
 function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormResponse, employee: IEmployeeCreationResponse }) {
     const [isDialogOpen, setIsDialogOpen] = React.useState(false)
     const [fileList, setFileList] = React.useState<File | null>(null)
+    const queryClient = useQueryClient();
+
     const { mutate: hodReview, isPending } = useMutation({
         mutationFn: async (data: FormData) => {
-            await new ClearanceService().hodReview(employee.id ?? "", data)
+            await new ClearanceService().hodReview(selectedForm.id ?? "", data)
         },
         onSuccess: (res) => {
+            setIsDialogOpen(false)
+            setFileList(null)
+            form.reset();
+            queryClient.invalidateQueries({ queryKey: ["clearanceForms", employee.role, "PENDING_APPROVAL"] })
+            queryClient.invalidateQueries({queryKey: ["clearanceForms", employee.role, FORM_STATUSES.PENDING_ADMIN]})
             toast.success("Review submitted successfully", {
                 description: "Moved to Admin for final approval"
             })
@@ -48,7 +56,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
     const form = useForm<ReviewFormValues>({
         resolver: zodResolver(hodReviewSchema),
         defaultValues: {
-            hodName: "",
+            hodName: employee ? employee.name : "",
             hodRemark: "",
         },
     });
@@ -57,10 +65,13 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
         const formData = new FormData();
         formData.append("hodName", values.hodName);
         formData.append("hodRemark", values.hodRemark);
+        if (!fileList) {
+            toast.error("Please attach your signature image");
+            return;
+        }
         if (fileList) {
             formData.append("signatureFile", fileList)
         }
-        console.log(values, formData)
         hodReview(formData)
     }
 
@@ -93,9 +104,9 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                             name="hodName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>HOD Name</FormLabel>
+                                    <FormLabel className='gap-0'>HOD Name<span className='text-sm text-red-600'>*</span></FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter HOD name" {...field} />
+                                        <Input placeholder="Enter HOD name" disabled {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -108,7 +119,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                             name="hodRemark"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>HOD Remark</FormLabel>
+                                    <FormLabel className='gap-0'>HOD Remark<span className='text-sm text-red-600'>*</span></FormLabel>
                                     <FormControl>
                                         <Textarea
                                             placeholder="Enter your remarks and recommendations..."
@@ -126,6 +137,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                 <div className="space-y-1">
                                     <h3 className="text-sm font-medium text-greyscale-text-title">
                                         Signature Image
+                                        <span className='text-sm text-red-600'>*</span>
                                     </h3>
                                     <p className="text-sm text-greyscale-text-body">
                                         File size should not exceed 50MB
@@ -144,7 +156,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                     Attach Image
                                 </Button>
                                 {fileList && <div className='space-y-2'>
-                                    <img src={URL.createObjectURL(fileList)} alt='preview' className='object-cover rounded-md' />
+                                    <img src={URL.createObjectURL(fileList)} alt='preview' className='size-18 object-cover rounded-md' />
                                     <div className='flex items-center gap-1'>
                                         <p>{fileList.name}</p>
                                         <button onClick={() => setFileList(null)} aria-label='Remove attached file' title='Remove attached file' className='hover:scale-125 transition-all ease-in-out duration-300'>

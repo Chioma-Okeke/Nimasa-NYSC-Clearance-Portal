@@ -11,8 +11,8 @@ import { Input } from '../ui/input'
 import { useMutation } from '@tanstack/react-query'
 import { ClearanceService } from '@/services/clearance-service'
 import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
-import { fileToBase64 } from '@/lib/utils'
 import { toast } from 'sonner'
+import { Textarea } from '../ui/textarea'
 
 type FormValues = z.infer<typeof supervisorReviewSchema>;
 
@@ -27,6 +27,9 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
             await new ClearanceService().supervisorReview(selectedForm.id ?? "", data, employee.role)
         },
         onSuccess: (res) => {
+            setIsDialogOpen(false)
+            form.reset();
+            setFileList(null)
             toast.success("Review submitted successfully", {
                 description: "Moved to HOD for review"
             })
@@ -47,10 +50,6 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
         }
     })
 
-    useEffect(() => {
-        console.log(fileList, "on pcik")
-    }, [fileList])
-
     const handleReviewSubmit = async (values: FormValues) => {
         const formData = new FormData();
         formData.append("supervisorName", values.supervisorName);
@@ -58,10 +57,6 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
         formData.append("conductRemark", values.conductRemark)
         if (fileList) {
             formData.append("signatureFile", fileList);
-        }
-        console.log(values, formData)
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}:`, value);
         }
         reviewForm(formData)
     }
@@ -125,7 +120,11 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                 <FormItem>
                                     <FormLabel>Conduct Remark <span className='text-red-600 test-sm'>*</span></FormLabel>
                                     <FormControl>
-                                        <Input placeholder='Enter conduct remark' {...field} />
+                                        <Textarea
+                                            placeholder="Enter conduct remark"
+                                            rows={4}
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
