@@ -2,18 +2,17 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { FileText } from 'lucide-react'
 import ReviewForm from './review-form'
-import { IEmployeeCreationResponse } from '@/types'
+import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
 import { formatDate } from '@/lib/utils'
 import StatusBadge from '../shared/status-badge'
-import { useQuery } from '@tanstack/react-query'
-import { getPendingApprovalFormsQueryOpt } from '@/lib/query-options/clearance'
 
 type PendingApprovalFormsProps = {
     employee: IEmployeeCreationResponse
+    pendingForms: IClearanceFormResponse[]
+    isLoading: boolean
 }
 
-function PendingApprovalForms({employee}: PendingApprovalFormsProps) {
-    const {data: pendingForms, isLoading} = useQuery(getPendingApprovalFormsQueryOpt(employee.role || ""))
+function PendingApprovalForms({employee, pendingForms, isLoading}: PendingApprovalFormsProps) {
 
     return (
         <Card>

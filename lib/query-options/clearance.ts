@@ -1,8 +1,11 @@
 import { ClearanceService } from "@/services/clearance-service";
 
-export const getPendingApprovalFormsQueryOpt = (role: string) => ({
-    queryKey: ["clearanceForms", role, "PENDING_APPROVAL"],
+export const getPendingApprovalFormsQueryOpt = (role: string, userId: number) => ({
+    queryKey: ["clearanceForms", role, "PENDING_APPROVAL", userId],
     queryFn: () => new ClearanceService().pendingApproval(role),
+    staleTime: 0,
+    refetchOnMount: "always",
+    enabled: !!role && !!userId
 });
 
 export const getClearanceFormsQueryOpt = (role: string) => ({

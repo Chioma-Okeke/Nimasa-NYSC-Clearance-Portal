@@ -9,7 +9,10 @@ import { IEmployeeCreationResponse } from '@/types'
 import ReviewForm from './review-form'
 
 function PendingApprovalForms({ employee }: { employee: IEmployeeCreationResponse }) {
-    const { data: pendingForms, isLoading } = useQuery(getPendingApprovalFormsQueryOpt(employee.role || ""))
+    const { data: pendingForms, isLoading } = useQuery({
+        ...getPendingApprovalFormsQueryOpt(employee.role || "", employee.id || 0),
+        refetchOnMount: "always"
+    })
     return (
         <Card>
             <CardHeader>

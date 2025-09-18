@@ -14,6 +14,8 @@ import StatusBadge from "@/components/shared/status-badge"
 import { formatDate } from "@/lib/utils"
 import ReviewedForms from "@/components/supervisor/reviewed-forms"
 import useAuth from "@/providers/use-auth"
+import { useQuery } from "@tanstack/react-query"
+import { getPendingApprovalFormsQueryOpt } from "@/lib/query-options/clearance"
 
 interface ClearanceForm {
   id: string
@@ -37,6 +39,10 @@ interface SupervisorReviewData {
 
 export default function SupervisorPage() {
   const { employee } = useAuth()
+  const { data: pendingForms, isLoading } = useQuery({
+    ...getPendingApprovalFormsQueryOpt(employee?.role || "", employee?.id || 0),
+    refetchOnMount: "always"
+  })
 
   return (
     <AuthGuard>
@@ -48,7 +54,7 @@ export default function SupervisorPage() {
             {/* Forms to Review Section */}
             {employee && (
               <div className="space-y-6">
-                <PendingApprovalForms employee={employee} />
+                <PendingApprovalForms pendingForms={pendingForms ?? []} isLoading={isLoading} employee={employee} />
               </div>
             )}
 

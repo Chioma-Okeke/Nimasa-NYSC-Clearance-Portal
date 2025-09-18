@@ -8,28 +8,33 @@ import { z } from 'zod'
 import { supervisorReviewSchema } from '@/lib/schema'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ClearanceService } from '@/services/clearance-service'
 import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
 import { toast } from 'sonner'
 import { Textarea } from '../ui/textarea'
+import { FORM_STATUSES } from '@/lib/constants'
 
 type FormValues = z.infer<typeof supervisorReviewSchema>;
 
 function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormResponse, employee: IEmployeeCreationResponse }) {
     const [fileList, setFileList] = useState<File | null>(null)
     const [isDialogOpen, setIsDialogOpen] = React.useState(false)
+    const queryClient = useQueryClient();
+
     const { mutate: reviewForm, isPending } = useMutation({
         mutationFn: async (data: FormData) => {
             for (const [key, value] of data.entries()) {
-            console.log(`${key}:`, value, "in mutation");
-        }
+                console.log(`${key}:`, value, "in mutation");
+            }
             await new ClearanceService().supervisorReview(selectedForm.id ?? "", data, employee.role)
         },
         onSuccess: (res) => {
             setIsDialogOpen(false)
             form.reset();
             setFileList(null)
+            queryClient.invalidateQueries({ queryKey: ["clearanceForms", employee.role, "PENDING_APPROVAL"] })
+            queryClient.invalidateQueries({ queryKey: ["clearanceForms", employee.role, FORM_STATUSES.PENDING_HOD] })
             toast.success("Review submitted successfully", {
                 description: "Moved to HOD for review"
             })
@@ -55,6 +60,10 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
         formData.append("supervisorName", values.supervisorName);
         formData.append("daysAbsent", String(values.daysAbsent));
         formData.append("conductRemark", values.conductRemark)
+        if (!fileList) {
+            toast.error("Please attach your signature image");
+            return;
+        }
         if (fileList) {
             formData.append("signatureFile", fileList);
         }
@@ -136,6 +145,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                 <div className="space-y-1">
                                     <h3 className="text-sm font-medium text-greyscale-text-title">
                                         Signature Image
+                                        <span className='text-sm text-red-600 ml-2'>*</span>
                                     </h3>
                                     <p className="text-sm text-greyscale-text-body">
                                         File size should not exceed 50MB

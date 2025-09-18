@@ -15,7 +15,10 @@ import Logo from "@/components/shared/logo"
 export default function AdminPage() {
   const { employee, isLoggingOut } = useAuth()
   const { data: clearanceForms } = useQuery(getClearanceFormsQueryOpt(employee?.role || ""))
-  const { data: pendingClearanceForms, isLoading } = useQuery(getPendingApprovalFormsQueryOpt(employee?.role || ""))
+  const { data: pendingClearanceForms, isLoading } = useQuery({
+    ...getPendingApprovalFormsQueryOpt(employee?.role || "", employee?.id || 0),
+    refetchOnMount: "always"
+  })
 
   return (
     <AuthGuard>
