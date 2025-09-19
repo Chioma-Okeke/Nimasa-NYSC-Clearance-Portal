@@ -1,4 +1,14 @@
-import axios, { AxiosInstance, RawAxiosRequestHeaders } from "axios";
+import { getAccessRefreshTokens } from "@/actions/utils-actions";
+import axios, {
+    AxiosInstance,
+    AxiosRequestConfig,
+    RawAxiosRequestHeaders,
+} from "axios";
+import { refreshAccessRefreshTokens } from "./refresh-service";
+
+let isRefreshing = false;
+
+let failedQueue: AxiosRequestConfig[] = [];
 
 export const createAxiosInstance = (
     clientUrl: string,
@@ -27,38 +37,46 @@ export const createAxiosInstance = (
         },
     });
 
-    axiosInstance.interceptors.request.use((config) => {
-        console.log("DATA TYPE:", config.data instanceof FormData); // should be true
-        console.log("HEADERS SENT:", config.headers);
-        return config;
-    });
+    // axiosInstance.interceptors.request.use((config) => {
+    //     async (error) => {
+    //         const originalRequest = error.config;
+    //         if (error.response?.status === 401 && !originalRequest._retry) {
+    //             const { refreshToken } = await getAccessRefreshTokens();
 
-    //   axiosInstance.interceptors.response.use(
-    //   (response) => response,
-    //   async (error) => {
-    //     const originalRequest = error.config;
+    //             if (!refreshToken) {
+    //                 return Promise.reject(error);
+    //             }
 
-    //     if (
-    //       error.response?.status === 401 &&
-    //       !originalRequest._retry // prevent infinite loop
-    //     ) {
-    //       originalRequest._retry = true;
-    //       try {
-    //         // Call refresh endpoint
-    //         await axiosInstance.post("/unified-auth/refresh", {}, { withCredentials: true });
+    //             originalRequest._retry = true;
 
-    //         // Retry original request after refreshing
-    //         return axiosInstance(originalRequest);
-    //       } catch (refreshError) {
-    //         console.error("Refresh token failed:", refreshError);
-    //         // Optionally clear user session and redirect
-    //         window.location.href = "/login";
-    //       }
-    //     }
+    //             if (isRefreshing) {
+    //                 return failedQueue.push(originalRequest);
+    //             }
+    //             isRefreshing = true;
 
-    //     return Promise.reject(error);
-    //   }
-    // );
+    //             try {
+    //                 const { access_token, refresh_token } =
+    //                     await refreshAccessRefreshTokens(refreshToken);
+
+    //                 if (access_token) {
+    //                     await setAccessRefreshTokens(
+    //                         access_token,
+    //                         refresh_token
+    //                     );
+    //                     originalRequest.headers.Authorization = `Bearer ${access_token}`;
+
+    //                     processQueue(access_token, protectedBaseInstance);
+    //                     return protectedBaseInstance(originalRequest);
+    //                 }
+    //             } catch (refreshError) {
+    //                 // processQueue(refreshError as Error)
+    //                 return Promise.reject(refreshError);
+    //             } finally {
+    //                 isRefreshing = false;
+    //             }
+    //         }
+    //     };
+    // });
 
     return axiosInstance;
 };

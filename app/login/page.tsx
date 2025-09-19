@@ -30,11 +30,14 @@ import Logo from "@/components/shared/logo"
 import { useRouter } from "@bprogress/next"
 import LoadingSpinner from "@/components/shared/loading-spinner"
 import { getCurrentUserQueryOpt } from "@/lib/query-options/employee"
+import { Eye, EyeClosed } from "lucide-react"
+import { useState } from "react"
 
 export default function LoginPage() {
   const router = useRouter()
   const employeeService = new EmployeeService()
   const queryClient = useQueryClient()
+  const [showPassword, setShowPassword] = useState(false)
 
   const { mutate: logUserIn, isPending } = useMutation({
     mutationFn: async (data: IEmployee) => {
@@ -172,12 +175,22 @@ export default function LoginPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Enter your password"
-                          {...field}
-                        />
+                      <FormControl >
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password"
+                            {...field}
+                          />
+                          <button type="button" className="absolute bottom-1.5 right-3 cursor-pointer hover:scale-125 transition ease-in-out duration-300"
+                            onClick={() => setShowPassword(prev => !prev)}>
+                            {
+                              showPassword ?
+                                <Eye size={15} /> :
+                                <EyeClosed size={15} />
+                            }
+                          </button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -190,7 +203,7 @@ export default function LoginPage() {
                 className="w-full bg-primary hover:bg-primary/90"
                 disabled={isPending}
               >
-                {isPending ? <LoadingSpinner/> : "Sign In"}
+                {isPending ? <LoadingSpinner /> : "Sign In"}
               </Button>
             </form>
           </Form>
