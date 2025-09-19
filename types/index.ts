@@ -100,3 +100,25 @@ export interface IClearanceFormResponse {
     approvalDate: string;
     approved: boolean;
 }
+
+export interface PrintableFormResponse {
+  formId: number;
+  corpsName: string;
+  stateCode: string;
+  cdsDay?: string;
+  department: string;
+  daysAbsent: number;
+  conductRemark: string;
+  supervisorName: string;
+  supervisorSignatureUrl: string;
+  supervisorDate: string;
+  hodRemark: string;
+  hodName: string;
+  hodSignatureUrl: string;
+  hodDate: string;
+  adminSignatureUrl?: string;
+  approvalDate: string;
+  status?: string;
+  createdAt: string;
+  updatedAt?: string;
+}

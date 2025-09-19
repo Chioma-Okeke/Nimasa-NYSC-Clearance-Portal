@@ -4,6 +4,7 @@ import {
     ICorperPrintableForm,
     IHodReview,
     ISupervisorReview,
+    PrintableFormResponse,
 } from "@/types";
 import { BaseService } from "./base-service";
 
@@ -33,7 +34,7 @@ export class ClearanceService extends BaseService {
     } // he need to explain what the request body is for. And if it is to confirm if that ia an admin, teach him how to better do it
 
     public async printClearanceForm(id: number, corpsName: string) {
-        return this.get<ICorperPrintableForm>(`/${id}/printable`, {
+        return this.get<PrintableFormResponse>(`/${id}/printable`, {
             corpsName,
         });
     }
@@ -61,12 +62,12 @@ export class ClearanceService extends BaseService {
         return this.post(`/${id}/hod-review`, data);
     }
 
-    public async rejectClearanceForm(id: number) {
-        return this.post(`/${id}/reject`);
+    public async rejectClearanceForm(id: number, reason: string) {
+        return this.post(`/${id}/reject`, {reason});
     }
 
-    public async approveClearanceForm(id: number) {
-        return this.post(`/${id}/approve`);
+    public async approveClearanceForm(id: number, reason: string) {
+        return this.post(`/${id}/approve`, {reason});
     }
 
     public async supervisorsList() {
@@ -83,5 +84,9 @@ export class ClearanceService extends BaseService {
 
     public async getClearanceFormsByStatus(role: string, status: string) {
         return this.get<IClearanceFormResponse[]>(`/status/${status}`, { role });
+    }
+
+    public async getCorperClearanceForms(name: string) {
+        return this.get<PrintableFormResponse[]>(`/approved/corps/${name}`);
     }
 }

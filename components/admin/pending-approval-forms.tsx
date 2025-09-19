@@ -1,54 +1,12 @@
-import { CheckCircle, Shield, XCircle } from 'lucide-react'
+import { AlertCircle, CheckCircle, Shield, XCircle } from 'lucide-react'
 import React from 'react'
-import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { IClearanceFormResponse } from '@/types'
+import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
 import { formatDate } from '@/lib/utils'
 import StatusBadge from '../shared/status-badge'
-import { useMutation } from '@tanstack/react-query'
-import { ClearanceService } from '@/services/clearance-service'
-import { toast } from 'sonner'
-import LoadingSpinner from '../shared/loading-spinner'
+import CloseOutForm from './close-out-form'
 
-function PendingApprovalForms({ pendingClearanceForms, isLoading }: { pendingClearanceForms: IClearanceFormResponse[] | undefined, isLoading: boolean }) {
-    const { mutate: approveForm, isPending: approvalInProgress } = useMutation({
-        mutationFn: async (id: number) => {
-            await new ClearanceService().approveClearanceForm(id)
-        },
-        onSuccess: () => {
-            toast.success("Form Approved", {
-                description: "The clearance form has been approved."
-            })
-        },
-        onError: (error) => {
-            toast.error("Form Approval Failed", {
-                description: error ? error.message : "There was an error while approving the clearance form."
-            })
-        }
-    })
-    const { mutate: rejectForm, isPending: rejectionInProgress } = useMutation({
-        mutationFn: async (id: number) => {
-            await new ClearanceService().rejectClearanceForm(id)
-        },
-        onSuccess: () => {
-            toast.success("Form Approved", {
-                description: "The clearance form has been approved."
-            })
-        },
-        onError: (error) => {
-            toast.error("Form Approval Failed", {
-                description: error ? error.message : "There was an error while approving the clearance form."
-            })
-        }
-    })
-
-    const handleApproveForm = (id: number) => {
-        approveForm(id)
-    }
-
-    const handleRejectForm = (id: number) => {
-        rejectForm(id)
-    }
+function PendingApprovalForms({ pendingClearanceForms, isLoading, employee }: { pendingClearanceForms: IClearanceFormResponse[] | undefined, isLoading: boolean, employee: IEmployeeCreationResponse | undefined }) {
 
     return (
         <Card>
@@ -124,34 +82,10 @@ function PendingApprovalForms({ pendingClearanceForms, isLoading }: { pendingCle
                                         </div>
                                     </div>
 
-                                    <div className="flex gap-2">
-                                        <Button
-                                            size="sm"
-                                            className="bg-green-600 hover:bg-green-700 text-white"
-                                            onClick={() => handleApproveForm(form.id)}
-                                            disabled={approvalInProgress || rejectionInProgress}
-                                        >
-                                            {approvalInProgress ? <LoadingSpinner /> : (
-                                                <>
-                                                    <CheckCircle className="h-4 w-4 mr-1" />
-                                                    Approve
-                                                </>
-                                            )}
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="destructive"
-                                            onClick={() => handleRejectForm(form.id)}
-                                            disabled={approvalInProgress || rejectionInProgress}
-                                        >
-                                            {rejectionInProgress ? <LoadingSpinner /> : (
-                                                <>
-                                                    <XCircle className="h-4 w-4 mr-1" />
-                                                    Reject
-                                                </>
-                                            )}
-                                        </Button>
-                                    </div>
+                                    {employee && <div className="flex gap-2">
+                                        <CloseOutForm name='Approve' Icon={CheckCircle} employee={employee} form={form} />
+                                        <CloseOutForm name='Reject' Icon={XCircle} employee={employee} form={form} />
+                                    </div>}
                                 </div>
                             </div>
                         ))}

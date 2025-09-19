@@ -1,34 +1,84 @@
-import React, { useEffect, useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Search } from 'lucide-react'
-import StatusBadge from '../shared/status-badge'
-import { formatDate } from '@/lib/utils'
-import { Input } from '../ui/input'
-import { useQuery } from '@tanstack/react-query'
-import { getIndividualClearanceFormQueryOpt } from '@/lib/query-options/clearance'
-import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
+import React, { useEffect, useRef, useState } from "react";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { FileText, Search } from "lucide-react";
+import StatusBadge from "../shared/status-badge";
+import { formatDate } from "@/lib/utils";
+import { Input } from "../ui/input";
+import { useQuery } from "@tanstack/react-query";
+import {
+    getClearanceFormsQueryOpt,
+    getCorpersClearanceFormsQueryOpt,
+} from "@/lib/query-options/clearance";
+import {
+    IClearanceFormResponse,
+    IEmployeeCreationResponse,
+    PrintableFormResponse,
+} from "@/types";
+import { Button } from "../ui/button";
+import { ClearanceService } from "@/services/clearance-service";
+import { useReactToPrint } from "react-to-print";
+import { PrintableClearanceForm } from "./print-clearance-form";
 
 type CoperFormListProps = {
-    employee: IEmployeeCreationResponse
-}
+    employee: IEmployeeCreationResponse;
+};
 
 function CorperFormList({ employee }: CoperFormListProps) {
-    const [searchQuery, setSearchQuery] = useState("")
-    const [filteredForms, setFilteredForms] = useState<IClearanceFormResponse[]>([])
-    const { data: employeeForms, isLoading } = useQuery(getIndividualClearanceFormQueryOpt(employee.id, employee.role))
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredForms, setFilteredForms] = useState<
+        PrintableFormResponse[]
+    >([]);
+    const [printData, setPrintData] = useState<PrintableFormResponse | null>(
+        null
+    );
 
+    const componentRef = useRef<HTMLDivElement>(null);
+    const handlePrint = useReactToPrint({ contentRef: componentRef });
+
+    const { data: employeeForms, isLoading } = useQuery(
+        getCorpersClearanceFormsQueryOpt(employee.name)
+    );
+
+    // debounce search
     useEffect(() => {
-        let timeOut: ReturnType<typeof setTimeout>;
-        if (employeeForms) {
-            timeOut = setTimeout(() => {
-                const filtered = employeeForms.find((form) => form.corpsName.toLowerCase().includes(searchQuery.toLowerCase()) || form.stateCode.toLowerCase().includes(searchQuery.toLowerCase()))
-                setFilteredForms(filtered ? [filtered] : employeeForms)
-            }, 500)
+        if (!employeeForms) return;
+        const timeout = setTimeout(() => {
+            const filtered = employeeForms.find(
+                (form) =>
+                    form.corpsName
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase()) ||
+                    form.stateCode
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase())
+            );
+            setFilteredForms(filtered ? [filtered] : employeeForms);
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [searchQuery, employeeForms]);
+
+    const printForm = async (form: PrintableFormResponse) => {
+        const clearanceService = new ClearanceService();
+        const data = await clearanceService.printClearanceForm(
+            form.formId,
+            form.corpsName
+        );
+        setPrintData(data);
+    };
+
+    // when printData changes, trigger print after DOM updates
+    useEffect(() => {
+        if (printData && handlePrint) {
+            setTimeout(() => handlePrint(), 100);
         }
-
-        return () => clearTimeout(timeOut);
-    }, [searchQuery, employeeForms])
-
+    }, [printData, handlePrint]);
 
     return (
         <div className="lg:col-span-2 space-y-6">
@@ -61,7 +111,9 @@ function CorperFormList({ employee }: CoperFormListProps) {
                         <FileText className="h-5 w-5 text-primary" />
                         My Forms ({filteredForms.length})
                     </CardTitle>
-                    <CardDescription>Track the status of your submitted clearance forms</CardDescription>
+                    <CardDescription>
+                        Track the status of your submitted clearance forms
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
@@ -73,30 +125,41 @@ function CorperFormList({ employee }: CoperFormListProps) {
                         <div className="text-center py-8">
                             <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                             <p className="text-muted-foreground">
-                                {searchQuery ? "No forms match your search." : "No forms submitted yet."}
+                                {searchQuery
+                                    ? "No forms match your search."
+                                    : "No forms submitted yet."}
                             </p>
                         </div>
                     ) : (
                         <div className="space-y-4">
                             {filteredForms.map((form) => (
                                 <div
-                                    key={form.id}
+                                    key={form.formId}
                                     className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
                                 >
                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-2">
-                                                <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                                                <StatusBadge status={form.status} />
+                                                <h3 className="font-medium text-foreground">
+                                                    {form.corpsName}
+                                                </h3>
+                                                {form.status && <StatusBadge status={form.status} />}
                                             </div>
                                             <p className="text-sm text-muted-foreground">
-                                                Form ID: {form.id} • State Code: {form.stateCode}
+                                                Form ID: {form.formId} • State Code: {form.stateCode}
                                             </p>
-                                            <p className="text-sm text-muted-foreground">Department: {form.department}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                Department: {form.department}
+                                            </p>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-sm text-muted-foreground">Submitted: {formatDate(form.createdAt)}</p>
-                                            <p className="text-sm text-muted-foreground">Updated: {formatDate(form.updatedAt)}</p>
+                                        <div className="text-right space-y-1">
+                                            <p className="text-sm text-muted-foreground">
+                                                Submitted: {formatDate(form.createdAt)}
+                                            </p>
+                                            {form.updatedAt && <p className="text-sm text-muted-foreground">
+                                                Updated: {formatDate(form.updatedAt)}
+                                            </p>}
+                                            {form.status?.toLowerCase() === "approved" && <Button onClick={() => printForm(form)}>Print</Button>}
                                         </div>
                                     </div>
                                 </div>
@@ -105,8 +168,15 @@ function CorperFormList({ employee }: CoperFormListProps) {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Hidden Printable Component */}
+            {printData && (
+                <div className="hidden">
+                    <PrintableClearanceForm ref={componentRef} form={printData} />
+                </div>
+            )}
         </div>
-    )
+    );
 }
 
-export default CorperFormList
+export default CorperFormList;

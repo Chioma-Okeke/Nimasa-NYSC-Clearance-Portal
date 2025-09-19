@@ -40,7 +40,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
             setIsDialogOpen(false)
             setFileList(null)
             form.reset();
-            queryClient.invalidateQueries({ queryKey: ["clearanceForms", employee.role, "PENDING_APPROVAL"] })
+            queryClient.invalidateQueries({ queryKey: ["clearanceForms", employee.role, "PENDING_APPROVAL", employee.id] })
             queryClient.invalidateQueries({queryKey: ["clearanceForms", employee.role, FORM_STATUSES.PENDING_ADMIN]})
             toast.success("Review submitted successfully", {
                 description: "Moved to Admin for final approval"
@@ -86,7 +86,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                     Review
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>HOD Review</DialogTitle>
                     <DialogDescription>
@@ -156,7 +156,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                     Attach Image
                                 </Button>
                                 {fileList && <div className='space-y-2'>
-                                    <img src={URL.createObjectURL(fileList)} alt='preview' className='size-18 object-cover rounded-md' />
+                                    <img src={URL.createObjectURL(fileList)} alt='preview' className='size-28 object-cover rounded-md' />
                                     <div className='flex items-center gap-1'>
                                         <p>{fileList.name}</p>
                                         <button onClick={() => setFileList(null)} aria-label='Remove attached file' title='Remove attached file' className='hover:scale-125 transition-all ease-in-out duration-300'>

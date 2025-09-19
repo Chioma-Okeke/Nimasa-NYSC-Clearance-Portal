@@ -41,7 +41,7 @@ export default function AdminPage() {
 
               {/* Forms to Approve/Reject Section */}
               <TabsContent value="pending">
-                <PendingApprovalForms pendingClearanceForms={pendingClearanceForms} isLoading={isLoading} />
+                <PendingApprovalForms pendingClearanceForms={pendingClearanceForms} isLoading={isLoading} employee={employee} />
               </TabsContent>
 
               {/* All Forms Section */}

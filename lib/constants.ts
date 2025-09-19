@@ -6,4 +6,11 @@ export const FORM_STATUSES = {
     REJECTED: "REJECTED"
 }
 
+export const ROLES = {
+    CORPER: "CORPS_MEMBER",
+    SUPERVISOR: "SUPERVISOR",
+    HOD: "HOD",
+    ADMIN: "ADMIN"
+}
+
 export const ALLOWED_ROLES = ["CORPS_MEMBER", "SUPERVISOR", "HOD", "ADMIN"];

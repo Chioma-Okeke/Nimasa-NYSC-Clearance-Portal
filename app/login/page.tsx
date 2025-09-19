@@ -32,6 +32,7 @@ import LoadingSpinner from "@/components/shared/loading-spinner"
 import { getCurrentUserQueryOpt } from "@/lib/query-options/employee"
 import { Eye, EyeClosed } from "lucide-react"
 import { useState } from "react"
+import { ROLES } from "@/lib/constants"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -44,9 +45,12 @@ export default function LoginPage() {
       return await employeeService.login(data)
     },
     onSuccess: async (response) => {
-      await queryClient.invalidateQueries(getCurrentUserQueryOpt)
+      if (response.role !== ROLES.CORPER) {
+        await queryClient.invalidateQueries(getCurrentUserQueryOpt)
+      }
       switch (response.role) {
         case "CORPS_MEMBER":
+          localStorage.setItem("corper_details", JSON.stringify(response))
           router.push("/corps-member")
           break
         case "SUPERVISOR":

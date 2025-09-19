@@ -10,37 +10,36 @@ import CorperFormList from "@/components/corper/corper-form-list"
 import useAuth from "@/providers/use-auth"
 
 export default function CorpsMemberPage() {
-  const {employee} = useAuth()
+  const data = localStorage.getItem("corper_details")
+  const employee = JSON.parse(data ?? "")
 
   return (
-    <AuthGuard>
-      <div className="min-h-screen bg-background">
-        <Header title="Corps Member Dashboard" userRole="Corps Member" userName={employee?.name} />
+    <div className="min-h-screen bg-background">
+      <Header title="Corps Member Dashboard" userRole="Corps Member" userName={employee?.name} />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {/* Create New Form Section */}
-            <div className="lg:col-span-1">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Plus className="h-5 w-5 text-primary" />
-                    Create New Form
-                  </CardTitle>
-                  <CardDescription>Submit a new clearance form for processing</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {employee && <ClearanceForm employee={employee} />}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Forms List and Search Section */}
-            {employee && <CorperFormList employee={employee}/>}
+          {/* Create New Form Section */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Plus className="h-5 w-5 text-primary" />
+                  Create New Form
+                </CardTitle>
+                <CardDescription>Submit a new clearance form for processing</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {employee && <ClearanceForm employee={employee} />}
+              </CardContent>
+            </Card>
           </div>
-        </main>
-      </div>
-    </AuthGuard>
+
+          {/* Forms List and Search Section */}
+          {employee && <CorperFormList employee={employee} />}
+        </div>
+      </main>
+    </div>
   )
 }

@@ -25,7 +25,6 @@ class EmployeeService extends BaseService {
 
     public async login(data: IEmployee) {
         const res = await this.post<IEmployeeCreationResponse, IEmployee>("/login", data);
-        localStorage.setItem("token", res.token)
         return res;
     }
 

@@ -22,3 +22,8 @@ export const getClearanceFormsByStatusQueryOpt = (role: string, status: string) 
     queryKey: ["clearanceForms", role, status],
     queryFn: () => new ClearanceService().getClearanceFormsByStatus(role, status)
 })
+
+export const getCorpersClearanceFormsQueryOpt = (name: string) => ({
+    queryKey: ["corperForms", name],
+    queryFn: () => new ClearanceService().getCorperClearanceForms(name)
+})

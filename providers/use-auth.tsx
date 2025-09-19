@@ -14,6 +14,7 @@ export const useAuth = () => {
       await new EmployeeService().logout();
     },
     onSuccess: async () => {
+      localStorage.removeItem("corper_details")
       toast.success("Logout Successful", {
         description: "You have been logged out successfully."
       })
