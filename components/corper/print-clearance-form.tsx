@@ -39,7 +39,7 @@ export const PrintableClearanceForm = React.forwardRef<
 
     return (
         <div ref={ref} className="p-4 print:p-2">
-            <div className="form-container border p-4 rounded bg-white text-[10pt] leading-snug max-w-[794px] mx-auto">
+            <div className="form-container border p-4 rounded bg-white text-[10pt] leading-snug max-w-[794px] mx-auto min-h-[95vh]">
                 {/* Header */}
                 <div className="header mb-4 text-center space-y-1">
                     <div className="flex justify-center mb-2">
