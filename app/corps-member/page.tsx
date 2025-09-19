@@ -8,10 +8,16 @@ import { Plus } from "lucide-react"
 import ClearanceForm from "@/forms/clearance-form"
 import CorperFormList from "@/components/corper/corper-form-list"
 import useAuth from "@/providers/use-auth"
+import { useEffect, useState } from "react"
+import { IEmployeeCreationResponse } from "@/types"
 
 export default function CorpsMemberPage() {
-  const data = localStorage.getItem("corper_details")
-  const employee = JSON.parse(data ?? "")
+  const [employee, setEmployee] = useState<IEmployeeCreationResponse>()
+
+  useEffect(() => {
+    const data = localStorage.getItem("corper_details")
+    setEmployee(JSON.parse(data ?? ""))
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
