@@ -32,7 +32,7 @@ import LoadingSpinner from "@/components/shared/loading-spinner"
 import { getCurrentUserQueryOpt } from "@/lib/query-options/employee"
 import { Building2, Eye, EyeClosed, EyeOff, Shield, Users } from "lucide-react"
 import { useState } from "react"
-import { ROLE_SELECTION, ROLES } from "@/lib/constants"
+import { DEPARTMENTS, ROLE_SELECTION, ROLES } from "@/lib/constants"
 import { getRoleDisplayName } from "@/lib/utils"
 
 export default function LoginPage() {
@@ -270,13 +270,24 @@ export default function LoginPage() {
                     <FormLabel style={{ color: '#333333' }} className="font-medium">
                       Department
                     </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your department"
-                        className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        {...field}
-                      />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectValue placeholder="Select your department" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {DEPARTMENTS.map((department) => {
+                          return (
+                            <SelectItem value={department}>
+                              <div className="flex items-center space-x-2">
+                                <span>{department}</span>
+                              </div>
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
                     <FormMessage className="text-red-600 text-sm" />
                   </FormItem>
                 )}

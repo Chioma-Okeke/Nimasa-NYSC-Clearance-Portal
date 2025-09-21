@@ -5,15 +5,15 @@ export const FORM_STATUSES = {
     PENDING_HOD: "PENDING_HOD",
     PENDING_ADMIN: "PENDING_ADMIN",
     APPROVED: "APPROVED",
-    REJECTED: "REJECTED"
-}
+    REJECTED: "REJECTED",
+};
 
 export const ROLES = {
     CORPER: "CORPS_MEMBER",
     SUPERVISOR: "SUPERVISOR",
     HOD: "HOD",
-    ADMIN: "ADMIN"
-}
+    ADMIN: "ADMIN",
+};
 
 export const ALLOWED_ROLES = ["CORPS_MEMBER", "SUPERVISOR", "HOD", "ADMIN"];
 
@@ -21,21 +21,43 @@ export const ROLE_SELECTION = [
     {
         roleName: "NYSC Corps Member",
         Icon: Users,
-        value: "CORPS_MEMBER"
+        value: "CORPS_MEMBER",
     },
     {
         roleName: "Supervisor",
         Icon: Shield,
-        value: "SUPERVISOR"
+        value: "SUPERVISOR",
     },
     {
         roleName: "Head of Department",
         Icon: Building2,
-        value: "HOD"
+        value: "HOD",
     },
     {
         roleName: "Administrator",
         Icon: Shield,
-        value: "ADMIN"
+        value: "ADMIN",
     },
-]
+];
+
+export const DEPARTMENTS = [
+    "AHRD",
+    "DEEP BLUE",
+    "DG's OFFICE",
+    "ED (F&A)'S OFFICE",
+    "ED (ML&CS)'S OFFICE",
+    "ED (OPS)'S OFFICE",
+    "FSD",
+    "ICT",
+    "INTERNAL AUDIT",
+    "LEGAL SERVICE",
+    "PPP",
+    "PRDMS",
+    "PROCUREMENT",
+    "PROTOCOL",
+    "PUBLIC RELATIONS",
+    "RCSM&BE",
+    "SECURITY & INTELIGENCE",
+    "SERVICOM",
+    "SPECIAL DUTIES",
+];
