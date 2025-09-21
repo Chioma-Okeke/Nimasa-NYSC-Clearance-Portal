@@ -7,7 +7,7 @@
   /* Updated color tokens for NIMASA government system with navy blue and green theme */
   --background: oklch(1 0 0); /* White background */
   --foreground: oklch(0.2 0.05 240); /* Navy blue text */
-  --card: oklch(0.98 0.02 195); /* Light cyan card background */
+  --card: oklch(1 0 0); /* Light cyan card background */
   --card-foreground: oklch(0.2 0.05 240); /* Navy blue card text */
   --popover: oklch(1 0 0); /* White popover */
   --popover-foreground: oklch(0.2 0.05 240); /* Navy blue popover text */
@@ -15,7 +15,7 @@
   --primary-foreground: oklch(1 0 0); /* White text on primary */
   --secondary: oklch(0.45 0.15 150); /* Green secondary */
   --secondary-foreground: oklch(1 0 0); /* White text on secondary */
-  --muted: oklch(0.97 0.01 120); /* Light green muted */
+  --muted: oklch(96.696% 0.00298 264.792); /* Light green muted */
   --muted-foreground: oklch(0.4 0.02 240); /* Dark gray muted text */
   --accent: oklch(0.45 0.15 150); /* Green accent */
   --accent-foreground: oklch(1 0 0); /* White text on accent */

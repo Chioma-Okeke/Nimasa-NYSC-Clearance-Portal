@@ -24,10 +24,25 @@ export const formatDate = (dateString: string) => {
 };
 
 export async function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-  });
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+    });
 }
+
+export const getRoleDisplayName = (role: string) => {
+    switch (role) {
+        case "CORPS_MEMBER":
+            return "NYSC Corps Member";
+        case "SUPERVISOR":
+            return "Supervisor";
+        case "HOD":
+            return "Head of Department";
+        case "ADMIN":
+            return "Administrator";
+        default:
+            return role;
+    }
+};
