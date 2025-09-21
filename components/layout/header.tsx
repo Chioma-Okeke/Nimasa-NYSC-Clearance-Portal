@@ -28,7 +28,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 flex-1">
-          {employee.role !== ROLES.CORPER && <SidebarTrigger />}
+          {/* {employee.role !== ROLES.CORPER && <SidebarTrigger />} */}
           <div className="flex items-center space-x-3 flex-1">
             <Logo />
             <div>
@@ -46,10 +46,12 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
           <Button variant="outline" size="sm" className="hidden">
             <Bell className="w-4 h-4" />
           </Button>
-          {employee.role === ROLES.CORPER && <Button variant="outline" size="sm" onClick={refreshForms}>
-            <RefreshCw className={`w-4 h-4 mr-2`} />
-            Refresh
-          </Button>}
+          <div className="hidden lg:block">
+            {employee.role === ROLES.CORPER && <Button variant="outline" size="sm" onClick={refreshForms}>
+              <RefreshCw className={`w-4 h-4 mr-2`} />
+              Refresh
+            </Button>}
+          </div>
           <div className="items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg hidden xl:flex">
             <div className="w-8 h-8 bg-[#172d5c] rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-medium">{generateUserInitials(employee?.name ?? "")}</span>
@@ -60,7 +62,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
             </div>
           </div>
           <div className="xl:hidden">
-            {employee ? <UserProfileCard userName={employee.name} userRole={employee.role} handleLogout={logoutUser} /> : <User2 />}
+            {employee ? <UserProfileCard userName={employee.name} userRole={employee.role} handleLogout={logoutUser} refreshForms={refreshForms} /> : <User2 />}
           </div>
           <Button
             variant="outline"

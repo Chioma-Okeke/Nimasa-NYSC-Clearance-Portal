@@ -1,8 +1,10 @@
 import { ClearanceService } from "@/services/clearance-service";
 
-export const getPendingApprovalFormsQueryOpt = (role: string, userId: number) => ({
+const clearanceService = new ClearanceService()
+
+export const getPendingApprovalFormsQueryOpt = (role: string, userId: string) => ({
     queryKey: ["clearanceForms", role, "PENDING_APPROVAL", userId],
-    queryFn: () => new ClearanceService().pendingApproval(role),
+    queryFn: () => clearanceService.pendingApproval(role),
     staleTime: 0,
     refetchOnMount: "always",
     enabled: !!role && !!userId
@@ -10,20 +12,25 @@ export const getPendingApprovalFormsQueryOpt = (role: string, userId: number) =>
 
 export const getClearanceFormsQueryOpt = (role: string) => ({
     queryKey: ["clearanceForms", role],
-    queryFn: () => new ClearanceService().getClearanceForms(role),
+    queryFn: () => clearanceService.getClearanceForms(role),
 });
 
 export const getIndividualClearanceFormQueryOpt = (id: number, role: string) => ({
     queryKey: ["clearanceForm", id, role],
-    queryFn: () => new ClearanceService().getClearanceForm(id, role)
+    queryFn: () => clearanceService.getClearanceForm(id, role)
 })
 
 export const getClearanceFormsByStatusQueryOpt = (role: string, status: string) => ({
     queryKey: ["clearanceForms", role, status],
-    queryFn: () => new ClearanceService().getClearanceFormsByStatus(role, status)
+    queryFn: () => clearanceService.getClearanceFormsByStatus(role, status)
 })
 
 export const getCorpersClearanceFormsQueryOpt = (name: string) => ({
     queryKey: ["corperForms", name],
-    queryFn: () => new ClearanceService().getCorperClearanceForms(name)
+    queryFn: () => clearanceService.getCorperClearanceForms(name)
+})
+
+export const trackCorperFormsQueryOpt = (id: string) => ({
+    queryKey: ["corper", id],
+    queryFn: () => clearanceService.trackCorperForm(id)
 })

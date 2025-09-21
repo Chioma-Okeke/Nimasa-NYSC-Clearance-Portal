@@ -17,50 +17,34 @@ import useAuth from "@/providers/use-auth"
 import { useQuery } from "@tanstack/react-query"
 import { getPendingApprovalFormsQueryOpt } from "@/lib/query-options/clearance"
 
-interface ClearanceForm {
-  id: string
-  corpsName: string
-  stateCode: string
-  department: string
-  status: "PENDING_SUPERVISOR" | "PENDING_HOD" | "PENDING_ADMIN" | "APPROVED" | "REJECTED"
-  createdAt: string
-  updatedAt: string
-  supervisorName?: string
-  daysAbsent?: number
-  conductRemark?: string
-  supervisorReviewDate?: string
-}
-
-interface SupervisorReviewData {
-  supervisorName: string
-  daysAbsent: number
-  conductRemark: string
-}
-
 export default function SupervisorPage() {
   const { employee } = useAuth()
   const { data: pendingForms, isLoading } = useQuery({
-    ...getPendingApprovalFormsQueryOpt(employee?.role || "", employee?.id || 0),
+    ...getPendingApprovalFormsQueryOpt(employee?.role || "", employee?.id || ""),
     refetchOnMount: "always"
   })
 
   return (
     <AuthGuard>
       <div className="min-h-screen bg-background">
-        <Header title="Supervisor Dashboard" userRole="Supervisor" userName={employee ? employee?.name : ""} />
+        {employee && <Header employee={employee}/>}
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Forms to Review Section */}
-            {employee && (
+            {/* {employee && (
               <div className="space-y-6">
                 <PendingApprovalForms pendingForms={pendingForms ?? []} isLoading={isLoading} employee={employee} />
               </div>
-            )}
+            )} */}
 
             {/* Forms I've Reviewed Section */}
             {employee && <div className="space-y-6">
-              <ReviewedForms employee={employee} />
+              <ReviewedForms
+                reviewedForms={[]} 
+                isLoading={false}
+                searchQuery=""
+              />
             </div>}
           </div>
         </main>

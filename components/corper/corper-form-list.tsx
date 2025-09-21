@@ -6,7 +6,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { FileText, Plus, Search } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock, FileText, Plus, Search, XCircle } from "lucide-react";
 import StatusBadge from "../shared/status-badge";
 import { cn, formatDate, getFormProgress } from "@/lib/utils";
 import { Input } from "../ui/input";
@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
     getClearanceFormsQueryOpt,
     getCorpersClearanceFormsQueryOpt,
+    trackCorperFormsQueryOpt,
 } from "@/lib/query-options/clearance";
 import {
     IClearanceFormResponse,
@@ -26,9 +27,21 @@ import { useReactToPrint } from "react-to-print";
 import { PrintableClearanceForm } from "./print-clearance-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import ClearanceForm from "@/forms/clearance-form";
+import LoadingSpinner from "../shared/loading-spinner";
 
 type CoperFormListProps = {
     employee: IEmployeeCreationResponse;
+};
+
+const getStatusIcon = (status: string) => {
+    switch (status) {
+        case 'APPROVED': return <CheckCircle className="w-5 h-5 text-green-600" />;
+        case 'REJECTED': return <XCircle className="w-5 h-5 text-red-600" />;
+        case 'PENDING_SUPERVISOR':
+        case 'PENDING_HOD':
+        case 'PENDING_ADMIN': return <Clock className="w-5 h-5 text-orange-500" />;
+        default: return <AlertCircle className="w-5 h-5 text-gray-500" />;
+    }
 };
 
 function CorperFormList({ employee }: CoperFormListProps) {
@@ -45,7 +58,7 @@ function CorperFormList({ employee }: CoperFormListProps) {
     const handlePrint = useReactToPrint({ contentRef: componentRef });
 
     const { data: employeeForms, isLoading } = useQuery(
-        getCorpersClearanceFormsQueryOpt(employee.name)
+        trackCorperFormsQueryOpt(employee.id)
     );
 
     // debounce search
@@ -132,7 +145,7 @@ function CorperFormList({ employee }: CoperFormListProps) {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {filteredForms.length === 0 ? (
+                    {isLoading ? <LoadingSpinner /> : filteredForms.length === 0 ? (
                         <div className="text-center py-12">
                             <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">No forms found</h3>
@@ -152,7 +165,7 @@ function CorperFormList({ employee }: CoperFormListProps) {
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center space-x-3 mb-2">
-                                                {/* {getStatusIcon(formItem.status)} */}
+                                                {getStatusIcon(formItem.status ?? "")}
                                                 <div>
                                                     <h3 className="font-medium text-gray-900">Form ID: {formItem.formId}</h3>
                                                     <p className="text-sm text-gray-600">

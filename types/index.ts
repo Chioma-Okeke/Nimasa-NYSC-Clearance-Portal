@@ -7,7 +7,7 @@ export interface IEmployee {
 }
 
 export interface IEmployeeCreationResponse {
-    id: number;
+    id: string;
     department: string;
     message: string;
     name: string;

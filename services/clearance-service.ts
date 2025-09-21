@@ -89,4 +89,8 @@ export class ClearanceService extends BaseService {
     public async getCorperClearanceForms(name: string) {
         return this.get<PrintableFormResponse[]>(`/approved/corps/${name}`);
     }
+
+    public async trackCorperForm(id: string) {
+        return this.get<PrintableFormResponse[]>(`/corps/${id}/forms/track`)
+    }
 }

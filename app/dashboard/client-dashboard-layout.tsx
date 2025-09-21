@@ -19,7 +19,7 @@ function ClientDashboardLayout({ children }: { children: ReactNode }) {
     return (
         <>
             {!corper && <SideNavigation />}
-            <main>
+            <main className='flex-1'>
                 {(corper ?? employee) ? (
                     <Header employee={corper ?? employee as IEmployeeCreationResponse} />
                 ) : null}

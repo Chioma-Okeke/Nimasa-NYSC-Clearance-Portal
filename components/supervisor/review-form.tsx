@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { Button } from '../ui/button'
-import { Eye, Upload, X } from 'lucide-react'
+import { Eye, MessageSquare, RefreshCw, Send, Upload, X } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -71,132 +71,299 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
     }
 
     return (
-        <Dialog open={isDialogOpen} onOpenChange={() => {
-            setIsDialogOpen(!isDialogOpen)
-            form.reset();
-            setFileList(null)
-        }}>
-            <DialogTrigger asChild>
-                <Button
-                    size="sm"
-                    className="bg-primary hover:bg-primary/90"
-                >
-                    <Eye className="h-4 w-4 mr-1" />
-                    Review
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>Review Clearance Form</DialogTitle>
-                    <DialogDescription>
-                        Review and provide feedback for {selectedForm?.corpsName}'s clearance form
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleReviewSubmit)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name='supervisorName'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Supervisor Name <span className='text-red-600 text-sm'>*</span></FormLabel>
-                                    <FormControl>
-                                        <Input disabled placeholder="Enter supervisor name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+        <>
+            {/* <Dialog open={isDialogOpen} onOpenChange={() => {
+                setIsDialogOpen(!isDialogOpen)
+                form.reset();
+                setFileList(null)
+            }}>
+                <DialogTrigger asChild>
+                    <Button
+                        size="sm"
+                        className="bg-primary hover:bg-primary/90"
+                    >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Review
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Review Clearance Form</DialogTitle>
+                        <DialogDescription>
+                            Review and provide feedback for {selectedForm?.corpsName}'s clearance form
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(handleReviewSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name='supervisorName'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Supervisor Name <span className='text-red-600 text-sm'>*</span></FormLabel>
+                                        <FormControl>
+                                            <Input disabled placeholder="Enter supervisor name" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <FormField
-                            control={form.control}
-                            name='daysAbsent'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Days Absent <span className='text-red-600 text-sm'>*</span></FormLabel>
-                                    <FormControl>
-                                        <Input type='number' placeholder='Enter number of absent days' {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField
+                                control={form.control}
+                                name='daysAbsent'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Days Absent <span className='text-red-600 text-sm'>*</span></FormLabel>
+                                        <FormControl>
+                                            <Input type='number' placeholder='Enter number of absent days' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <FormField
-                            control={form.control}
-                            name='conductRemark'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Conduct Remark <span className='text-red-600 test-sm'>*</span></FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Enter conduct remark"
-                                            rows={4}
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField
+                                control={form.control}
+                                name='conductRemark'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Conduct Remark <span className='text-red-600 test-sm'>*</span></FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Enter conduct remark"
+                                                rows={4}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <div className="mt-4">
-                            <div className="space-y-4">
-                                <div className="space-y-1">
-                                    <h3 className="text-sm font-medium text-greyscale-text-title">
-                                        Signature Image
-                                        <span className='text-sm text-red-600 ml-2'>*</span>
-                                    </h3>
-                                    <p className="text-sm text-greyscale-text-body">
-                                        File size should not exceed 50MB
-                                    </p>
-                                </div>
-                                <Button variant="secondary" className="relative">
-                                    <Input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                            if (e.target.files) { setFileList(e.target.files?.[0]) }
-                                        }}
-                                        className="absolute inset-0 z-10 w-full max-w-full cursor-pointer opacity-0"
-                                    />
-                                    <Upload className="cursor-pointer text-greyscale-icon-default group-hover:scale-105" />
-                                    Attach Image
-                                </Button>
-                                {fileList && <div className='space-y-2'>
-                                    <img src={URL.createObjectURL(fileList)} alt='preview' className='size-28 object-cover rounded-md' />
-                                    <div className='flex items-center gap-1'>
-                                        <p>{fileList.name}</p>
-                                        <button onClick={() => setFileList(null)} aria-label='Remove attached file' title='Remove attached file' className='hover:scale-125 transition-all ease-in-out duration-300'>
-                                            <X color='red' size={16} className='cursor-pointer' />
-                                        </button>
+                            <div className="mt-4">
+                                <div className="space-y-4">
+                                    <div className="space-y-1">
+                                        <h3 className="text-sm font-medium text-greyscale-text-title">
+                                            Signature Image
+                                            <span className='text-sm text-red-600 ml-2'>*</span>
+                                        </h3>
+                                        <p className="text-sm text-greyscale-text-body">
+                                            File size should not exceed 50MB
+                                        </p>
                                     </div>
-                                </div>}
+                                    <Button variant="secondary" className="relative">
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                if (e.target.files) { setFileList(e.target.files?.[0]) }
+                                            }}
+                                            className="absolute inset-0 z-10 w-full max-w-full cursor-pointer opacity-0"
+                                        />
+                                        <Upload className="cursor-pointer text-greyscale-icon-default group-hover:scale-105" />
+                                        Attach Image
+                                    </Button>
+                                    {fileList && <div className='space-y-2'>
+                                        <img src={URL.createObjectURL(fileList)} alt='preview' className='size-28 object-cover rounded-md' />
+                                        <div className='flex items-center gap-1'>
+                                            <p>{fileList.name}</p>
+                                            <button onClick={() => setFileList(null)} aria-label='Remove attached file' title='Remove attached file' className='hover:scale-125 transition-all ease-in-out duration-300'>
+                                                <X color='red' size={16} className='cursor-pointer' />
+                                            </button>
+                                        </div>
+                                    </div>}
+                                </div>
                             </div>
-                        </div>
 
-                        <DialogFooter className="flex gap-2 pt-4">
-                            <DialogClose asChild>
+                            <DialogFooter className="flex gap-2 pt-4">
+                                <DialogClose asChild>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="flex-1"
+                                    >
+                                        Cancel
+                                    </Button>
+                                </DialogClose>
                                 <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="flex-1"
+                                    type="submit"
+                                    className="flex-1 bg-primary hover:bg-primary/90"
+                                    disabled={isPending}
                                 >
-                                    Cancel
+                                    {isPending ? "Submitting..." : "Submit Review"}
                                 </Button>
-                            </DialogClose>
-                            <Button
-                                type="submit"
-                                className="flex-1 bg-primary hover:bg-primary/90"
-                                disabled={isPending}
-                            >
-                                {isPending ? "Submitting..." : "Submit Review"}
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+                            </DialogFooter>
+                        </form>
+                    </Form>
+                </DialogContent>
+            </Dialog> */}
+            <Dialog open={isDialogOpen}
+                // <Dialog open={isDialogOpen && selectedForm?.id === formItem.id}
+                onOpenChange={() => {
+                    setIsDialogOpen(!isDialogOpen)
+                    form.reset();
+                    setFileList(null)
+                }}>
+                <DialogTrigger asChild>
+                    <Button
+                        size="sm"
+                        style={{ backgroundColor: '#0066CC' }}
+                    >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Review
+                    </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px] max-h-[95vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Supervisor Review - {selectedForm?.corpsName}</DialogTitle>
+                        <DialogDescription>
+                            Complete your review for this corps member's clearance form
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {selectedForm && (
+                        <div className="space-y-6">
+                            {/* Form Details Summary */}
+                            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Corps Member</label>
+                                    <p className="text-sm text-gray-900">{selectedForm.corpsName}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">State Code</label>
+                                    <p className="text-sm text-gray-900">{selectedForm.stateCode}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Department</label>
+                                    <p className="text-sm text-gray-900">{selectedForm.department}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700">Form ID</label>
+                                    <p className="text-sm text-gray-900">{selectedForm.id}</p>
+                                </div>
+                            </div>
+
+                            <Form {...form}>
+                                <div className="space-y-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="supervisorName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Supervisor Name</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="daysAbsent"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Days Absent</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        max="365"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="conductRemark"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Conduct Remark</FormLabel>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Provide your assessment of the corps member's conduct and performance..."
+                                                        className="min-h-[100px]"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <div className="mt-4">
+                                        <div className="space-y-4">
+                                            <div className="space-y-1">
+                                                <h3 className="text-sm font-medium text-greyscale-text-title">
+                                                    Signature Image
+                                                    <span className='text-sm text-red-600 ml-2'>*</span>
+                                                </h3>
+                                                <p className="text-sm text-greyscale-text-body">
+                                                    File size should not exceed 50MB
+                                                </p>
+                                            </div>
+                                            <Button variant="secondary" className="relative">
+                                                <Input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        if (e.target.files) { setFileList(e.target.files?.[0]) }
+                                                    }}
+                                                    className="absolute inset-0 z-10 w-full max-w-full cursor-pointer opacity-0"
+                                                />
+                                                <Upload className="cursor-pointer text-greyscale-icon-default group-hover:scale-105" />
+                                                Attach Image
+                                            </Button>
+                                            {fileList && <div className='space-y-2'>
+                                                <img src={URL.createObjectURL(fileList)} alt='preview' className='size-28 object-cover rounded-md' />
+                                                <div className='flex items-center gap-1'>
+                                                    <p>{fileList.name}</p>
+                                                    <button onClick={() => setFileList(null)} aria-label='Remove attached file' title='Remove attached file' className='hover:scale-125 transition-all ease-in-out duration-300'>
+                                                        <X color='red' size={16} className='cursor-pointer' />
+                                                    </button>
+                                                </div>
+                                            </div>}
+                                        </div>
+                                    </div>
+
+                                    <DialogFooter className="flex gap-2 pt-4">
+                                        <DialogClose asChild>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                className="flex-1"
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </DialogClose>
+                                        <Button
+                                            onClick={form.handleSubmit(handleReviewSubmit)}
+                                            disabled={isPending}
+                                            className="flex-1"
+                                            style={{ backgroundColor: '#0066CC' }}
+                                        >
+                                            {isPending ? (
+                                                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                                            ) : (
+                                                <Send className="w-4 h-4 mr-2" />
+                                            )}
+                                            Submit Review
+                                        </Button>
+                                    </DialogFooter>
+                                </div>
+                            </Form>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }
 

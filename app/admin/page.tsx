@@ -16,7 +16,7 @@ export default function AdminPage() {
   const { employee, isLoggingOut } = useAuth()
   const { data: clearanceForms } = useQuery(getClearanceFormsQueryOpt(employee?.role || ""))
   const { data: pendingClearanceForms, isLoading } = useQuery({
-    ...getPendingApprovalFormsQueryOpt(employee?.role || "", employee?.id || 0),
+    ...getPendingApprovalFormsQueryOpt(employee?.role || "", employee?.id || ""),
     refetchOnMount: "always"
   })
 
