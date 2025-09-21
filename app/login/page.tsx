@@ -55,10 +55,10 @@ export default function LoginPage() {
           router.push("/dashboard/corps-dashboard")
           break
         case "SUPERVISOR":
-          router.push("/supervisor")
+          router.push("/dashboard/supervisor-dashboard")
           break
         case "HOD":
-          router.push("/hod")
+          router.push("/dashboard/hod-dashboard")
           break
         case "ADMIN":
           router.push("/admin")

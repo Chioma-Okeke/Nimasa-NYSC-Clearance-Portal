@@ -1,59 +1,95 @@
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Eye } from 'lucide-react'
+import { AlertCircle, CheckCircle, Clock, Eye, FileText, XCircle } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { getClearanceFormsByStatusQueryOpt } from '@/lib/query-options/clearance'
 import { FORM_STATUSES } from '@/lib/constants'
-import { IEmployeeCreationResponse } from '@/types'
+import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
 import StatusBadge from '../shared/status-badge'
 import { formatDate } from '@/lib/utils'
+import FromDetailsModal from '../supervisor/form-details-modal'
+import LoadingSpinner from '../shared/loading-spinner'
+
+const getStatusIcon = (status: string) => {
+    switch (status) {
+        case 'APPROVED': return <CheckCircle className="w-5 h-5 text-green-600" />;
+        case 'REJECTED': return <XCircle className="w-5 h-5 text-red-600" />;
+        case 'PENDING_SUPERVISOR':
+        case 'PENDING_HOD':
+        case 'PENDING_ADMIN': return <Clock className="w-5 h-5 text-orange-500" />;
+        default: return <AlertCircle className="w-5 h-5 text-gray-500" />;
+    }
+};
 
 
-function ReviewedForms({employee}: {employee: IEmployeeCreationResponse}) {
-    const { data: reviewedForms = [], isLoading } = useQuery(getClearanceFormsByStatusQueryOpt(employee?.role || "", FORM_STATUSES.PENDING_ADMIN))
+function ReviewedForms({ reviewedForms, isLoading, searchQuery }: { reviewedForms: IClearanceFormResponse[], isLoading: boolean, searchQuery: string }) {
     return (
 
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Eye className="h-5 w-5 text-primary" />
-                    Forms I've Reviewed ({reviewedForms.length})
+                <CardTitle className="flex items-center space-x-2">
+                    <CheckCircle
+                        className="w-5 h-5 text-green-600" />
+                    <span>Forms You've Reviewed</span>
                 </CardTitle>
-                <CardDescription>Track forms you have already reviewed</CardDescription>
+                <CardDescription>
+                    Track the progress of forms you've already reviewed
+                </CardDescription>
             </CardHeader>
             <CardContent>
-                {reviewedForms.length === 0 ? (
-                    <div className="text-center py-8">
-                        <Eye className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                        <p className="text-muted-foreground">No forms reviewed yet.</p>
+                {isLoading ? <LoadingSpinner /> : reviewedForms.length === 0 ? (
+                    <div className="text-center py-12">
+                        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No reviewed forms</h3>
+                        <p className="text-gray-600">
+                            {searchQuery
+                                ? 'No reviewed forms match your search criteria'
+                                : 'You haven\'t reviewed any forms yet'}
+                        </p>
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {reviewedForms.map((form) => (
-                            <div
-                                key={form.id}
-                                className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                            >
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="font-medium text-foreground">{form.corpsName}</h3>
-                                        <StatusBadge status={form.status} />
+                        {reviewedForms.map((formItem) => (
+                            <div key={formItem.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <div className="flex items-center space-x-3 mb-2">
+                                            {getStatusIcon(formItem.status)}
+                                            <div>
+                                                <h3 className="font-medium text-gray-900">{formItem.corpsName}</h3>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3 text-sm">
+                                            <div>
+                                                <span className="text-gray-500">Status:</span>
+                                                <div className="mt-1"><StatusBadge status={formItem.status} /></div>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-500">Days Absent:</span>
+                                                <p className={`font-medium ${formItem.dayAbsent === 0 ? 'text-green-600' : formItem.dayAbsent <= 2 ? 'text-orange-600' : 'text-red-600'}`}>
+                                                    {formItem.dayAbsent}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-500">Department:</span>
+                                                <p className="font-medium">{formItem.department}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-500">State Code:</span>
+                                                <p className="font-medium">{formItem.stateCode}</p>
+                                            </div>
+                                        </div>
+
+                                        {formItem.conductRemark && (
+                                            <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                                                <span className="text-xs font-medium text-gray-700">Your Remark:</span>
+                                                <p className="text-sm text-gray-900 mt-1">{formItem.conductRemark}</p>
+                                            </div>
+                                        )}
                                     </div>
-                                    <p className="text-sm text-muted-foreground">
-                                        Form ID: {form.id} • State Code: {form.stateCode}
-                                    </p>
-                                    <p className="text-sm text-muted-foreground">Department: {form.department}</p>
-                                    {form.hodDate && (
-                                        <p className="text-sm text-muted-foreground">
-                                            Reviewed: {formatDate(form.hodDate)}
-                                        </p>
-                                    )}
-                                    {form.hodRemark && (
-                                        <p className="text-sm text-muted-foreground">
-                                            My Remark: {form.hodRemark.substring(0, 100)}
-                                            {form.hodRemark.length > 100 ? "..." : ""}
-                                        </p>
-                                    )}
+
+                                    <FromDetailsModal selectedForm={formItem} />
                                 </div>
                             </div>
                         ))}
