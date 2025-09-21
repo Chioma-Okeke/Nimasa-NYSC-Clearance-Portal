@@ -1,7 +1,7 @@
 "use client"
 
 import { Header } from '@/components/layout/header'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { SideNavigation } from '@/components/shared/side-navigation'
 import useAuth from '@/providers/use-auth'
 import { IEmployeeCreationResponse } from '@/types'
 import React, { ReactNode, useEffect, useState } from 'react'
@@ -17,12 +17,15 @@ function ClientDashboardLayout({ children }: { children: ReactNode }) {
         }
     }, [])
     return (
-        <main>
-            {(corper ?? employee) ? (
-                <Header employee={corper ?? employee as IEmployeeCreationResponse} />
-            ) : null}
-            {children}
-        </main>
+        <>
+            {!corper && <SideNavigation />}
+            <main>
+                {(corper ?? employee) ? (
+                    <Header employee={corper ?? employee as IEmployeeCreationResponse} />
+                ) : null}
+                {children}
+            </main>
+        </>
     )
 }
 

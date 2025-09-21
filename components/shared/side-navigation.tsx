@@ -9,7 +9,7 @@ import {
 export function SideNavigation() {
     return (
         <Sidebar>
-            <SidebarHeader />
+            <SidebarHeader>Hi there</SidebarHeader>
             <SidebarContent>
                 <SidebarGroup />
                 <SidebarGroup />
