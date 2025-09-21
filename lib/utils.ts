@@ -1,3 +1,4 @@
+import { StatusType } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -45,4 +46,15 @@ export const getRoleDisplayName = (role: string) => {
         default:
             return role;
     }
+};
+
+export const getFormProgress = (status: string) => {
+    const progressMap: Record<StatusType, number> = {
+        PENDING_SUPERVISOR: 25,
+        PENDING_HOD: 50,
+        PENDING_ADMIN: 75,
+        APPROVED: 100,
+        REJECTED: 0,
+    };
+    return progressMap[status as StatusType] ?? 0;
 };

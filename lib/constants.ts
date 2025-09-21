@@ -15,6 +15,13 @@ export const ROLES = {
     ADMIN: "ADMIN",
 };
 
+export const ROLE_MAPPING = {
+    CORPS_MEMBER: "Corps Member",
+    ADMIN: "Admin",
+    HOD: "HOD",
+    SUPERVISOR: "Supervisor"
+}
+
 export const ALLOWED_ROLES = ["CORPS_MEMBER", "SUPERVISOR", "HOD", "ADMIN"];
 
 export const ROLE_SELECTION = [

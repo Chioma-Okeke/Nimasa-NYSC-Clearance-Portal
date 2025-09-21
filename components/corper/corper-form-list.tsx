@@ -6,9 +6,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { FileText, Search } from "lucide-react";
+import { FileText, Plus, Search } from "lucide-react";
 import StatusBadge from "../shared/status-badge";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate, getFormProgress } from "@/lib/utils";
 import { Input } from "../ui/input";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -24,6 +24,8 @@ import { Button } from "../ui/button";
 import { ClearanceService } from "@/services/clearance-service";
 import { useReactToPrint } from "react-to-print";
 import { PrintableClearanceForm } from "./print-clearance-form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import ClearanceForm from "@/forms/clearance-form";
 
 type CoperFormListProps = {
     employee: IEmployeeCreationResponse;
@@ -37,6 +39,7 @@ function CorperFormList({ employee }: CoperFormListProps) {
     const [printData, setPrintData] = useState<PrintableFormResponse | null>(
         null
     );
+    const [statusFilter, setStatusFilter] = useState('all');
 
     const componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({ contentRef: componentRef });
@@ -48,21 +51,29 @@ function CorperFormList({ employee }: CoperFormListProps) {
     // debounce search
     useEffect(() => {
         if (!employeeForms) return;
+
         const timeout = setTimeout(() => {
-            const filtered = employeeForms.find(
+            let filtered = employeeForms.filter(
                 (form) =>
                     form.corpsName
                         .toLowerCase()
                         .includes(searchQuery.toLowerCase()) ||
                     form.stateCode
                         .toLowerCase()
+                        .includes(searchQuery.toLowerCase()) ||
+                    form.department
+                        .toLowerCase()
                         .includes(searchQuery.toLowerCase())
             );
-            setFilteredForms(filtered ? [filtered] : employeeForms);
+
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(form => form.status === statusFilter);
+            }
+            setFilteredForms(filtered.length > 0 ? filtered : employeeForms);
         }, 500);
 
         return () => clearTimeout(timeout);
-    }, [searchQuery, employeeForms]);
+    }, [searchQuery, employeeForms, statusFilter]);
 
     const printForm = async (form: PrintableFormResponse) => {
         const clearanceService = new ClearanceService();
@@ -85,82 +96,93 @@ function CorperFormList({ employee }: CoperFormListProps) {
             {/* Search Section */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Search className="h-5 w-5 text-primary" />
-                        Search Forms
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="text"
-                            placeholder="Search by name, state code, or form ID..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10"
-                        />
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* My Forms List Section */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-primary" />
-                        My Forms ({filteredForms.length})
-                    </CardTitle>
-                    <CardDescription>
-                        Track the status of your submitted clearance forms
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {isLoading ? (
-                        <div className="text-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                            <p className="text-muted-foreground">Loading your forms...</p>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle className="flex items-center space-x-2">
+                                <FileText className="w-5 h-5" style={{ color: '#7B1FA2' }} />
+                                <span>My Clearance Forms</span>
+                            </CardTitle>
+                            <CardDescription>Track the status of your submitted forms</CardDescription>
                         </div>
-                    ) : filteredForms.length === 0 ? (
-                        <div className="text-center py-8">
-                            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <p className="text-muted-foreground">
-                                {searchQuery
-                                    ? "No forms match your search."
-                                    : "No forms submitted yet."}
+                    </div>
+
+                    {/* Search and Filter */}
+                    <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                        <div className="flex-1">
+                            <Input
+                                placeholder="Search forms..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full"
+                            />
+                        </div>
+                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <SelectTrigger className="w-full sm:w-48">
+                                <SelectValue placeholder="Filter by status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Status</SelectItem>
+                                <SelectItem value="PENDING_SUPERVISOR">Pending Supervisor</SelectItem>
+                                <SelectItem value="PENDING_HOD">Pending HOD</SelectItem>
+                                <SelectItem value="PENDING_ADMIN">Pending Admin</SelectItem>
+                                <SelectItem value="APPROVED">Approved</SelectItem>
+                                <SelectItem value="REJECTED">Rejected</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {filteredForms.length === 0 ? (
+                        <div className="text-center py-12">
+                            <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">No forms found</h3>
+                            <p className="text-gray-600 mb-4">
+                                {searchQuery || statusFilter !== 'all'
+                                    ? 'No forms match your search criteria'
+                                    : 'You haven\'t created any clearance forms yet'}
                             </p>
+                            {!searchQuery && statusFilter === 'all' && (
+                                <ClearanceForm employee={employee} />
+                            )}
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {filteredForms.map((form) => (
-                                <div
-                                    key={form.formId}
-                                    className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors"
-                                >
-                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="font-medium text-foreground">
-                                                    {form.corpsName}
-                                                </h3>
-                                                {form.status && <StatusBadge status={form.status} />}
+                            {filteredForms.map((formItem) => (
+                                <div key={formItem.formId} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <div className="flex items-center space-x-3 mb-2">
+                                                {/* {getStatusIcon(formItem.status)} */}
+                                                <div>
+                                                    <h3 className="font-medium text-gray-900">Form ID: {formItem.formId}</h3>
+                                                    <p className="text-sm text-gray-600">
+                                                        {formItem.department}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <p className="text-sm text-muted-foreground">
-                                                Form ID: {form.formId} • State Code: {form.stateCode}
-                                            </p>
-                                            <p className="text-sm text-muted-foreground">
-                                                Department: {form.department}
-                                            </p>
+
+                                            {/* Progress Bar */}
+                                            <div className="mb-3">
+                                                <div className="flex justify-between text-sm mb-1">
+                                                    <span className="text-gray-600">Progress</span>
+                                                    <span className="text-gray-600">{getFormProgress(formItem.status ?? "")}%</span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div
+                                                        className={cn(`h-2 rounded-full transition-all bg-[#0066CC] w-[${getFormProgress(formItem.status ?? "")}%]`, {
+                                                            "bg-[#D32F2F]": formItem.status === 'REJECTED',
+
+                                                        })}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-4">
+                                                <StatusBadge status={formItem.status ?? ""} />
+                                            </div>
                                         </div>
-                                        <div className="text-right space-y-1">
-                                            <p className="text-sm text-muted-foreground">
-                                                Submitted: {formatDate(form.createdAt)}
-                                            </p>
-                                            {form.updatedAt && <p className="text-sm text-muted-foreground">
-                                                Updated: {formatDate(form.updatedAt)}
-                                            </p>}
-                                            {form.status?.toLowerCase() === "approved" && <Button onClick={() => printForm(form)}>Print</Button>}
-                                        </div>
+
+                                        {formItem.status?.toLowerCase() === "approved" && <Button onClick={() => printForm(formItem)}>Print</Button>}
                                     </div>
                                 </div>
                             ))}

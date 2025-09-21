@@ -1,9 +1,20 @@
-import React from 'react'
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarHeader,
+} from "@/components/ui/sidebar"
 
-function SideNavigation() {
-  return (
-    <div>SideNavigation</div>
-  )
+export function SideNavigation() {
+    return (
+        <Sidebar>
+            <SidebarHeader />
+            <SidebarContent>
+                <SidebarGroup />
+                <SidebarGroup />
+            </SidebarContent>
+            <SidebarFooter />
+        </Sidebar>
+    )
 }
-
-export default SideNavigation

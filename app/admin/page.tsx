@@ -23,7 +23,7 @@ export default function AdminPage() {
   return (
     <AuthGuard>
       <div className="min-h-screen bg-background">
-        <Header title="Administrator Dashboard" userRole="Admin" userName={employee ? employee.name : ""} />
+        {employee && <Header employee={employee} />}
 
         {isLoggingOut ?
           (

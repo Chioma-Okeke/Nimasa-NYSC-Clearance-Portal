@@ -21,7 +21,7 @@ export default function CorpsMemberPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header title="Corps Member Dashboard" userRole="Corps Member" userName={employee?.name} />
+      {employee && <Header employee={employee} />}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

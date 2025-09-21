@@ -52,7 +52,7 @@ export default function LoginPage() {
       switch (response.role) {
         case "CORPS_MEMBER":
           localStorage.setItem("corper_details", JSON.stringify(response))
-          router.push("/corps-member")
+          router.push("/dashboard/corps-dashboard")
           break
         case "SUPERVISOR":
           router.push("/supervisor")
