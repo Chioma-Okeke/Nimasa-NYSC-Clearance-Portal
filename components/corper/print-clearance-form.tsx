@@ -34,9 +34,6 @@ export const PrintableClearanceForm = React.forwardRef<
         return date.toLocaleString("en-US", { month: "long", year: "numeric" });
     };
 
-    const conductLines = splitTextIntoLines(form.conductRemark || "", 3);
-    const hodRemarkLines = splitTextIntoLines(form.hodRemark || "", 3);
-
     return (
         <div ref={ref} className="p-4 print:p-2">
             <div className="form-container border p-4 rounded bg-white text-[10pt] leading-snug max-w-[794px] mx-auto min-h-[95vh]">
