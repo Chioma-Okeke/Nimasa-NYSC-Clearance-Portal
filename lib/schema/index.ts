@@ -10,7 +10,7 @@ export const employeeSchema = z.object({
 export const clearanceFormSchema = z.object({
     corpsName: z.string().min(5, "Kindly Enter a valid Full name."),
     stateCode: z.string().min(5, "Kindly input a valid state code."),
-    department: z.string().min(5, "Choose your department.")
+    department: z.string().min(1, "Choose your department.")
 })
 
 export const loginFormSchema = z.object({

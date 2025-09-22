@@ -461,7 +461,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
     UserCheck,
@@ -511,46 +511,42 @@ import AddEmployeeForm from "@/forms/add-employee-form";
 import LoadingSpinner from "@/components/shared/loading-spinner";
 import { EmployeeList } from "@/types";
 import EmployeeEdit from "@/components/admin/employee-edit";
+import EmployeeService from "@/services/employee-service";
+import { getEmployeeListQueryOpt } from "@/lib/query-options/employee";
 
 export default function EmployeeManagementTable() {
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [roleFilter, setRoleFilter] = useState("ALL");
-    const [selectedEmployee, setSelectedEmployee] = useState<EmployeeList | null>(
-        null
-    );
-    const [showDeactivateDialog, setShowDeactivateDialog] = useState(false);
-    const [showEditDialog, setShowEditDialog] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        const data = new EmployeeService().getAdminStats()
+        console.log(data, "fetched data")
+    }, [])
 
     // ✅ Fetch employees using React Query
-    const { data: employees = [], isLoading: queryLoading } = useQuery<EmployeeList[]>({
-        queryKey: ["employees"],
-        queryFn: async () => {
-            const res = await fetch("/api/unified-auth/employee/list");
-            if (!res.ok) throw new Error("Failed to fetch employees");
-            return res.json();
-        },
-    });
+    const { data: employees = [], isLoading: queryLoading } = useQuery(getEmployeeListQueryOpt)
 
     // ✅ Apply filters
-    const filteredEmployees = employees.filter((emp) => {
-        const matchesSearch =
-            searchQuery === "" ||
-            emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            emp.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            emp.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const filteredEmployees = useMemo(() => {
+        return (employees ?? []).filter((emp) => {
+            const matchesSearch =
+                searchQuery === "" ||
+                emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                emp.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                emp.id.toLowerCase().includes(searchQuery.toLowerCase());
 
-        const matchesStatus =
-            statusFilter === "ALL" ||
-            (statusFilter === "ACTIVE" && emp.active) ||
-            (statusFilter === "INACTIVE" && !emp.active);
+            const matchesStatus =
+                statusFilter === "ALL" ||
+                (statusFilter === "ACTIVE" && emp.active) ||
+                (statusFilter === "INACTIVE" && !emp.active);
 
-        const matchesRole =
-            roleFilter === "ALL" || emp.userRole === roleFilter;
+            const matchesRole =
+                roleFilter === "ALL" || emp.userRole === roleFilter;
 
-        return matchesSearch && matchesStatus && matchesRole;
-    });
+            return matchesSearch && matchesStatus && matchesRole;
+        });
+    }, [employees, searchQuery, statusFilter, roleFilter]);
 
     const getRoleBadge = (role: string) => {
         const roleConfig: Record<string, { color: string; text: string }> = {
@@ -586,7 +582,7 @@ export default function EmployeeManagementTable() {
             <CardHeader className="px-3">
                 <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5 text-primary" />
-                    Manage People
+                    <p className="text-2xl">Manage People</p>
                 </CardTitle>
                 <CardDescription>Add supervisors, HODs, and other employees to the system</CardDescription>
             </CardHeader>
@@ -656,7 +652,7 @@ export default function EmployeeManagementTable() {
                             {queryLoading ? (
                                 <TableRow>
                                     <TableCell colSpan={7} className="text-center py-6">
-                                        <LoadingSpinner/>
+                                        <LoadingSpinner />
                                     </TableCell>
                                 </TableRow>
                             ) : filteredEmployees.length > 0 ? (
@@ -679,7 +675,7 @@ export default function EmployeeManagementTable() {
                                         <TableCell>{employee.formPendingReview}</TableCell>
                                         <TableCell>
                                             <div className="flex items-center justify-center space-x-2">
-                                                <EmployeeEdit selectedEmployee={employee}/>
+                                                <EmployeeEdit selectedEmployee={employee} />
                                                 {employee.active && <EmployeeDeactivation selectedEmployee={employee} />}
                                             </div>
                                         </TableCell>

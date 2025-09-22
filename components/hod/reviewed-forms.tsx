@@ -81,10 +81,10 @@ function ReviewedForms({ reviewedForms, isLoading, searchQuery }: { reviewedForm
                                             </div>
                                         </div>
 
-                                        {formItem.conductRemark && (
+                                        {formItem.hodRemark && (
                                             <div className="mt-2 p-3 bg-gray-50 rounded-lg">
                                                 <span className="text-xs font-medium text-gray-700">Your Remark:</span>
-                                                <p className="text-sm text-gray-900 mt-1">{formItem.conductRemark}</p>
+                                                <p className="text-sm text-gray-900 mt-1">{formItem.hodRemark}</p>
                                             </div>
                                         )}
                                     </div>

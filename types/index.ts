@@ -123,17 +123,23 @@ export interface PrintableFormResponse {
     updatedAt?: string;
 }
 
-
 export interface EmployeeList {
-    id : string;
-    name : string;
-    department : string;
-    userRole : "CORPS_MEMBER" | "SUPERVISOR" | "HOD" | "ADMIN";
+    id: string;
+    name: string;
+    department: string;
+    userRole: "CORPS_MEMBER" | "SUPERVISOR" | "HOD" | "ADMIN";
     active: boolean;
     createdAT: string;
     lastPasswordChange: string;
-    passwordExpired : boolean;
+    passwordExpired: boolean;
     formPendingReview: number;
+}
+
+export interface EmployeeListResponse {
+    employees: EmployeeList[];
+    hodCount: number;
+    supervisorCount: number;
+    totalCount: number;
 }
 
 export type StatusType =

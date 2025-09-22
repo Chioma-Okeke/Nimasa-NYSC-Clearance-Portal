@@ -1,3 +1,5 @@
+"use client"
+
 import {
     Sidebar,
     SidebarContent,
@@ -9,9 +11,11 @@ import {
 } from "@/components/ui/sidebar"
 import Logo from "./logo"
 import { Button } from "../ui/button"
-import { LayoutDashboard, LogOut, Users2Icon } from "lucide-react"
+import { BookAIcon, LayoutDashboard, LogOut, Users2Icon } from "lucide-react"
 import useAuth from "@/providers/use-auth"
 import LoadingSpinner from "./loading-spinner"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 const menus = [
     {
@@ -24,10 +28,16 @@ const menus = [
         url: "/dashboard/admin-dashboard/employee-management",
         icon: Users2Icon
     },
+    {
+        title: "Forms",
+        url: "/dashboard/admin-dashboard/forms",
+        icon: BookAIcon
+    },
 ]
 
 export function SideNavigation() {
     const { logoutUser, isLoggingOut } = useAuth()
+    const path = usePathname()
     return (
         <Sidebar className="py-4">
             <SidebarHeader>
@@ -42,7 +52,9 @@ export function SideNavigation() {
                 <SidebarMenu>
                     {menus.map((item) => (
                         <SidebarMenuItem key={item.title} className="px-3">
-                            <SidebarMenuButton asChild className="px-3 py-5">
+                            <SidebarMenuButton asChild className={cn("px-3 py-5", {
+                                "bg-secondary text-white": path === item.url
+                            })}>
                                 <a href={item.url}>
                                     <item.icon />
                                     <span>{item.title}</span>

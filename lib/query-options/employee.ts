@@ -16,7 +16,8 @@ export const getCurrentUserQueryOpt = queryOptions({
 
 export const getEmployeeListQueryOpt = queryOptions({
     queryKey: ["employee-list"],
-    queryFn: () => {
-        return employeeService.getEmployeeList()
+    queryFn: async () => {
+        const res = await employeeService.getEmployeeList()
+        return res.employees
     }
 })

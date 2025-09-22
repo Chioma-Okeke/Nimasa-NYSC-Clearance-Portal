@@ -44,12 +44,12 @@ import {
 } from '@/components/ui/form';
 import useAuth from '@/providers/use-auth';
 import StatusBadge from '@/components/shared/status-badge';
-import PendingApprovalForms from '@/components/supervisor/pending-approval-forms';
 import { IClearanceFormResponse } from '@/types';
 import { getClearanceFormsByStatusQueryOpt, getPendingApprovalFormsQueryOpt } from '@/lib/query-options/clearance';
 import { useQuery } from '@tanstack/react-query';
 import { FORM_STATUSES } from '@/lib/constants';
-import ReviewedForms from '@/components/supervisor/reviewed-forms';
+import PendingApprovalForms from '@/components/hod/pending-approval-forms';
+import ReviewedForms from '@/components/hod/reviewed-forms';
 
 export default function SupervisorDashboard() {
     const [searchQuery, setSearchQuery] = useState('');

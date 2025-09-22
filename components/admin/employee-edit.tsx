@@ -84,15 +84,6 @@ function EmployeeEdit({ selectedEmployee }: EmployeeDeactivationProp) {
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="py-4">
-                    <Alert>
-                        <Edit className="w-4 h-4" />
-                        <AlertDescription>
-                            Edit functionality would be implemented here with form fields for updating employee details, role changes, department transfers, etc.
-                        </AlertDescription>
-                    </Alert>
-                </div>
-
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
@@ -102,7 +93,7 @@ function EmployeeEdit({ selectedEmployee }: EmployeeDeactivationProp) {
                                 <FormItem>
                                     <FormLabel>Full Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter full name" {...field} />
+                                        <Input placeholder="Enter full name" {...field} disabled />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -164,26 +155,6 @@ function EmployeeEdit({ selectedEmployee }: EmployeeDeactivationProp) {
                                 </FormItem>
                             )}
                         />
-
-                        <DialogFooter className="flex gap-2 pt-4">
-                            <DialogClose
-                                className="flex-1"
-                            >
-                                <Button
-                                    variant="outline"
-                                    className="w-full"
-                                >
-                                    Cancel
-                                </Button>
-                            </DialogClose>
-                            <Button
-                                type="submit"
-                                className="flex-1 bg-primary hover:bg-primary/90"
-                                disabled={isPending}
-                            >
-                                {isPending ? <LoadingSpinner /> : "Add Employee"}
-                            </Button>
-                        </DialogFooter>
                         <DialogFooter className="flex gap-2 pt-4">
                             <DialogClose className='flex-1'>
                                 <Button

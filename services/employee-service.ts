@@ -1,4 +1,4 @@
-import { EmployeeList, IEmployee, IEmployeeCreationResponse } from "@/types";
+import { EmployeeList, EmployeeListResponse, IEmployee, IEmployeeCreationResponse } from "@/types";
 import { BaseService } from "./base-service";
 
 class EmployeeService extends BaseService {
@@ -32,11 +32,15 @@ class EmployeeService extends BaseService {
         const res = await this.post("/logout");
     }
     public async getEmployeeList() {
-        return await this.get<EmployeeList>("/admin/employees/EmployeeList")
+        return await this.get<EmployeeListResponse>("/admin/employees/employeeList")
     }
 
     public async editEmployee(id: string, data: IEmployee) {
-        return await this.post<EmployeeList, IEmployee>(`/employee/${id}/edit`, data)
+        return await this.patch<EmployeeList, IEmployee>(`/employee/${id}/edit`, data)
+    }
+
+    public async getAdminStats() {
+        return await this.get("/admin/employees/stats")
     }
 }
 

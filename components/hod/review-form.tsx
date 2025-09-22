@@ -244,7 +244,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                             <FormItem>
                                                 <FormLabel>HOD Name</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input {...field} disabled/>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -256,7 +256,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                         name="hodRemark"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Conduct Remark</FormLabel>
+                                                <FormLabel>HOD Remark</FormLabel>
                                                 <FormControl>
                                                     <Textarea
                                                         placeholder="Provide your assessment of the corps member's conduct and performance..."

@@ -19,7 +19,8 @@ function EmployeeDeactivation({ selectedEmployee }: EmployeeDeactivationProp) {
     const { mutate: deactivateEmployee, isPending } = useMutation({
         mutationFn: async (employee: EmployeeList) => {
             await new EmployeeService().deactivateEmployee(employee?.id, reason)
-        }
+        },
+        
     })
 
     const handleDeactivate = (employee: EmployeeList) => {
@@ -31,7 +32,7 @@ function EmployeeDeactivation({ selectedEmployee }: EmployeeDeactivationProp) {
                 <Button
                     variant="outline"
                     size="sm"
-                    className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                    className="text-red-600 hover:bg-red-700 border-red-200 hover:border-red-300 hover:text-white"
                 >
                     <UserX className="w-4 h-4 mr-1" />
                     Deactivate
@@ -46,7 +47,7 @@ function EmployeeDeactivation({ selectedEmployee }: EmployeeDeactivationProp) {
                 </DialogHeader>
 
                 {selectedEmployee && (
-                    <div className="py-4">
+                    <div>
                         <Alert>
                             <Shield className="w-4 h-4" />
                             <AlertDescription>
@@ -75,13 +76,15 @@ function EmployeeDeactivation({ selectedEmployee }: EmployeeDeactivationProp) {
                             </div>
                         </div>
 
-                        <Label htmlFor='reason'>Reason for Deactivation</Label>
-                        <Textarea
-                            name="reason"
-                            placeholder='Kindly enter the reason for deactivation'
-                            value={reason}
-                            onChange={(e) => setReason(e.target.value)}
-                        />
+                        <div className='flex flex-col gap-2 mt-4'>
+                            <Label htmlFor='reason'>Reason for Deactivation</Label>
+                            <Textarea
+                                name="reason"
+                                placeholder='Kindly enter the reason for deactivation'
+                                value={reason}
+                                onChange={(e) => setReason(e.target.value)}
+                            />
+                        </div>
                     </div>
                 )}
 

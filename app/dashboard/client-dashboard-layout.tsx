@@ -19,7 +19,7 @@ function ClientDashboardLayout({ children }: { children: ReactNode }) {
     }, [])
     return (
         <>
-            {employee?.role === ROLES.ADMIN && <SideNavigation />}
+            {employee?.role === ROLES.ADMIN && !corper && <SideNavigation />}
             <main className='flex-1 overflow-x-hidden'>
                 {(corper ?? employee) ? (
                     <Header employee={corper ?? employee as IEmployeeCreationResponse} />

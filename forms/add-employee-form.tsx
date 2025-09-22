@@ -38,6 +38,7 @@ import { IEmployee } from "@/types";
 import EmployeeService from "@/services/employee-service";
 import { toast } from "sonner";
 import LoadingSpinner from "@/components/shared/loading-spinner";
+import { DEPARTMENTS } from "@/lib/constants";
 
 type FormValues = z.infer<typeof employeeSchema>;
 
@@ -121,9 +122,24 @@ const AddEmployeeForm = () => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Department</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter department" {...field} />
-                                    </FormControl>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                                <SelectValue placeholder="Select your department" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {DEPARTMENTS.map((department) => {
+                                                return (
+                                                    <SelectItem key={department} value={department}>
+                                                        <div className="flex items-center space-x-2">
+                                                            <span>{department}</span>
+                                                        </div>
+                                                    </SelectItem>
+                                                )
+                                            })}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

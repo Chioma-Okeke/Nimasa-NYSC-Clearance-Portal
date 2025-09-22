@@ -126,7 +126,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                         <FormItem>
                                             <FormLabel>Supervisor Name</FormLabel>
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Input {...field} disabled />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
