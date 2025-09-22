@@ -162,12 +162,11 @@ function CorperFormList({ employee }: CoperFormListProps) {
                         <div className="space-y-4">
                             {filteredForms.map((formItem) => (
                                 <div key={formItem.formId} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
+                                    <div className="flex flex-col gap-4 items-start justify-between">
+                                        <div className="flex-1 w-full">
                                             <div className="flex items-center space-x-3 mb-2">
                                                 {getStatusIcon(formItem.status ?? "")}
                                                 <div>
-                                                    <h3 className="font-medium text-gray-900">Form ID: {formItem.formId}</h3>
                                                     <p className="text-sm text-gray-600">
                                                         {formItem.department}
                                                     </p>
@@ -182,7 +181,8 @@ function CorperFormList({ employee }: CoperFormListProps) {
                                                 </div>
                                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                                     <div
-                                                        className={cn(`h-2 rounded-full transition-all bg-[#0066CC] w-[${getFormProgress(formItem.status ?? "")}%]`, {
+                                                        style={{ width: `${getFormProgress(formItem.status ?? "")}%` }}
+                                                        className={cn(`h-2 rounded-full transition-all bg-[#0066CC]`, {
                                                             "bg-[#D32F2F]": formItem.status === 'REJECTED',
 
                                                         })}

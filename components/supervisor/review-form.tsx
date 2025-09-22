@@ -77,7 +77,6 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
 
     return (
         <Dialog open={isDialogOpen}
-            // <Dialog open={isDialogOpen && selectedForm?.id === formItem.id}
             onOpenChange={() => {
                 setIsDialogOpen(!isDialogOpen)
                 form.reset();

@@ -45,8 +45,8 @@ function AllFormsCard({ isLoading, searchQuery, clearanceForms }: { isLoading: b
                     <div className="space-y-4">
                         {clearanceForms?.map((formItem) => (
                             <div key={formItem.id} className="border-2 border-input rounded-lg p-4 hover:shadow-md transition-shadow">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex-1">
+                                <div className="flex flex-col lg:flex-row items-start justify-between">
+                                    <div className="flex-1 ">
                                         <div className="flex items-center space-x-3 mb-2">
                                             {getStatusIcon(formItem.status)}
                                             <div>

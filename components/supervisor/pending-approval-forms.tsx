@@ -44,7 +44,7 @@ function PendingApprovalForms({ pendingForms, isLoading, searchQuery }: PendingA
                     <div className="space-y-4">
                         {pendingForms.map((formItem) => (
                             <div key={formItem.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-orange-50 border-orange-200">
-                                <div className="flex flex-col md:flex-row items-start justify-between">
+                                <div className="flex flex-col lg:flex-row items-start justify-between">
                                     <div className="flex-1 w-full">
                                         <div className="flex items-center space-x-3 mb-2">
                                             <Clock className="w-5 h-5 text-orange-500" />

@@ -50,7 +50,7 @@ function ReviewedForms({ reviewedForms, isLoading, searchQuery }: { reviewedForm
                     <div className="space-y-4">
                         {reviewedForms.map((formItem) => (
                             <div key={formItem.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                                <div className="flex items-start justify-between">
+                                <div className="flex flex-col lg:flex-row items-start justify-between">
                                     <div className="flex-1">
                                         <div className="flex items-center space-x-3 mb-2">
                                             {getStatusIcon(formItem.status)}

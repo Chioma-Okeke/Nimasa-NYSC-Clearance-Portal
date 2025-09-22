@@ -93,4 +93,8 @@ export class ClearanceService extends BaseService {
     public async trackCorperForm(id: string) {
         return this.get<PrintableFormResponse[]>(`/corps/${id}/forms/track`)
     }
+
+    public async exportEmployeeList() {
+        return this.get<string>("/admin/export/excel")
+    }
 }

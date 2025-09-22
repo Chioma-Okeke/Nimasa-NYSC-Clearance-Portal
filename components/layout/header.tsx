@@ -15,13 +15,43 @@ import { generateUserInitials } from "@/lib/utils"
 import { IEmployeeCreationResponse } from "@/types"
 import { ROLE_MAPPING, ROLES } from "@/lib/constants"
 import { SidebarTrigger } from "../ui/sidebar"
+import { ClearanceService } from "@/services/clearance-service"
+import { useState } from "react"
 
 export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
   const { logoutUser, isLoggingOut } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
   const queryClient = useQueryClient()
 
   const refreshForms = () => {
-    queryClient.invalidateQueries({ queryKey: ["corperForms", employee?.name] })
+    queryClient.invalidateQueries({ queryKey: ["corper", employee?.id] })
+  }
+
+  const exportData = async () => {
+    const clearanceService = new ClearanceService()
+    try {
+      setIsLoading(true)
+      const response = await clearanceService.exportEmployeeList()
+      if (!response) {
+        toast.warning("Nothing to download.")
+      }
+      const link = document.createElement("a")
+      link.href = response
+      link.download = "employee.csv"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      toast.success("User Data Exported Successfully", {
+        description: "The CSV file was successfully downloaded"
+      })
+    } catch (error) {
+      toast.error("User Data Export Failed", {
+        description: "An error occurred when exporting the file"
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -39,10 +69,11 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
         </div>
 
         <div className="flex items-center space-x-4">
-          {employee?.role === ROLES.ADMIN && <Button variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export Data
-          </Button>}
+          {employee?.role === ROLES.ADMIN &&
+            <Button variant="outline" size="sm" onClick={exportData}>
+              <Download className="w-4 h-4 mr-2" />
+              {isLoading ? <LoadingSpinner /> : "Export Data"}
+            </Button>}
           <Button variant="outline" size="sm" className="hidden">
             <Bell className="w-4 h-4" />
           </Button>

@@ -4,10 +4,12 @@ import { Button } from '../ui/button'
 import { EmployeeList } from '@/types'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Shield, UserX } from 'lucide-react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
 import EmployeeService from '@/services/employee-service'
+import { toast } from 'sonner'
+import LoadingSpinner from '../shared/loading-spinner'
 
 interface EmployeeDeactivationProp {
     selectedEmployee: EmployeeList
@@ -16,11 +18,24 @@ interface EmployeeDeactivationProp {
 function EmployeeDeactivation({ selectedEmployee }: EmployeeDeactivationProp) {
     const [isOpen, setIsOpen] = useState(false)
     const [reason, setReason] = useState("")
+    const queryClient = useQueryClient()
     const { mutate: deactivateEmployee, isPending } = useMutation({
         mutationFn: async (employee: EmployeeList) => {
             await new EmployeeService().deactivateEmployee(employee?.id, reason)
         },
-        
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["employee-list"] })
+            setIsOpen(false)
+            setReason("")
+            toast.success("User Deactivation Successful", {
+                description: "User has been successfully deactivated"
+            })
+        },
+        onError: (error) => {
+            toast.error("User Deactivation Failed", {
+                description: error ? error.message : "There was an error. Kindly try again"
+            })
+        }
     })
 
     const handleDeactivate = (employee: EmployeeList) => {
@@ -48,9 +63,9 @@ function EmployeeDeactivation({ selectedEmployee }: EmployeeDeactivationProp) {
 
                 {selectedEmployee && (
                     <div>
-                        <Alert>
-                            <Shield className="w-4 h-4" />
-                            <AlertDescription>
+                        <Alert className='text-red-500 border-red-200'>
+                            <Shield className="size-5" />
+                            <AlertDescription className='text-red-500'>
                                 <strong>Warning:</strong> This action will immediately revoke {selectedEmployee.name}'s access to the NIMASA clearance system. Any pending reviews will need to be reassigned.
                             </AlertDescription>
                         </Alert>
@@ -99,11 +114,12 @@ function EmployeeDeactivation({ selectedEmployee }: EmployeeDeactivationProp) {
                         </Button>
                     </DialogClose>
                     <Button
+                        type='submit'
                         onClick={() => handleDeactivate(selectedEmployee)}
                         disabled={isPending}
                         className="flex-1 bg-red-600 hover:bg-red-700"
                     >
-                        {isPending ? 'Deactivating...' : 'Deactivate'}
+                        {isPending ? <LoadingSpinner/> : 'Deactivate'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

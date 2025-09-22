@@ -8,7 +8,7 @@ import LoadingSpinner from '../shared/loading-spinner'
 import { z } from 'zod'
 import { employeeSchema } from '@/lib/schema'
 import EmployeeService from '@/services/employee-service'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -24,6 +24,7 @@ type FormValues = z.infer<typeof employeeSchema>;
 
 function EmployeeEdit({ selectedEmployee }: EmployeeDeactivationProp) {
     const [isOpen, setIsOpen] = useState(false)
+    const queryClient = useQueryClient()
 
     const employeeService = new EmployeeService();
 
@@ -31,9 +32,9 @@ function EmployeeEdit({ selectedEmployee }: EmployeeDeactivationProp) {
         mutationFn: async (data: IEmployee) => {
             return await employeeService.editEmployee(selectedEmployee?.id, data)
         },
-        onSuccess: (res) => {
+        onSuccess: async (res) => {
+            await queryClient.invalidateQueries({ queryKey: ["employee-list"] })
             form.reset()
-            console.log(res)
             setIsOpen(false)
             toast.success("Employee Creation Successful", {
                 description: "Employee was successfully created."
