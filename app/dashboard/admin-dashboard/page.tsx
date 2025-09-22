@@ -30,6 +30,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import Logo from '@/components/shared/logo';
+import useAuth from '@/providers/use-auth';
 
 interface StatusCardProps { title: string, value: number, subtitle: string, icon: LucideIcon, color: string, trend: number }
 
@@ -95,6 +96,7 @@ export default function AdminDashboard() {
         department: 'IT Administration',
         role: 'ADMIN'
     });
+    const { employee } = useAuth()
 
     const getStatusIcon = (status: string) => {
         switch (status) {
@@ -133,37 +135,14 @@ export default function AdminDashboard() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 flex-1">
-                        <Logo />
-                        <div>
-                            <h1 className="text-xl font-bold text-[#003366]">NIMASA</h1>
-                            <p className="text-sm text-gray-600">Admin Dashboard</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4">
-                        <Button variant="outline" size="sm">
-                            <Download className="w-4 h-4 mr-2" />
-                            Export Data
-                        </Button>
-                        <Button variant="outline" size="sm">
-                            <Bell className="w-4 h-4" />
-                        </Button>
-                        <div className="flex items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg">
-                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-medium">A</span>
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium">{currentUser.name}</p>
-                                <p className="text-xs text-gray-500">{currentUser.role}</p>
-                            </div>
-                        </div>
+            <div className="px-6 py-4 border-b bg-white">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-center justify-between">
+                    <div>
+                        <h2 className="text-xl md:text-2xl font-bold text-gray-900">Welcome, {employee?.name}</h2>
+                        <p className="text-gray-600 text-sm md:text-base">Review and manage corps member clearance forms</p>
                     </div>
                 </div>
-            </header>
+            </div>
 
             {/* Main Content */}
             <main className="p-6">

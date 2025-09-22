@@ -1,6 +1,6 @@
 export interface IEmployee {
     id?: string;
-    name: string;
+    name?: string;
     password?: string;
     department: string;
     role: "CORPS_MEMBER" | "SUPERVISOR" | "HOD" | "ADMIN";
@@ -121,6 +121,19 @@ export interface PrintableFormResponse {
     status?: string;
     createdAt: string;
     updatedAt?: string;
+}
+
+
+export interface EmployeeList {
+    id : string;
+    name : string;
+    department : string;
+    userRole : "CORPS_MEMBER" | "SUPERVISOR" | "HOD" | "ADMIN";
+    active: boolean;
+    createdAT: string;
+    lastPasswordChange: string;
+    passwordExpired : boolean;
+    formPendingReview: number;
 }
 
 export type StatusType =

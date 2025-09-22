@@ -22,7 +22,7 @@
   --destructive: oklch(0.6 0.2 25); /* Red for errors */
   --destructive-foreground: oklch(1 0 0); /* White text on destructive */
   --border: oklch(0.5 0.02 240); /* Dark gray borders */
-  --input: oklch(0.98 0.02 195); /* Light cyan input background */
+  --input: rgb(238,238,240); /* Light cyan input background */
   --ring: oklch(0.45 0.15 150); /* Green focus ring */
   --chart-1: oklch(0.45 0.15 150); /* Green chart color */
   --chart-2: oklch(0.2 0.05 240); /* Navy blue chart color */

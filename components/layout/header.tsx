@@ -28,7 +28,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 flex-1">
-          {/* {employee.role !== ROLES.CORPER && <SidebarTrigger />} */}
+          {employee?.role === ROLES.ADMIN && <SidebarTrigger />}
           <div className="flex items-center space-x-3 flex-1">
             <Logo />
             <div>

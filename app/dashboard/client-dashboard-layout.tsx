@@ -2,6 +2,7 @@
 
 import { Header } from '@/components/layout/header'
 import { SideNavigation } from '@/components/shared/side-navigation'
+import { ROLES } from '@/lib/constants'
 import useAuth from '@/providers/use-auth'
 import { IEmployeeCreationResponse } from '@/types'
 import React, { ReactNode, useEffect, useState } from 'react'
@@ -18,8 +19,8 @@ function ClientDashboardLayout({ children }: { children: ReactNode }) {
     }, [])
     return (
         <>
-            {!corper && <SideNavigation />}
-            <main className='flex-1'>
+            {employee?.role === ROLES.ADMIN && <SideNavigation />}
+            <main className='flex-1 overflow-x-hidden'>
                 {(corper ?? employee) ? (
                     <Header employee={corper ?? employee as IEmployeeCreationResponse} />
                 ) : null}

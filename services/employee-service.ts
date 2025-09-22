@@ -1,4 +1,4 @@
-import { IEmployee, IEmployeeCreationResponse } from "@/types";
+import { EmployeeList, IEmployee, IEmployeeCreationResponse } from "@/types";
 import { BaseService } from "./base-service";
 
 class EmployeeService extends BaseService {
@@ -15,8 +15,8 @@ class EmployeeService extends BaseService {
         return res;
     }
 
-    public async deactivateEmployee(name: string) {
-        const res = await this.post("employee/deactivate", { name });
+    public async deactivateEmployee(id: string, reason: string) {
+        const res = await this.post(`employee/${id}/deactivate`, { reason });
     }
 
     public async changePassword(data: {userName: string, newPassword: string}) {
@@ -30,6 +30,13 @@ class EmployeeService extends BaseService {
 
     public async logout() {
         const res = await this.post("/logout");
+    }
+    public async getEmployeeList() {
+        return await this.get<EmployeeList>("/admin/employees/EmployeeList")
+    }
+
+    public async editEmployee(id: string, data: IEmployee) {
+        return await this.post<EmployeeList, IEmployee>(`/employee/${id}/edit`, data)
     }
 }
 

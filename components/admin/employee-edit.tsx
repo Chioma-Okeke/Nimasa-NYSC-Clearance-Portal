@@ -1,53 +1,35 @@
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
+import React, { useState } from 'react'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Alert, AlertDescription } from '../ui/alert'
+import { Edit } from 'lucide-react'
+import { Button } from '../ui/button'
+import { EmployeeList, IEmployee } from '@/types'
+import LoadingSpinner from '../shared/loading-spinner'
+import { z } from 'zod'
+import { employeeSchema } from '@/lib/schema'
+import EmployeeService from '@/services/employee-service'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Input } from '../ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { UserPlus } from "lucide-react";
-import React, { useState } from "react";
-import { employeeSchema } from "@/lib/schema";
-import { useMutation } from "@tanstack/react-query";
-import { IEmployee } from "@/types";
-import EmployeeService from "@/services/employee-service";
-import { toast } from "sonner";
-import LoadingSpinner from "@/components/shared/loading-spinner";
+interface EmployeeDeactivationProp {
+    selectedEmployee: EmployeeList
+}
 
 type FormValues = z.infer<typeof employeeSchema>;
 
-const AddEmployeeForm = () => {
+function EmployeeEdit({ selectedEmployee }: EmployeeDeactivationProp) {
     const [isOpen, setIsOpen] = useState(false)
+
     const employeeService = new EmployeeService();
 
     const { mutate: createEmployee, isPending } = useMutation({
         mutationFn: async (data: IEmployee) => {
-            return await employeeService.addEmployee(data)
+            return await employeeService.editEmployee(selectedEmployee?.id, data)
         },
         onSuccess: (res) => {
             form.reset()
@@ -67,16 +49,16 @@ const AddEmployeeForm = () => {
     const form = useForm<FormValues>({
         resolver: zodResolver(employeeSchema),
         defaultValues: {
-            name: "",
-            department: "",
+            name: selectedEmployee?.name,
+            department: selectedEmployee?.department,
             password: "",
-            role: undefined,
+            role: selectedEmployee?.userRole,
         },
     });
 
     const onSubmit = (values: FormValues) => {
-        console.log("New Employee:", values);
-        createEmployee(values)
+        const { name, ...rest } = values
+        createEmployee(rest)
     };
 
     return (
@@ -85,19 +67,31 @@ const AddEmployeeForm = () => {
             setIsOpen(!isOpen)
         }}>
             <DialogTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/90">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Add Employee
+                <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={!selectedEmployee.active}
+                >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Edit
                 </Button>
             </DialogTrigger>
-
-            <DialogContent >
+            <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Add New Employee</DialogTitle>
+                    <DialogTitle>Edit Employee - {selectedEmployee?.name}</DialogTitle>
                     <DialogDescription>
-                        Add a new supervisor or HOD to the system
+                        Update employee information and permissions
                     </DialogDescription>
                 </DialogHeader>
+
+                <div className="py-4">
+                    <Alert>
+                        <Edit className="w-4 h-4" />
+                        <AlertDescription>
+                            Edit functionality would be implemented here with form fields for updating employee details, role changes, department transfers, etc.
+                        </AlertDescription>
+                    </Alert>
+                </div>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -190,11 +184,30 @@ const AddEmployeeForm = () => {
                                 {isPending ? <LoadingSpinner /> : "Add Employee"}
                             </Button>
                         </DialogFooter>
+                        <DialogFooter className="flex gap-2 pt-4">
+                            <DialogClose className='flex-1'>
+                                <Button
+                                    variant="outline"
+                                    className="w-full"
+                                >
+                                    Cancel
+                                </Button>
+                            </DialogClose>
+                            <Button
+                                type='submit'
+                                className="flex-1 bg-[#0066CC]"
+                                disabled={isPending}
+                            >
+                                {isPending ? <LoadingSpinner /> : "Save Changes"}
+                            </Button>
+                        </DialogFooter>
                     </form>
                 </Form>
+
+
             </DialogContent>
         </Dialog>
-    );
+    )
 }
 
-export default AddEmployeeForm;
+export default EmployeeEdit
