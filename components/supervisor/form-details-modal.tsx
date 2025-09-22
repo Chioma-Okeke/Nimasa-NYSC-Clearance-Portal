@@ -19,7 +19,7 @@ function FromDetailsModal({ selectedForm }: { selectedForm: IClearanceFormRespon
                     View
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent className="sm:max-w-[600px] max-h-[95vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Form Details - {selectedForm?.corpsName}</DialogTitle>
                     <DialogDescription>
