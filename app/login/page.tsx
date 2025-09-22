@@ -61,7 +61,7 @@ export default function LoginPage() {
           router.push("/dashboard/hod-dashboard")
           break
         case "ADMIN":
-          router.push("/admin")
+          router.push("/dashboard/admin-dashboard")
           break
       }
       form.reset()
@@ -279,7 +279,7 @@ export default function LoginPage() {
                       <SelectContent>
                         {DEPARTMENTS.map((department) => {
                           return (
-                            <SelectItem value={department}>
+                            <SelectItem key={department} value={department}>
                               <div className="flex items-center space-x-2">
                                 <span>{department}</span>
                               </div>
@@ -311,7 +311,7 @@ export default function LoginPage() {
                       <SelectContent>
                         {ROLE_SELECTION.map(({ roleName, Icon, value }) => {
                           return (
-                            <SelectItem value={value}>
+                            <SelectItem key={value} value={value}>
                               <div className="flex items-center space-x-2">
                                 <Icon className="size-4" style={{ color: '#0066CC' }} />
                                 <span>{roleName}</span>

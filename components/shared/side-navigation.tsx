@@ -2,7 +2,6 @@ import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
-    SidebarGroup,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -30,7 +29,7 @@ const menus = [
 export function SideNavigation() {
     const { logoutUser, isLoggingOut } = useAuth()
     return (
-        <Sidebar>
+        <Sidebar className="py-4">
             <SidebarHeader>
                 <div className="flex items-center space-x-3 flex-1">
                     <Logo />
@@ -39,13 +38,11 @@ export function SideNavigation() {
                     </div>
                 </div>
             </SidebarHeader>
-            <SidebarContent>
-                <SidebarGroup />
-                <SidebarGroup />
+            <SidebarContent className="pt-3">
                 <SidebarMenu>
                     {menus.map((item) => (
-                        <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton asChild>
+                        <SidebarMenuItem key={item.title} className="px-3">
+                            <SidebarMenuButton asChild className="px-3 py-5">
                                 <a href={item.url}>
                                     <item.icon />
                                     <span>{item.title}</span>
