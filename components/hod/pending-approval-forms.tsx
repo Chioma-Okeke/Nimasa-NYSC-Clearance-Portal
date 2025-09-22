@@ -1,11 +1,7 @@
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Clock, FileText } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { getPendingApprovalFormsQueryOpt } from '@/lib/query-options/clearance'
-import StatusBadge from '../shared/status-badge'
-import { formatDate } from '@/lib/utils'
-import type { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
+import { CheckCircle, Clock } from 'lucide-react'
+import type { IClearanceFormResponse } from '@/types'
 import ReviewForm from './review-form'
 import FromDetailsModal from '../supervisor/form-details-modal'
 import LoadingSpinner from '../shared/loading-spinner'

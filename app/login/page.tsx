@@ -311,9 +311,9 @@ export default function LoginPage() {
                       <SelectContent>
                         {ROLE_SELECTION.map(({ roleName, Icon, value }) => {
                           return (
-                            <SelectItem key={value} value={value}>
+                            <SelectItem key={value} value={value} className="group cursor-pointer">
                               <div className="flex items-center space-x-2">
-                                <Icon className="size-4" style={{ color: '#0066CC' }} />
+                                <Icon className="size-4 group-hover:text-white text-secondary" />
                                 <span>{roleName}</span>
                               </div>
                             </SelectItem>

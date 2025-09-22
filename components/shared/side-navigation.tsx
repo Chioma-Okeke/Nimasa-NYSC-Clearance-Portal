@@ -39,7 +39,7 @@ export function SideNavigation() {
     const { logoutUser, isLoggingOut } = useAuth()
     const path = usePathname()
     return (
-        <Sidebar className="py-4">
+        <Sidebar className="py-4 border-r-2 border-input">
             <SidebarHeader>
                 <div className="flex items-center space-x-3 flex-1">
                     <Logo />

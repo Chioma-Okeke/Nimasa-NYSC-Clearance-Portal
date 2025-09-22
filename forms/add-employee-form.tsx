@@ -33,7 +33,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus } from "lucide-react";
 import React, { useState } from "react";
 import { employeeSchema } from "@/lib/schema";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { IEmployee } from "@/types";
 import EmployeeService from "@/services/employee-service";
 import { toast } from "sonner";
@@ -45,14 +45,15 @@ type FormValues = z.infer<typeof employeeSchema>;
 const AddEmployeeForm = () => {
     const [isOpen, setIsOpen] = useState(false)
     const employeeService = new EmployeeService();
+    const queryClient = useQueryClient()
 
     const { mutate: createEmployee, isPending } = useMutation({
         mutationFn: async (data: IEmployee) => {
             return await employeeService.addEmployee(data)
         },
-        onSuccess: (res) => {
+        onSuccess: async (res) => {
             form.reset()
-            console.log(res)
+            await queryClient.invalidateQueries({queryKey: ["employee-list"]})
             setIsOpen(false)
             toast.success("Employee Creation Successful", {
                 description: "Employee was successfully created."

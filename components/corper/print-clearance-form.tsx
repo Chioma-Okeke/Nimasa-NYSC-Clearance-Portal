@@ -36,7 +36,7 @@ export const PrintableClearanceForm = React.forwardRef<
 
     return (
         <div ref={ref} className="p-4 print:p-2">
-            <div className="form-container border p-4 rounded bg-white text-[10pt] leading-snug max-w-[794px] mx-auto min-h-[95vh]">
+            <div className="form-container relative border p-4 rounded bg-white text-[10pt] leading-snug max-w-[794px] mx-auto min-h-[95vh]">
                 {/* Header */}
                 <div className="header mb-4 text-center space-y-1">
                     <div className="flex justify-center mb-2">
@@ -109,7 +109,7 @@ export const PrintableClearanceForm = React.forwardRef<
                         </div>
                         <div className="flex items-end gap-8 pl-4">
                             <div>
-                                <div className="border rounded p-2 flex items-center justify-center min-h-[35px]">
+                                <div className="p-2 flex items-center justify-center min-h-[35px] underline underline-offset-4">
                                     {form.supervisorSignatureUrl?.startsWith("http") ? (
                                         <img
                                             src={form.supervisorSignatureUrl}
@@ -120,12 +120,14 @@ export const PrintableClearanceForm = React.forwardRef<
                                         form.supervisorSignatureUrl
                                     )}
                                 </div>
+                                <hr />
                                 <div className="text-center font-bold text-[9pt] mt-1">
                                     Signature:
                                 </div>
                             </div>
                             <div>
                                 <div className="text-center">{formatDate(form.supervisorDate)}</div>
+                                <hr />
                                 <div className="text-center font-bold text-[9pt] mt-1">Date:</div>
                             </div>
                         </div>
@@ -149,7 +151,7 @@ export const PrintableClearanceForm = React.forwardRef<
                     </div>
                     <div className="flex items-end gap-8">
                         <div>
-                            <div className="border rounded p-2 flex items-center justify-center min-h-[35px]">
+                            <div className="p-2 flex items-center justify-center min-h-[35px] underline underline-offset-4">
                                 {form.hodSignatureUrl?.startsWith("http") ? (
                                     <img
                                         src={form.hodSignatureUrl}
@@ -160,12 +162,14 @@ export const PrintableClearanceForm = React.forwardRef<
                                     form.hodSignatureUrl
                                 )}
                             </div>
+                            <hr />
                             <div className="text-center font-bold text-[9pt] mt-1">
                                 Signature:
                             </div>
                         </div>
                         <div>
                             <div className="text-center">{formatDate(form.hodDate)}</div>
+                            <hr />
                             <div className="text-center font-bold text-[9pt] mt-1">Date:</div>
                         </div>
                     </div>
@@ -205,10 +209,10 @@ export const PrintableClearanceForm = React.forwardRef<
                 </div>
 
                 {/* Footer */}
-                <div className="mt-4 text-center text-[8pt] text-gray-500">
+                <footer className="mt-4 text-center text-[8pt] text-gray-500 absolute left-1/2 -translate-x-1/2 bottom-4">
                     This form was generated on {new Date().toLocaleDateString()} | NIMASA NYSC
                     Clearance System
-                </div>
+                </footer>
             </div>
         </div>
 

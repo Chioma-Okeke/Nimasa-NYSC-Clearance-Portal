@@ -14,13 +14,18 @@ import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
 import { toast } from 'sonner'
 import { Textarea } from '../ui/textarea'
 import { FORM_STATUSES } from '@/lib/constants'
+import SignaturePadComp from '../shared/signature-pad'
+import { Label } from '../ui/label'
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 
 type FormValues = z.infer<typeof supervisorReviewSchema>;
+type UploadStyles = "attach" | "draw"
 
 function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormResponse, employee: IEmployeeCreationResponse }) {
     const [fileList, setFileList] = useState<File | null>(null)
     const [isDialogOpen, setIsDialogOpen] = React.useState(false)
     const queryClient = useQueryClient();
+    const [uploadStyle, setUploadStyle] = useState("upload")
 
     const { mutate: reviewForm, isPending } = useMutation({
         mutationFn: async (data: FormData) => {
@@ -83,7 +88,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                     size="sm"
                     style={{ backgroundColor: '#0066CC' }}
                 >
-                    <MessageSquare className="w-4 h-4 mr-2" />
+                    <MessageSquare className="w-3.5 h-3.5 mr-2" />
                     Review
                 </Button>
             </DialogTrigger>
@@ -172,12 +177,29 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                 />
 
                                 <div className="mt-4">
-                                    <div className="space-y-4">
+                                    <div className='space-y-3'>
+                                        <h3 className="text-sm font-medium text-greyscale-text-title">
+                                            Signature Image
+                                            <span className='text-sm text-red-600 ml-2'>*</span>
+                                        </h3>
+                                        <RadioGroup
+                                            defaultValue={uploadStyle}
+                                            onValueChange={(val) => setUploadStyle(val)}
+                                            className="flex gap-6"
+                                        >
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="draw" id="draw" />
+                                                <Label htmlFor="draw">Draw Signature</Label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <RadioGroupItem value="upload" id="upload" />
+                                                <Label htmlFor="upload">Upload File</Label>
+                                            </div>
+                                        </RadioGroup>
+                                    </div>
+                                    {uploadStyle === "draw" && <SignaturePadComp setFileList={setFileList} />}
+                                    {uploadStyle === "upload" && <div className="space-y-4 mt-4">
                                         <div className="space-y-1">
-                                            <h3 className="text-sm font-medium text-greyscale-text-title">
-                                                Signature Image
-                                                <span className='text-sm text-red-600 ml-2'>*</span>
-                                            </h3>
                                             <p className="text-sm text-greyscale-text-body">
                                                 File size should not exceed 50MB
                                             </p>
@@ -203,7 +225,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                                                 </button>
                                             </div>
                                         </div>}
-                                    </div>
+                                    </div>}
                                 </div>
 
                                 <DialogFooter className="flex gap-2 pt-4">
