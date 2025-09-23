@@ -101,7 +101,7 @@ export default function AdminFormsPage() {
             </div>
 
             {/* Main Content */}
-            <main className="py-6 px-4 relative">
+            <main className="py-6 px-6 relative">
 
                 {/* Quick Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -116,18 +116,6 @@ export default function AdminFormsPage() {
                             </div>
                         </CardContent>
                     </Card>
-{/* 
-                    <Card>
-                        <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                                <CheckCircle className="w-8 h-8 text-green-600" />
-                                <div>
-                                    <p className="text-2xl font-bold">{allForms.length}</p>
-                                    <p className="text-sm text-gray-600">Reviewed Forms</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card> */}
 
                     <Card>
                         <CardContent className="p-4">

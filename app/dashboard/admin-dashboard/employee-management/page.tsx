@@ -116,7 +116,7 @@ export default function EmployeeManagementTable() {
 
     return (
         <Card>
-            <CardHeader className="px-3">
+            <CardHeader className="px-6">
                 <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5 text-primary" />
                     <p className="text-2xl">Manage People</p>
@@ -124,7 +124,7 @@ export default function EmployeeManagementTable() {
                 <CardDescription>Add supervisors, HODs, and other employees to the system</CardDescription>
             </CardHeader>
 
-            <CardContent className="px-3">
+            <CardContent className="px-6">
                 <div className="space-y-6">
                     <AddEmployeeForm />
                 </div>
