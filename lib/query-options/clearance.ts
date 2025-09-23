@@ -34,3 +34,11 @@ export const trackCorperFormsQueryOpt = (id: string) => ({
     queryKey: ["corper", id],
     queryFn: () => clearanceService.trackCorperForm(id)
 })
+
+export const trackDepartmentFormsQueryOpt = (dept: string) => ({
+    queryKey: ["departmentFormList", dept],
+    queryFn: () => clearanceService.trackDepartmentalForms(),
+    staleTime: 0,
+    refetchOnMount: "always",
+    enabled: !!dept
+})

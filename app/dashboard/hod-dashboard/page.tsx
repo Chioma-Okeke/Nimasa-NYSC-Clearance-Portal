@@ -45,7 +45,7 @@ import {
 import useAuth from '@/providers/use-auth';
 import StatusBadge from '@/components/shared/status-badge';
 import { IClearanceFormResponse } from '@/types';
-import { getClearanceFormsByStatusQueryOpt, getPendingApprovalFormsQueryOpt } from '@/lib/query-options/clearance';
+import { getClearanceFormsByStatusQueryOpt, getPendingApprovalFormsQueryOpt, trackDepartmentFormsQueryOpt } from '@/lib/query-options/clearance';
 import { useQuery } from '@tanstack/react-query';
 import { FORM_STATUSES } from '@/lib/constants';
 import PendingApprovalForms from '@/components/hod/pending-approval-forms';
@@ -59,7 +59,10 @@ export default function SupervisorDashboard() {
         ...getPendingApprovalFormsQueryOpt(employee?.role || "", employee?.id || ""),
         refetchOnMount: "always"
     })
-    const { data: reviewedForms = [], isLoading: isLoadingReviewedFOrms } = useQuery(getClearanceFormsByStatusQueryOpt(employee?.role || "", FORM_STATUSES.PENDING_ADMIN))
+    const { data: reviewedForms = [], isLoading: isLoadingReviewedFOrms } = useQuery({
+        ...trackDepartmentFormsQueryOpt(employee?.department || ""),
+        refetchOnMount: "always"
+    })
 
     const filteredPending = useMemo(() => {
         if (!pendingForms) return [];

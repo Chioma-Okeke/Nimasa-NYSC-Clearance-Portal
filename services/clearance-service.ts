@@ -97,4 +97,8 @@ export class ClearanceService extends BaseService {
     public async exportEmployeeList() {
         return this.get<string>("/admin/export/excel")
     }
+
+    public async trackDepartmentalForms() {
+        return this.get<IClearanceFormResponse[]>("/forms/track")
+    }
 }

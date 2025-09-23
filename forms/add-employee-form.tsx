@@ -30,7 +30,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { UserPlus } from "lucide-react";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 import React, { useState } from "react";
 import { employeeSchema } from "@/lib/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -44,6 +44,7 @@ type FormValues = z.infer<typeof employeeSchema>;
 
 const AddEmployeeForm = () => {
     const [isOpen, setIsOpen] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
     const employeeService = new EmployeeService();
     const queryClient = useQueryClient()
 
@@ -53,7 +54,7 @@ const AddEmployeeForm = () => {
         },
         onSuccess: async (res) => {
             form.reset()
-            await queryClient.invalidateQueries({queryKey: ["employee-list"]})
+            await queryClient.invalidateQueries({ queryKey: ["employee-list"] })
             setIsOpen(false)
             toast.success("Employee Creation Successful", {
                 description: "Employee was successfully created."
@@ -85,6 +86,7 @@ const AddEmployeeForm = () => {
         <Dialog open={isOpen} onOpenChange={() => {
             form.reset()
             setIsOpen(!isOpen)
+            setShowPassword(false)
         }}>
             <DialogTrigger asChild>
                 <Button className="bg-primary hover:bg-primary/90">
@@ -164,9 +166,9 @@ const AddEmployeeForm = () => {
                                         </FormControl>
                                         <SelectContent>
                                             <SelectItem value="ADMIN">Admin</SelectItem>
+                                            <SelectItem value="CORPS_MEMBER">Corps Member</SelectItem>
                                             <SelectItem value="HOD">Head of Department</SelectItem>
                                             <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
-                                            <SelectItem value="CORPS_MEMBER">Corps Member</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -181,7 +183,23 @@ const AddEmployeeForm = () => {
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input type="password" placeholder="Enter password" {...field} />
+                                        <div className="relative">
+                                            <Input
+                                                type={showPassword ? 'text' : 'password'}
+                                                placeholder="Enter your password"
+                                                className="h-11 pr-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                                {...field}
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent text-gray-400 hover:text-gray-600"
+                                            >
+                                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                            </Button>
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

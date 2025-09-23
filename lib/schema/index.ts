@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const checkNameFormat = (name: string) => {
+  const newName = name.split(".")
+  return newName.length === 2;
+}
+
 export const employeeSchema = z.object({
     name: z.string().min(1, "Name is required"),
     department: z.string().min(1, "Department is required"),
@@ -28,6 +33,16 @@ export const loginFormSchema = z.object({
   {
     message: "Password is required for employees",
     path: ["password"],
+  }
+).refine(
+  (data) => {
+    if (data.role === "CORPS_MEMBER") return true
+    if (!data.name) return false
+    return data.name.split(".").length === 2
+  },
+  {
+    message: "Kindly Enter a valid username in the format 'firstname.lastname'",
+    path: ["name"]
   }
 )
 

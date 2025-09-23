@@ -102,119 +102,6 @@ export default function LoginPage() {
   }
 
   return (
-    // <div className="min-h-screen bg-background flex items-center justify-center p-4">
-    //   <Card className="w-full max-w-md">
-    //     <CardHeader className="text-center flex flex-col items-center">
-    //       <Logo />
-    //       <CardTitle className="text-2xl font-bold text-primary">
-    //         NIMASA NYSC Clearance System
-    //       </CardTitle>
-    //       <CardDescription>Sign in to access your dashboard</CardDescription>
-    //     </CardHeader>
-    //     <CardContent>
-    //       <Form {...form}>
-    //         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-    //           {/* Full Name */}
-    //           <FormField
-    //             control={form.control}
-    //             name="name"
-    //             render={({ field }) => (
-    //               <FormItem>
-    //                 <FormLabel>Full Name</FormLabel>
-    //                 <FormControl>
-    //                   <Input placeholder="Enter your full name" {...field} />
-    //                 </FormControl>
-    //                 <FormMessage />
-    //               </FormItem>
-    //             )}
-    //           />
-
-    //           {/* Department */}
-    //           <FormField
-    //             control={form.control}
-    //             name="department"
-    //             render={({ field }) => (
-    //               <FormItem>
-    //                 <FormLabel>Department</FormLabel>
-    //                 <FormControl>
-    //                   <Input placeholder="Enter your department" {...field} />
-    //                 </FormControl>
-    //                 <FormMessage />
-    //               </FormItem>
-    //             )}
-    //           />
-
-    //           {/* Role */}
-    //           <FormField
-    //             control={form.control}
-    //             name="role"
-    //             render={({ field }) => (
-    //               <FormItem>
-    //                 <FormLabel>Role</FormLabel>
-    //                 <Select
-    //                   onValueChange={field.onChange}
-    //                   defaultValue={field.value}
-    //                 >
-    //                   <FormControl>
-    //                     <SelectTrigger>
-    //                       <SelectValue placeholder="Select your role" />
-    //                     </SelectTrigger>
-    //                   </FormControl>
-    //                   <SelectContent>
-    //                     <SelectItem value="CORPS_MEMBER">Corps Member</SelectItem>
-    //                     <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
-    //                     <SelectItem value="HOD">Head of Department</SelectItem>
-    //                     <SelectItem value="ADMIN">Administrator</SelectItem>
-    //                   </SelectContent>
-    //                 </Select>
-    //                 <FormMessage />
-    //               </FormItem>
-    //             )}
-    //           />
-
-    //           {/* Password (conditionally visible) */}
-    //           {role && role !== "CORPS_MEMBER" && (
-    //             <FormField
-    //               control={form.control}
-    //               name="password"
-    //               render={({ field }) => (
-    //                 <FormItem>
-    //                   <FormLabel>Password</FormLabel>
-    //                   <FormControl >
-    //                     <div className="relative">
-    //                       <Input
-    //                         type={showPassword ? "text" : "password"}
-    //                         placeholder="Enter your password"
-    //                         {...field}
-    //                       />
-    //                       <button type="button" className="absolute bottom-1.5 right-3 cursor-pointer hover:scale-125 transition ease-in-out duration-300"
-    //                         onClick={() => setShowPassword(prev => !prev)}>
-    //                         {
-    //                           showPassword ?
-    //                             <Eye size={15} /> :
-    //                             <EyeClosed size={15} />
-    //                         }
-    //                       </button>
-    //                     </div>
-    //                   </FormControl>
-    //                   <FormMessage />
-    //                 </FormItem>
-    //               )}
-    //             />
-    //           )}
-
-    //           <Button
-    //             type="submit"
-    //             className="w-full bg-primary hover:bg-primary/90"
-    //             disabled={isPending}
-    //           >
-    //             {isPending ? <LoadingSpinner /> : "Sign In"}
-    //           </Button>
-    //         </form>
-    //       </Form>
-    //     </CardContent>
-    //   </Card>
-    // </div>
     <div className="min-h-screen flex items-center justify-center">
       <Card className="border-0 shadow-xl bg-white w-full max-w-md ">
         <CardHeader className="space-y-1 pb-6">
@@ -230,14 +117,6 @@ export default function LoginPage() {
         </CardHeader>
 
         <CardContent>
-          {/* {loginResponse && (
-                                <Alert className={`mb-6 ${loginResponse.error ? 'border-red-200 bg-red-50' : 'border-green-200 bg-green-50'}`}>
-                                    <AlertDescription className={loginResponse.error ? 'text-red-800' : 'text-green-800'}>
-                                        {loginResponse.error || loginResponse.message}
-                                    </AlertDescription>
-                                </Alert>
-                            )} */}
-
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Name Field */}
@@ -247,11 +126,11 @@ export default function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel style={{ color: '#333333' }} className="font-medium">
-                      Full Name
+                      Username
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter your full name"
+                        placeholder="Enter your username"
                         className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         {...field}
                       />

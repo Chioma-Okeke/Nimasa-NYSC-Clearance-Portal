@@ -26,6 +26,16 @@ export const ALLOWED_ROLES = ["CORPS_MEMBER", "SUPERVISOR", "HOD", "ADMIN"];
 
 export const ROLE_SELECTION = [
     {
+        roleName: "Administrator",
+        Icon: Shield,
+        value: "ADMIN",
+    },
+    {
+        roleName: "Head of Department",
+        Icon: Building2,
+        value: "HOD",
+    },
+    {
         roleName: "NYSC Corps Member",
         Icon: Users,
         value: "CORPS_MEMBER",
@@ -34,16 +44,6 @@ export const ROLE_SELECTION = [
         roleName: "Supervisor",
         Icon: Shield,
         value: "SUPERVISOR",
-    },
-    {
-        roleName: "Head of Department",
-        Icon: Building2,
-        value: "HOD",
-    },
-    {
-        roleName: "Administrator",
-        Icon: Shield,
-        value: "ADMIN",
     },
 ];
 

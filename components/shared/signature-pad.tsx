@@ -47,6 +47,11 @@ export default function SignaturePad({ setFileList }: { setFileList: (file: File
         return new File([u8arr], filename, { type: mime });
     }
 
+    const handleImageCancellation = () => {
+        clear()
+        setFileList(null)
+    }
+
     return (
         <div className="flex flex-col gap-4 items-center mt-4">
             <SignatureCanvas
@@ -70,7 +75,7 @@ export default function SignaturePad({ setFileList }: { setFileList: (file: File
                 <div className="relative">
                     <p className="font-semibold mb-2">Preview:</p>
                     <img src={imageURL} alt="signature" className="size-28 border rounded-md" />
-                    <button onClick={() => setFileList(null)} aria-label='Remove attached file' title='Remove attached file' className='hover:scale-125 transition-all ease-in-out duration-300 absolute top-4 right-0'>
+                    <button onClick={handleImageCancellation} aria-label='Remove attached file' title='Remove attached file' className='hover:scale-125 transition-all ease-in-out duration-300 absolute top-4 right-0'>
                         <X color='red' size={16} className='cursor-pointer' />
                     </button>
                 </div>

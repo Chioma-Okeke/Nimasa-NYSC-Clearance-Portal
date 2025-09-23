@@ -46,7 +46,7 @@ import useAuth from '@/providers/use-auth';
 import StatusBadge from '@/components/shared/status-badge';
 import PendingApprovalForms from '@/components/supervisor/pending-approval-forms';
 import { IClearanceFormResponse } from '@/types';
-import { getClearanceFormsByStatusQueryOpt, getPendingApprovalFormsQueryOpt } from '@/lib/query-options/clearance';
+import { getClearanceFormsByStatusQueryOpt, getPendingApprovalFormsQueryOpt, trackDepartmentFormsQueryOpt } from '@/lib/query-options/clearance';
 import { useQuery } from '@tanstack/react-query';
 import { FORM_STATUSES } from '@/lib/constants';
 import ReviewedForms from '@/components/supervisor/reviewed-forms';
@@ -199,7 +199,10 @@ export default function SupervisorDashboard() {
         ...getPendingApprovalFormsQueryOpt(employee?.role || "", employee?.id || ""),
         refetchOnMount: "always"
     })
-    const { data: reviewedForms = [], isLoading: isLoadingReviewedFOrms } = useQuery(getClearanceFormsByStatusQueryOpt(employee?.role || "", FORM_STATUSES.PENDING_HOD))
+    const { data: reviewedForms = [], isLoading: isLoadingReviewedFOrms } = useQuery({
+        ...trackDepartmentFormsQueryOpt(employee?.department ?? ""),
+        refetchOnMount: "always"
+    })
 
     const filteredPending = useMemo(() => {
         if (!pendingForms) return [];
@@ -220,17 +223,6 @@ export default function SupervisorDashboard() {
             form.stateCode.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [reviewedForms, searchQuery]);
-
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'APPROVED': return <CheckCircle className="w-5 h-5 text-green-600" />;
-            case 'REJECTED': return <XCircle className="w-5 h-5 text-red-600" />;
-            case 'PENDING_SUPERVISOR':
-            case 'PENDING_HOD':
-            case 'PENDING_ADMIN': return <Clock className="w-5 h-5 text-orange-500" />;
-            default: return <AlertCircle className="w-5 h-5 text-gray-500" />;
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gray-50">

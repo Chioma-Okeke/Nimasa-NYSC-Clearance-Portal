@@ -39,7 +39,7 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
             form.reset();
             setFileList(null)
             queryClient.invalidateQueries({ queryKey: ["clearanceForms", employee.role, "PENDING_APPROVAL", employee.id] })
-            queryClient.invalidateQueries({ queryKey: ["clearanceForms", employee.role, FORM_STATUSES.PENDING_HOD] })
+            queryClient.invalidateQueries({ queryKey: ["departmentFormList", employee.department] })
             toast.success("Review submitted successfully", {
                 description: "Moved to HOD for review"
             })

@@ -6,7 +6,7 @@ import { clearanceFormSchema } from '@/lib/schema'
 import { ClearanceService } from '@/services/clearance-service';
 import { ICorperForm, IEmployeeCreationResponse } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, RefreshCw } from 'lucide-react';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
@@ -20,6 +20,7 @@ function ClearanceForm({ employee }: {
 }) {
     const clearanceService = new ClearanceService();
     const [showFormModal, setShowFormModal] = useState(false)
+    const queryClient = useQueryClient()
 
     const form = useForm<FormValues>({
         resolver: zodResolver(clearanceFormSchema),
@@ -34,7 +35,8 @@ function ClearanceForm({ employee }: {
         mutationFn: async (data: ICorperForm) => {
             return await clearanceService.submitClearanceForm(data)
         },
-        onSuccess: () => {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ["corper", employee.id]})
             form.reset()
             setShowFormModal(false)
             toast.success("Form Submitted Successfully", {
