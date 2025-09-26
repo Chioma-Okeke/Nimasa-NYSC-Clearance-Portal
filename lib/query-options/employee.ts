@@ -29,3 +29,11 @@ export const getCorpsListQueryOpt = queryOptions({
         return res.corpsMembers
     }
 })
+
+export const getAdminStatsQueryOpt = (id: string) => ({
+    queryKey: ["admin-stats", id],
+    queryFn: () => employeeService.getAdminStats(),
+    staleTime: 0,
+    refetchOnMount: "always",
+    enabled: !!id
+});

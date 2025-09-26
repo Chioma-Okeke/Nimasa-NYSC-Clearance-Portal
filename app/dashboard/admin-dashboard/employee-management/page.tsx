@@ -49,7 +49,7 @@ import {
 import EmployeeDeactivation from "@/components/admin/employee-deactivation";
 import AddEmployeeForm from "@/forms/add-employee-form";
 import LoadingSpinner from "@/components/shared/loading-spinner";
-import { EmployeeList } from "@/types";
+import { CorpsList, EmployeeList } from "@/types";
 import EmployeeEdit from "@/components/admin/employee-edit";
 import EmployeeService from "@/services/employee-service";
 import { getCorpsListQueryOpt, getEmployeeListQueryOpt } from "@/lib/query-options/employee";
@@ -60,18 +60,19 @@ export default function EmployeeManagementTable() {
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [roleFilter, setRoleFilter] = useState("ALL");
+    const [activeTab, setActiveTab] = useState("staff")
     const queryClient = useQueryClient()
 
     useEffect(() => {
         const data = new EmployeeService().getAdminStats()
-        console.log(data, "fetched data")
+        console.log(data, "fetched data here")
     }, [])
 
     const { data: employees = [], isLoading: queryLoading } = useQuery(getEmployeeListQueryOpt)
     const { data: corpers = [], isLoading: loadingCorperList } = useQuery(getCorpsListQueryOpt)
 
     const { mutate: corperDeactivation, isPending } = useMutation({
-        mutationFn: async (corper: EmployeeList) => {
+        mutationFn: async (corper: CorpsList) => {
             await new EmployeeService().deactivateCorper(corper?.id)
         },
         onSuccess: async () => {
@@ -120,12 +121,9 @@ export default function EmployeeManagementTable() {
                 (statusFilter === "ACTIVE" && emp.active) ||
                 (statusFilter === "INACTIVE" && !emp.active);
 
-            const matchesRole =
-                roleFilter === "ALL" || emp.userRole === roleFilter;
-
-            return matchesSearch && matchesStatus && matchesRole;
+            return matchesSearch && matchesStatus;
         });
-    }, [corpers, searchQuery, statusFilter, roleFilter]);
+    }, [corpers, searchQuery, statusFilter]);
 
     const getRoleBadge = (role: string) => {
         const roleConfig: Record<string, { color: string; text: string }> = {
@@ -156,7 +154,7 @@ export default function EmployeeManagementTable() {
         });
     };
 
-    const deactivateCorper = (corper: EmployeeList) => {
+    const deactivateCorper = (corper: CorpsList) => {
         corperDeactivation(corper)
     }
 
@@ -206,7 +204,7 @@ export default function EmployeeManagementTable() {
                             </SelectContent>
                         </Select>
 
-                        <Select value={roleFilter} onValueChange={setRoleFilter}>
+                        {activeTab === "staff" && <Select value={roleFilter} onValueChange={setRoleFilter}>
                             <SelectTrigger className="w-[140px]">
                                 <SelectValue placeholder="All Roles" />
                             </SelectTrigger>
@@ -216,11 +214,11 @@ export default function EmployeeManagementTable() {
                                 <SelectItem value="HOD">HOD</SelectItem>
                                 <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
                             </SelectContent>
-                        </Select>
+                        </Select>}
                     </div>
                 </div>
 
-                <Tabs className="space-y-6" defaultValue="staff">
+                <Tabs className="space-y-6" defaultValue="staff" onValueChange={(value) => setActiveTab(value)}>
                     <TabsList className="grid grid-cols-2">
                         <TabsTrigger value="staff">Staff</TabsTrigger>
                         <TabsTrigger value="corpers">Copers</TabsTrigger>
@@ -293,7 +291,6 @@ export default function EmployeeManagementTable() {
                                     <TableRow className="bg-gray-50">
                                         <TableHead>Corpers</TableHead>
                                         <TableHead>Department</TableHead>
-                                        <TableHead>Role</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead>Created</TableHead>
                                         <TableHead className="text-center">Actions</TableHead>
@@ -318,7 +315,6 @@ export default function EmployeeManagementTable() {
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>{corper.department}</TableCell>
-                                                <TableCell>{getRoleBadge(corper.userRole)}</TableCell>
                                                 <TableCell>{getStatusBadge(corper.active)}</TableCell>
                                                 <TableCell>
                                                     {formatDate(corper.createdAT)}

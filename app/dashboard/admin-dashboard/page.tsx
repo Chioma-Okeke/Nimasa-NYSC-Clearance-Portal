@@ -36,6 +36,9 @@ import AddEmployeeForm from '@/forms/add-employee-form';
 import { ClearanceService } from '@/services/clearance-service';
 import { toast } from 'sonner';
 import LoadingSpinner from '@/components/shared/loading-spinner';
+import { useQuery } from '@tanstack/react-query';
+import { getAdminStats, getAdminStatsQueryOpt } from '@/lib/query-options/employee';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface StatusCardProps { title: string, value: number, subtitle: string, icon: LucideIcon, color: string, trend: number }
 
@@ -97,6 +100,10 @@ export default function AdminDashboard() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(false)
     const { employee } = useAuth()
+    const { data: adminStats, isLoading: statsLoading } = useQuery({
+        ...getAdminStatsQueryOpt(employee?.id ?? ""),
+        refetchOnMount: true
+    })
     const router = useRouter()
 
     const navigateToEmployeePage = () => {
@@ -137,14 +144,9 @@ export default function AdminDashboard() {
                     <div>
                         <p className="text-sm font-medium text-gray-600">{title}</p>
                         <div className="flex items-center space-x-2">
-                            <p className={cn(`text-2xl font-bold text-[${color}]`)}>{value}</p>
-                            {trend && (
-                                <span className={`text-xs px-2 py-1 rounded-full ${trend > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                    {trend > 0 ? '+' : ''}{trend}%
-                                </span>
-                            )}
+                            {isLoading || !employee ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : <p className={cn(`text-2xl font-bold text-[${color}]`)}>{value}</p>}
                         </div>
-                        <p className="text-xs text-gray-500">{subtitle}</p>
+                        {isLoading || !employee ? <Skeleton className='h-4 w-18 my-2'></Skeleton> : <p className="text-xs text-gray-500">{subtitle}</p>}
                     </div>
                     <div className={cn(`p-3 rounded-full bg-[${color}]/15`, color)} >
                         <Icon className="size-6" color={color} />
@@ -171,23 +173,23 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <StatCard
                         title="Total Employees"
-                        value={mockStats.totalEmployees}
-                        subtitle={`${mockStats.activeEmployees} active, ${mockStats.inactiveEmployees} inactive`}
+                        value={adminStats?.totalEmployees ?? 0}
+                        subtitle={`${adminStats?.activeEmployees} active, ${adminStats?.inactiveEmployees} inactive`}
                         icon={Users}
                         color="#0066CC"
                         trend={5.2}
                     />
                     <StatCard
                         title="Corps Members"
-                        value={mockStats.totalCorpsMembers}
-                        subtitle={`${mockStats.activeCorpsMembers} currently active`}
+                        value={adminStats?.totalCorpsMembers ?? 0}
+                        subtitle={`${adminStats?.totalCorpsMembers} currently active`}
                         icon={UserCheck}
                         color="#006633"
                         trend={12.1}
                     />
                     <StatCard
                         title="Total Clearances"
-                        value={mockStats.completedClearances}
+                        value={adminStats?.approvedForms ?? 0}
                         subtitle="Completed this year"
                         icon={FileText}
                         color="#7B1FA2"
@@ -195,7 +197,7 @@ export default function AdminDashboard() {
                     />
                     <StatCard
                         title="Pending Reviews"
-                        value={mockStats.pendingClearances}
+                        value={adminStats?.pendingForms ?? 0}
                         subtitle="Awaiting action"
                         icon={Clock}
                         color="#FF6B35"
@@ -282,14 +284,14 @@ export default function AdminDashboard() {
                                             <CheckCircle className="w-5 h-5 text-green-600" />
                                             <span className="font-medium text-green-900">Approved</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-green-900 mt-2">{mockStats.completedClearances}</p>
+                                        <p className="text-2xl font-bold text-green-900 mt-2">{adminStats?.approvedForms}</p>
                                     </div>
                                     <div className="bg-orange-50 p-4 rounded-lg">
                                         <div className="flex items-center space-x-2">
                                             <Clock className="w-5 h-5 text-orange-600" />
                                             <span className="font-medium text-orange-900">Pending</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-orange-900 mt-2">{mockStats.pendingClearances}</p>
+                                        <p className="text-2xl font-bold text-orange-900 mt-2">{adminStats?.pendingForms}</p>
                                     </div>
                                     <div className="bg-red-50 p-4 rounded-lg">
                                         <div className="flex items-center space-x-2">
@@ -317,21 +319,21 @@ export default function AdminDashboard() {
                                                 <Users className="w-5 h-5 text-blue-600" />
                                                 <span className="font-medium">Total Employees</span>
                                             </div>
-                                            <span className="text-xl font-bold text-blue-900">{mockStats.totalEmployees}</span>
+                                            <span className="text-xl font-bold text-blue-900">{adminStats?.totalEmployees}</span>
                                         </div>
                                         <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
                                             <div className="flex items-center space-x-3">
                                                 <UserCheck className="w-5 h-5 text-green-600" />
                                                 <span className="font-medium">Active</span>
                                             </div>
-                                            <span className="text-xl font-bold text-green-900">{mockStats.activeEmployees}</span>
+                                            <span className="text-xl font-bold text-green-900">{adminStats?.activeEmployees}</span>
                                         </div>
                                         <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
                                             <div className="flex items-center space-x-3">
                                                 <UserX className="w-5 h-5 text-red-600" />
                                                 <span className="font-medium">Inactive</span>
                                             </div>
-                                            <span className="text-xl font-bold text-red-900">{mockStats.inactiveEmployees}</span>
+                                            <span className="text-xl font-bold text-red-900">{adminStats?.inactiveEmployees}</span>
                                         </div>
                                     </div>
                                 </CardContent>

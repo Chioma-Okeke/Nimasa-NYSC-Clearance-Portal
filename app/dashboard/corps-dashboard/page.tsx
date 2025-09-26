@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import ClearanceForm from '@/forms/clearance-form';
 import { IEmployeeCreationResponse } from '@/types';
 import CorperFormList from '@/components/corper/corper-form-list';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function CorpsMemberDashboard() {
     const [employee, setEmployee] = useState<IEmployeeCreationResponse>()
@@ -54,7 +55,7 @@ export default function CorpsMemberDashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <ClearanceForm employee={employee} />
+                                {employee ? <ClearanceForm employee={employee} /> : <Skeleton className='h-9 w-full'></Skeleton>}
                                 <div className="mt-6 space-y-3">
                                     <div className="p-3 bg-blue-50 rounded-lg">
                                         <h4 className="font-medium text-blue-900 text-sm">Quick Info</h4>

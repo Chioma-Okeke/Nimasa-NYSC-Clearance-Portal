@@ -1,4 +1,4 @@
-import { CorpsListResponse, EmployeeList, EmployeeListResponse, IEmployee, IEmployeeCreationResponse } from "@/types";
+import { AdminStatsResponse, CorpsListResponse, EmployeeList, EmployeeListResponse, IEmployee, IEmployeeCreationResponse } from "@/types";
 import { BaseService } from "./base-service";
 
 class EmployeeService extends BaseService {
@@ -20,7 +20,7 @@ class EmployeeService extends BaseService {
     }
 
     public async deactivateCorper(id: string) {
-        const res = await this.post(`admin/corps-members/${id}/deactivate`);
+        const res = await this.delete(`admin/corps-members/${id}/deactivate`);
     }
 
     public async changePassword(data: {userName: string, newPassword: string}) {
@@ -49,7 +49,7 @@ class EmployeeService extends BaseService {
     }
 
     public async getAdminStats() {
-        return await this.get("/admin/employees/stats")
+        return await this.get<AdminStatsResponse>("/admin/employees/stats")
     }
 }
 

@@ -144,8 +144,30 @@ export interface EmployeeListResponse {
 }
 
 export interface CorpsListResponse {
-    corpsMembers: EmployeeList[];
+    corpsMembers: CorpsList[];
     totalCount: number;
+}
+
+export interface CorpsList {
+    id: string;
+    createdAT: string;
+    active: boolean;
+    name: string;
+    department: string;
+}
+
+export interface AdminStatsResponse {
+    hods: number;
+    inactiveEmployees: number;
+    employeesWithExpiredPasswords: number;
+    approvedForms: number;
+    totalForms: number;
+    totalCorpsMembers: number;
+    activeEmployees: number;
+    totalEmployees: number;
+    admins: number;
+    supervisors: number;
+    pendingForms: number;
 }
 
 export type StatusType =

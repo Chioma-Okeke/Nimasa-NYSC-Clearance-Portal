@@ -10,7 +10,7 @@ import { ICorperForm, IEmployeeCreationResponse } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, RefreshCw } from 'lucide-react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -32,6 +32,10 @@ function ClearanceForm({ employee }: {
             department: employee ? employee.department : ""
         }
     })
+
+    useEffect(() => {
+        console.log(employee, "In create form")
+    }, [])
 
     const { mutate: submitClearance, isPending } = useMutation({
         mutationFn: async (data: ICorperForm) => {
