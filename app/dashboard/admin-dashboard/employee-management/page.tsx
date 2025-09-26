@@ -10,6 +10,7 @@ import {
     Shield,
     Users,
     AlertTriangle,
+    UserPlus,
 } from "lucide-react";
 
 import {
@@ -126,7 +127,12 @@ export default function EmployeeManagementTable() {
 
             <CardContent className="px-6">
                 <div className="space-y-6">
-                    <AddEmployeeForm />
+                    <AddEmployeeForm>
+                        <Button className="bg-primary hover:bg-primary/90">
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Add Employee
+                        </Button>
+                    </AddEmployeeForm>
                 </div>
 
                 {/* Search and Filter Controls */}
@@ -218,7 +224,7 @@ export default function EmployeeManagementTable() {
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan={7} className="text-center py-6 flex items-center flex-col justify-center">
-                                        <UserX/>
+                                        <UserX />
                                         No employees found
                                     </TableCell>
                                 </TableRow>

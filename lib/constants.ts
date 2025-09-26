@@ -68,3 +68,5 @@ export const DEPARTMENTS = [
     "SERVICOM",
     "SPECIAL DUTIES",
 ];
+
+export const daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]

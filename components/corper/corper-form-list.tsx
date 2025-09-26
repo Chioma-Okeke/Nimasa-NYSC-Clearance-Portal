@@ -30,7 +30,7 @@ import ClearanceForm from "@/forms/clearance-form";
 import LoadingSpinner from "../shared/loading-spinner";
 
 type CoperFormListProps = {
-    employee: IEmployeeCreationResponse;
+    employee: IEmployeeCreationResponse | undefined;
 };
 
 const getStatusIcon = (status: string) => {
@@ -58,7 +58,7 @@ function CorperFormList({ employee }: CoperFormListProps) {
     const handlePrint = useReactToPrint({ contentRef: componentRef });
 
     const { data: employeeForms, isLoading } = useQuery(
-        trackCorperFormsQueryOpt(employee.id)
+        trackCorperFormsQueryOpt(employee?.id ?? "")
     );
 
     // debounce search
@@ -145,7 +145,7 @@ function CorperFormList({ employee }: CoperFormListProps) {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {isLoading ? <LoadingSpinner /> : filteredForms.length === 0 ? (
+                    {isLoading || !employee ? <LoadingSpinner /> : filteredForms.length === 0 ? (
                         <div className="text-center py-12">
                             <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">No forms found</h3>

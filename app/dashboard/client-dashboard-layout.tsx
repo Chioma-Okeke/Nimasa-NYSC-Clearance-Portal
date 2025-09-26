@@ -23,14 +23,12 @@ function ClientDashboardLayout({ children }: { children: ReactNode }) {
         <>
             {employee?.role === ROLES.ADMIN && !corper && <SideNavigation />}
             <main className='flex-1 overflow-hidden'>
-                {(corper ?? employee) ? (
-                    <Header employee={corper ?? employee as IEmployeeCreationResponse} />
-                ) : null}
-                <div className='hidden xl:flex'>
+                <Header employee={corper ?? employee as IEmployeeCreationResponse} />
+                <div className='xl:flex'>
                     <div className='flex-1'>
                         {children}
                     </div>
-                    <div className="flex justify-center p-4 w-fit">
+                    <div className="hidden xl:flex justify-center p-4 w-fit">
                         <Calendar
                             mode="single"
                             selected={today}

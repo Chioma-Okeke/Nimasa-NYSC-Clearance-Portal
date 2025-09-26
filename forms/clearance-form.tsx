@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { daysOfTheWeek } from '@/lib/constants';
 import { clearanceFormSchema } from '@/lib/schema'
 import { ClearanceService } from '@/services/clearance-service';
 import { ICorperForm, IEmployeeCreationResponse } from '@/types';
@@ -16,7 +18,7 @@ import { z } from 'zod';
 type FormValues = z.infer<typeof clearanceFormSchema>;
 
 function ClearanceForm({ employee }: {
-    employee: IEmployeeCreationResponse
+    employee: IEmployeeCreationResponse | undefined
 }) {
     const clearanceService = new ClearanceService();
     const [showFormModal, setShowFormModal] = useState(false)
@@ -36,7 +38,7 @@ function ClearanceForm({ employee }: {
             return await clearanceService.submitClearanceForm(data)
         },
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ["corper", employee.id]})
+            await queryClient.invalidateQueries({queryKey: ["corper", employee?.id]})
             form.reset()
             setShowFormModal(false)
             toast.success("Form Submitted Successfully", {
@@ -72,53 +74,6 @@ function ClearanceForm({ employee }: {
                         Fill in your details to submit a new clearance request
                     </DialogDescription>
                 </DialogHeader>
-                {/* <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmitForm)} className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name='corpsName'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Corps Member Name</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder='Enter full Name' {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name='stateCode'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>State Code</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder='e.g., LA/23A/1234' {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name='department'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Department</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder='Enter department' {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isPending}>
-                            {isPending ? "Submitting..." : "Submit Form"}
-                        </Button>
-                    </form>
-                </Form> */}
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmitForm)} className="space-y-4">
                         <FormField
@@ -144,6 +99,35 @@ function ClearanceForm({ employee }: {
                                     <FormControl>
                                         <Input {...field} placeholder="e.g., LA, OG, AB" />
                                     </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="cdsDay"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>CDS Day</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="h-9 border-gray-300 focus:border-accent focus:ring-accent w-full">
+                                                <SelectValue placeholder="Pick a day" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {daysOfTheWeek.map((day) => {
+                                                return (
+                                                    <SelectItem key={day} value={day}>
+                                                        <div className="flex items-center space-x-2">
+                                                            <span>{day}</span>
+                                                        </div>
+                                                    </SelectItem>
+                                                )
+                                            })}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

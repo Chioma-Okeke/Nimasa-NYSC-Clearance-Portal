@@ -31,7 +31,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Eye, EyeOff, UserPlus } from "lucide-react";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { employeeSchema } from "@/lib/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { IEmployee } from "@/types";
@@ -42,7 +42,7 @@ import { DEPARTMENTS } from "@/lib/constants";
 
 type FormValues = z.infer<typeof employeeSchema>;
 
-const AddEmployeeForm = () => {
+const AddEmployeeForm = ({ children }: { children: ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const employeeService = new EmployeeService();
@@ -89,10 +89,7 @@ const AddEmployeeForm = () => {
             setShowPassword(false)
         }}>
             <DialogTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/90">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Add Employee
-                </Button>
+                {children}
             </DialogTrigger>
 
             <DialogContent >

@@ -16,15 +16,27 @@ import { IEmployeeCreationResponse } from "@/types"
 import { ROLE_MAPPING, ROLES } from "@/lib/constants"
 import { SidebarTrigger } from "../ui/sidebar"
 import { ClearanceService } from "@/services/clearance-service"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { Skeleton } from "../ui/skeleton"
 
-export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
-  const { logoutUser, isLoggingOut } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
-  const queryClient = useQueryClient()
+export function Header({  }: { employee: IEmployeeCreationResponse }) {
+    const [corper, setCorper] = useState<IEmployeeCreationResponse>()
+    const { logoutUser, isLoggingOut, employee } = useAuth()
+    const [isLoading, setIsLoading] = useState(false)
+    const queryClient = useQueryClient()
+    const [loggedEmployee, setLoggedEmployee] = useState<IEmployeeCreationResponse>()
+
+
+    useEffect(() => {
+        const data = localStorage.getItem("corper_details")
+        if (data) {
+            setCorper(JSON.parse(data ?? ""))
+        }
+        setLoggedEmployee(corper ?? employee);
+    }, [])
 
   const refreshForms = () => {
-    queryClient.invalidateQueries({ queryKey: ["corper", employee?.id] })
+    queryClient.invalidateQueries({ queryKey: ["corper", loggedEmployee?.id] })
   }
 
   const exportData = async () => {
@@ -58,7 +70,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 flex-1">
-          {employee?.role === ROLES.ADMIN && <SidebarTrigger />}
+          {loggedEmployee?.role === ROLES.ADMIN && <SidebarTrigger />}
           <div className="flex items-center space-x-3 flex-1">
             <Logo />
             <div>
@@ -69,7 +81,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
         </div>
 
         <div className="flex items-center space-x-4">
-          {employee?.role === ROLES.ADMIN &&
+          {loggedEmployee?.role === ROLES.ADMIN &&
             <Button variant="outline" size="sm" onClick={exportData}>
               <Download className="w-4 h-4 mr-2" />
               {isLoading ? <LoadingSpinner /> : "Export Data"}
@@ -78,22 +90,22 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
             <Bell className="w-4 h-4" />
           </Button>
           <div className="hidden lg:block">
-            {employee.role === ROLES.CORPER && <Button variant="outline" size="sm" onClick={refreshForms}>
+            {loggedEmployee?.role === ROLES.CORPER && <Button variant="outline" size="sm" onClick={refreshForms}>
               <RefreshCw className={`w-4 h-4 mr-2`} />
               Refresh
             </Button>}
           </div>
           <div className="items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg hidden xl:flex">
             <div className="w-8 h-8 bg-[#172d5c] rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-medium">{generateUserInitials(employee?.name ?? "")}</span>
+              <span className="text-white text-sm font-medium">{generateUserInitials(loggedEmployee?.name ?? "")}</span>
             </div>
             <div className="hidden lg:block">
-              <p className="text-sm font-medium">{employee?.name}</p>
-              <p className="text-xs text-gray-500">{ROLE_MAPPING[employee?.role as keyof typeof ROLE_MAPPING]}</p>
+              <p className="text-sm font-medium">{loggedEmployee ? loggedEmployee?.name : <Skeleton className="w-22 h-3"></Skeleton>}</p>
+              <p className="text-xs text-gray-500">{loggedEmployee ? ROLE_MAPPING[loggedEmployee?.role as keyof typeof ROLE_MAPPING] : <Skeleton className="w-22 h-3 mt-2"></Skeleton>}</p>
             </div>
           </div>
           <div className="xl:hidden">
-            {employee ? <UserProfileCard userName={employee.name} userRole={employee.role} handleLogout={logoutUser} refreshForms={refreshForms} /> : <User2 />}
+            {loggedEmployee ? <UserProfileCard userName={loggedEmployee.name} userRole={loggedEmployee.role} handleLogout={logoutUser} refreshForms={refreshForms} /> : <User2 />}
           </div>
           <Button
             variant="outline"

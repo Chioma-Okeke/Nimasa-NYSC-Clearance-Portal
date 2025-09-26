@@ -40,58 +40,6 @@ export default function CorpsMemberDashboard() {
 
             {/* Main Content */}
             <main className="py-6 px-4">
-                {/* Quick Stats */}
-                {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <Card>
-                        <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                                <FileText className="w-8 h-8" style={{ color: '#0066CC' }} />
-                                <div>
-                                    <p className="text-2xl font-bold">{forms.length}</p>
-                                    <p className="text-sm text-gray-600">Total Forms</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                                <CheckCircle className="w-8 h-8 text-green-600" />
-                                <div>
-                                    <p className="text-2xl font-bold">{forms.filter(f => f.status === 'APPROVED').length}</p>
-                                    <p className="text-sm text-gray-600">Approved</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                                <Clock className="w-8 h-8 text-orange-500" />
-                                <div>
-                                    <p className="text-2xl font-bold">
-                                        {forms.filter(f => f.status.startsWith('PENDING')).length}
-                                    </p>
-                                    <p className="text-sm text-gray-600">Pending</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                                <XCircle className="w-8 h-8 text-red-600" />
-                                <div>
-                                    <p className="text-2xl font-bold">{forms.filter(f => f.status === 'REJECTED').length}</p>
-                                    <p className="text-sm text-gray-600">Rejected</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div> */}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Create New Form Section */}
@@ -106,7 +54,7 @@ export default function CorpsMemberDashboard() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {employee && <ClearanceForm employee={employee} />}
+                                <ClearanceForm employee={employee} />
                                 <div className="mt-6 space-y-3">
                                     <div className="p-3 bg-blue-50 rounded-lg">
                                         <h4 className="font-medium text-blue-900 text-sm">Quick Info</h4>
@@ -128,7 +76,7 @@ export default function CorpsMemberDashboard() {
 
                     {/* My Forms Section */}
                     <div className="lg:col-span-2">
-                        {employee && <CorperFormList employee={employee} />}
+                        <CorperFormList employee={employee} />
                     </div>
                 </div>
             </main>

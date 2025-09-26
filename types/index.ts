@@ -21,6 +21,7 @@ export interface IEmployeeCreationResponse {
 export interface ICorperForm {
     id?: string;
     corpsName: string;
+    cdsDay: string;
     stateCode: string;
     department: string;
 }

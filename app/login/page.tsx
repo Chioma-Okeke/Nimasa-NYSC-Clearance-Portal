@@ -151,7 +151,7 @@ export default function LoginPage() {
                     </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 w-full">
                           <SelectValue placeholder="Select your department" />
                         </SelectTrigger>
                       </FormControl>
@@ -183,7 +183,7 @@ export default function LoginPage() {
                     </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500 w-full">
                           <SelectValue placeholder="Select your role" />
                         </SelectTrigger>
                       </FormControl>

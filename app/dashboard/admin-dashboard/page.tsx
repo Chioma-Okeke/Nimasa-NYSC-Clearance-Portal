@@ -31,6 +31,11 @@ import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, X
 import { cn } from '@/lib/utils';
 import Logo from '@/components/shared/logo';
 import useAuth from '@/providers/use-auth';
+import { useRouter } from '@bprogress/next';
+import AddEmployeeForm from '@/forms/add-employee-form';
+import { ClearanceService } from '@/services/clearance-service';
+import { toast } from 'sonner';
+import LoadingSpinner from '@/components/shared/loading-spinner';
 
 interface StatusCardProps { title: string, value: number, subtitle: string, icon: LucideIcon, color: string, trend: number }
 
@@ -89,25 +94,41 @@ const recentActivities = [
 ];
 
 export default function AdminDashboard() {
-    const [selectedTimeRange, setSelectedTimeRange] = useState('last30days');
     const [searchQuery, setSearchQuery] = useState('');
-    const [currentUser] = useState({
-        name: 'Administrator',
-        department: 'IT Administration',
-        role: 'ADMIN'
-    });
+    const [isLoading, setIsLoading] = useState(false)
     const { employee } = useAuth()
+    const router = useRouter()
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'approved': return <CheckCircle className="w-4 h-4 text-green-600" />;
-            case 'rejected': return <XCircle className="w-4 h-4 text-red-600" />;
-            case 'pending': return <Clock className="w-4 h-4 text-orange-500" />;
-            case 'forwarded': return <TrendingUp className="w-4 h-4 text-blue-600" />;
-            case 'active': return <UserCheck className="w-4 h-4 text-green-600" />;
-            default: return <AlertCircle className="w-4 h-4 text-gray-500" />;
+    const navigateToEmployeePage = () => {
+        router.push("/dashboard/admin-dashboard/employee-management")
+    }
+
+    const exportData = async () => {
+        const clearanceService = new ClearanceService()
+        try {
+            setIsLoading(true)
+            const response = await clearanceService.exportEmployeeList()
+            if (!response) {
+                toast.warning("Nothing to download.")
+            }
+            const link = document.createElement("a")
+            link.href = response
+            link.download = "employee.csv"
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+
+            toast.success("User Data Exported Successfully", {
+                description: "The CSV file was successfully downloaded"
+            })
+        } catch (error) {
+            toast.error("User Data Export Failed", {
+                description: "An error occurred when exporting the file"
+            })
+        } finally {
+            setIsLoading(false)
         }
-    };
+    }
 
     const StatCard = ({ title, value, subtitle, icon: Icon, color, trend }: StatusCardProps) => (
         <Card className="hover:shadow-md transition-shadow">
@@ -184,11 +205,10 @@ export default function AdminDashboard() {
 
                 {/* Dashboard Tabs */}
                 <Tabs defaultValue="overview" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+                    <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
                         <TabsTrigger value="overview">Overview</TabsTrigger>
                         <TabsTrigger value="forms">Forms Management</TabsTrigger>
                         <TabsTrigger value="employees">Employee Management</TabsTrigger>
-                        <TabsTrigger value="analytics">Analytics</TabsTrigger>
                     </TabsList>
 
                     {/* Overview Tab */}
@@ -202,7 +222,7 @@ export default function AdminDashboard() {
                                         <span>Clearance Status Distribution</span>
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="overflow-x">
                                     <ResponsiveContainer width="100%" height={300}>
                                         <PieChart>
                                             <Pie
@@ -246,74 +266,10 @@ export default function AdminDashboard() {
                                 </CardContent>
                             </Card>
                         </div>
-
-                        {/* Recent Activity */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2">
-                                        <Clock className="w-5 h-5" style={{ color: '#FF6B35' }} />
-                                        <span>Recent System Activity</span>
-                                    </div>
-                                    <Button variant="outline" size="sm">
-                                        <Eye className="w-4 h-4 mr-2" />
-                                        View All
-                                    </Button>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    {recentActivities.map((activity) => (
-                                        <div key={activity.id} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                                            {getStatusIcon(activity.status)}
-                                            <div className="flex-1">
-                                                <p className="text-sm">
-                                                    <span className="font-medium">{activity.user}</span>
-                                                    {' '}{activity.action}{' '}
-                                                    {activity.target && <span className="font-medium">{activity.target}</span>}
-                                                </p>
-                                                <p className="text-xs text-gray-500">{activity.time}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
                     </TabsContent>
 
                     {/* Forms Management Tab */}
                     <TabsContent value="forms" className="space-y-6">
-                        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                            <div className="flex gap-2">
-                                <Input
-                                    placeholder="Search clearance forms..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-64"
-                                />
-                                <Button variant="outline">
-                                    <Search className="w-4 h-4" />
-                                </Button>
-                            </div>
-                            <div className="flex gap-2">
-                                <Select>
-                                    <SelectTrigger className="w-40">
-                                        <SelectValue placeholder="Filter by status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
-                                        <SelectItem value="pending">Pending</SelectItem>
-                                        <SelectItem value="approved">Approved</SelectItem>
-                                        <SelectItem value="rejected">Rejected</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Button variant="outline">
-                                    <Filter className="w-4 h-4 mr-2" />
-                                    Filter
-                                </Button>
-                            </div>
-                        </div>
-
                         <Card>
                             <CardHeader>
                                 <CardTitle>Clearance Forms Overview</CardTitle>
@@ -386,100 +342,19 @@ export default function AdminDashboard() {
                                     <CardTitle>Quick Actions</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
-                                    <Button className="w-full justify-start" style={{ backgroundColor: '#0066CC' }}>
-                                        <Users className="w-4 h-4 mr-2" />
-                                        Add New Employee
-                                    </Button>
-                                    <Button variant="outline" className="w-full justify-start">
+                                    <AddEmployeeForm>
+                                        <Button variant="outline" className="w-full justify-start">
+                                            <Users className="w-4 h-4 mr-2" />
+                                            Add New Employee
+                                        </Button>
+                                    </AddEmployeeForm>
+                                    <Button onClick={navigateToEmployeePage} variant="outline" className="w-full justify-start">
                                         <Settings className="w-4 h-4 mr-2" />
                                         Manage Roles & Permissions
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start">
-                                        <Download className="w-4 h-4 mr-2" />
-                                        Export Employee Data
+                                    <Button variant="outline" className="w-full justify-start" onClick={exportData}>
+                                        {isLoading ? <LoadingSpinner /> : (<><Download className="w-4 h-4 mr-2" /> "Export Employee Data"</>)}
                                     </Button>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        {/* Department Overview */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Department Overview</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <ResponsiveContainer width="100%" height={400}>
-                                    <BarChart data={departmentData}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="department" angle={-45} textAnchor="end" height={100} />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Legend />
-                                        <Bar dataKey="employees" fill="#0066CC" name="Employees" />
-                                        <Bar dataKey="corpsMembers" fill="#006633" name="Corps Members" />
-                                        <Bar dataKey="clearances" fill="#7B1FA2" name="Clearances" />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    {/* Analytics Tab */}
-                    <TabsContent value="analytics" className="space-y-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Processing Time Trends</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <LineChart data={monthlyTrendData}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="month" />
-                                            <YAxis />
-                                            <Tooltip />
-                                            <Legend />
-                                            <Line type="monotone" dataKey="submissions" stroke="#0066CC" strokeWidth={2} />
-                                            <Line type="monotone" dataKey="approved" stroke="#006633" strokeWidth={2} />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </CardContent>
-                            </Card>
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>System Performance</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-6">
-                                        <div>
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-sm font-medium">Average Processing Time</span>
-                                                <span className="text-sm text-gray-500">{mockStats.averageProcessingTime}</span>
-                                            </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                                <div className="bg-green-600 h-2 rounded-full w-[75%]"></div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-sm font-medium">Approval Rate</span>
-                                                <span className="text-sm text-gray-500">95.2%</span>
-                                            </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                                <div className="bg-blue-600 h-2 rounded-full w-[95%]"></div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="flex justify-between mb-2">
-                                                <span className="text-sm font-medium">User Satisfaction</span>
-                                                <span className="text-sm text-gray-500">4.6/5</span>
-                                            </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                                <div className="bg-purple-600 h-2 rounded-full w-[92%]"></div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </CardContent>
                             </Card>
                         </div>
