@@ -143,6 +143,11 @@ export interface EmployeeListResponse {
     totalCount: number;
 }
 
+export interface CorpsListResponse {
+    corpsMembers: EmployeeList[];
+    totalCount: number;
+}
+
 export type StatusType =
     | "PENDING_SUPERVISOR"
     | "PENDING_HOD"

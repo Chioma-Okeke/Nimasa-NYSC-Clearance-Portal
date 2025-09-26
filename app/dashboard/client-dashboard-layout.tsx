@@ -1,6 +1,7 @@
 "use client"
 
 import { Header } from '@/components/layout/header'
+import { HeaderSkeleton } from '@/components/layout/header-skeleton'
 import { SideNavigation } from '@/components/shared/side-navigation'
 import { Calendar } from '@/components/ui/calendar'
 import { ROLES } from '@/lib/constants'
@@ -23,7 +24,7 @@ function ClientDashboardLayout({ children }: { children: ReactNode }) {
         <>
             {employee?.role === ROLES.ADMIN && !corper && <SideNavigation />}
             <main className='flex-1 overflow-hidden'>
-                <Header employee={corper ?? employee as IEmployeeCreationResponse} />
+                {corper || employee ? <Header employee={corper ?? employee as IEmployeeCreationResponse} /> : <HeaderSkeleton />}
                 <div className='xl:flex'>
                     <div className='flex-1'>
                         {children}

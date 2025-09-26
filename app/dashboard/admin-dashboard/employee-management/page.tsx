@@ -108,7 +108,7 @@ export default function EmployeeManagementTable() {
     }, [employees, searchQuery, statusFilter, roleFilter]);
 
     const filteredCorpers = useMemo(() => {
-        return (employees ?? []).filter((emp) => {
+        return (corpers ?? []).filter((emp) => {
             const matchesSearch =
                 searchQuery === "" ||
                 emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

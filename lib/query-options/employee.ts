@@ -26,6 +26,6 @@ export const getCorpsListQueryOpt = queryOptions({
     queryKey: ["corpers-list"],
     queryFn: async () => {
         const res = await employeeService.getCorperList()
-        return res
+        return res.corpsMembers
     }
 })

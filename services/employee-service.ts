@@ -1,4 +1,4 @@
-import { EmployeeList, EmployeeListResponse, IEmployee, IEmployeeCreationResponse } from "@/types";
+import { CorpsListResponse, EmployeeList, EmployeeListResponse, IEmployee, IEmployeeCreationResponse } from "@/types";
 import { BaseService } from "./base-service";
 
 class EmployeeService extends BaseService {
@@ -41,7 +41,7 @@ class EmployeeService extends BaseService {
     }
 
     public async getCorperList() {
-        return await this.get("/admin/coprs-members/list")
+        return await this.get<CorpsListResponse>("/admin/corps-members/list")
     }
 
     public async editEmployee(id: string, data: IEmployee) {
