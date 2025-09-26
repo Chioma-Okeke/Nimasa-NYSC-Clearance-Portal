@@ -19,6 +19,10 @@ class EmployeeService extends BaseService {
         const res = await this.post(`employee/${id}/deactivate`, { reason });
     }
 
+    public async deactivateCorper(id: string) {
+        const res = await this.post(`admin/corps-members/${id}/deactivate`);
+    }
+
     public async changePassword(data: {userName: string, newPassword: string}) {
         const res = await this.post('employee/change-password', data);
     }
@@ -31,8 +35,13 @@ class EmployeeService extends BaseService {
     public async logout() {
         const res = await this.post("/logout");
     }
+
     public async getEmployeeList() {
         return await this.get<EmployeeListResponse>("/admin/employees/employeeList")
+    }
+
+    public async getCorperList() {
+        return await this.get("/admin/coprs-members/list")
     }
 
     public async editEmployee(id: string, data: IEmployee) {

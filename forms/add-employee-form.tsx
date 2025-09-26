@@ -109,7 +109,7 @@ const AddEmployeeForm = ({ children }: { children: ReactNode }) => {
                                 <FormItem>
                                     <FormLabel>Full Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter full name" {...field} />
+                                        <Input className="h-11" placeholder="Enter full name" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -124,7 +124,7 @@ const AddEmployeeForm = ({ children }: { children: ReactNode }) => {
                                     <FormLabel>Department</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
-                                            <SelectTrigger className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            <SelectTrigger className="h-11 w-full focus:border-blue-500 focus:ring-blue-500">
                                                 <SelectValue placeholder="Select your department" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -157,7 +157,7 @@ const AddEmployeeForm = ({ children }: { children: ReactNode }) => {
                                         defaultValue={field.value}
                                     >
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="h-11 w-full">
                                                 <SelectValue placeholder="Select role" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -184,7 +184,7 @@ const AddEmployeeForm = ({ children }: { children: ReactNode }) => {
                                             <Input
                                                 type={showPassword ? 'text' : 'password'}
                                                 placeholder="Enter your password"
-                                                className="h-11 pr-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                                className="h-11 pr-11 focus:border-blue-500 focus:ring-blue-500"
                                                 {...field}
                                             />
                                             <Button
