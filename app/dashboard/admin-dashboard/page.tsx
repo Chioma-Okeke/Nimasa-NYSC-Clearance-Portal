@@ -41,24 +41,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface StatusCardProps { title: string, value: number, subtitle: string, icon: LucideIcon, color: string, trend: number }
 
-// Mock data for the dashboard
-const mockStats = {
-    totalEmployees: 156,
-    activeEmployees: 142,
-    inactiveEmployees: 14,
-    totalCorpsMembers: 89,
-    activeCorpsMembers: 76,
-    completedClearances: 234,
-    pendingClearances: 43,
-    rejectedClearances: 12,
-    thisMonthSubmissions: 28,
-    averageProcessingTime: '5.2 days'
-};
-
 export default function AdminDashboard() {
-    const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(false)
-    const { employee } = useAuth()
+    const { employee, isLoading: employeeLoading } = useAuth()
     const { data: adminStats, isLoading: statsLoading } = useQuery({
         ...getAdminStatsQueryOpt(employee?.id ?? ""),
         refetchOnMount: true
@@ -103,9 +88,9 @@ export default function AdminDashboard() {
                     <div>
                         <p className="text-sm font-medium text-gray-600">{title}</p>
                         <div className="flex items-center space-x-2">
-                            {isLoading || !employee ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : <p className={cn(`text-2xl font-bold text-[${color}]`)}>{value}</p>}
+                            {employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : <p className={cn(`text-2xl font-bold text-[${color}]`)}>{value}</p>}
                         </div>
-                        {isLoading || !employee ? <Skeleton className='h-4 w-18 my-2'></Skeleton> : <p className="text-xs text-gray-500">{subtitle}</p>}
+                        {employeeLoading || statsLoading ? <Skeleton className='h-4 w-18 my-2'></Skeleton> : <p className="text-xs text-gray-500">{subtitle}</p>}
                     </div>
                     <div className={cn(`p-3 rounded-full bg-[${color}]/15`, color)} >
                         <Icon className="size-6" color={color} />
@@ -185,21 +170,21 @@ export default function AdminDashboard() {
                                             <CheckCircle className="w-5 h-5 text-green-600" />
                                             <span className="font-medium text-green-900">Approved</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-green-900 mt-2">{adminStats?.approvedForms}</p>
+                                        <p className="text-2xl font-bold text-green-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.approvedForms}</p>
                                     </div>
                                     <div className="bg-orange-50 p-4 rounded-lg">
                                         <div className="flex items-center space-x-2">
                                             <Clock className="w-5 h-5 text-orange-600" />
                                             <span className="font-medium text-orange-900">Pending</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-orange-900 mt-2">{adminStats?.pendingForms}</p>
+                                        <p className="text-2xl font-bold text-orange-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.pendingForms}</p>
                                     </div>
                                     <div className="bg-red-50 p-4 rounded-lg">
                                         <div className="flex items-center space-x-2">
                                             <XCircle className="w-5 h-5 text-red-600" />
                                             <span className="font-medium text-red-900">Rejected</span>
                                         </div>
-                                        <p className="text-2xl font-bold text-red-900 mt-2">{mockStats.rejectedClearances}</p>
+                                        <p className="text-2xl font-bold text-red-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.rejectedForms}</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -256,7 +241,7 @@ export default function AdminDashboard() {
                                         Manage Roles & Permissions
                                     </Button>
                                     <Button variant="outline" className="w-full justify-start" onClick={exportData}>
-                                        {isLoading ? <LoadingSpinner /> : (<><Download className="w-4 h-4 mr-2" /> "Export Employee Data"</>)}
+                                        {isLoading ? <LoadingSpinner /> : (<><Download className="w-4 h-4 mr-2" /> Export Employee Data</>)}
                                     </Button>
                                 </CardContent>
                             </Card>

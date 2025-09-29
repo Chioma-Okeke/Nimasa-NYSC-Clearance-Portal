@@ -158,7 +158,7 @@ export default function LoginPage() {
                       <SelectContent>
                         {DEPARTMENTS.map((department) => {
                           return (
-                            <SelectItem key={department} value={department}>
+                            <SelectItem key={department} value={department} className="py-2">
                               <div className="flex items-center space-x-2">
                                 <span>{department}</span>
                               </div>
@@ -190,7 +190,7 @@ export default function LoginPage() {
                       <SelectContent>
                         {ROLE_SELECTION.map(({ roleName, Icon, value }) => {
                           return (
-                            <SelectItem key={value} value={value} className="group cursor-pointer">
+                            <SelectItem key={value} value={value} className="group cursor-pointer py-2">
                               <div className="flex items-center space-x-2">
                                 <Icon className={cn("size-4 group-hover:text-white text-secondary", {
                                   "text-secondary": field.value === value

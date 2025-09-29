@@ -168,6 +168,7 @@ export interface AdminStatsResponse {
     admins: number;
     supervisors: number;
     pendingForms: number;
+    rejectedForms: number;
 }
 
 export type StatusType =
