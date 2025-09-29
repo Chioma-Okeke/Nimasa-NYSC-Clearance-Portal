@@ -29,7 +29,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
-import Logo from '@/components/shared/logo';
 import useAuth from '@/providers/use-auth';
 import { useRouter } from '@bprogress/next';
 import AddEmployeeForm from '@/forms/add-employee-form';
@@ -37,7 +36,7 @@ import { ClearanceService } from '@/services/clearance-service';
 import { toast } from 'sonner';
 import LoadingSpinner from '@/components/shared/loading-spinner';
 import { useQuery } from '@tanstack/react-query';
-import { getAdminStats, getAdminStatsQueryOpt } from '@/lib/query-options/employee';
+import { getAdminStatsQueryOpt } from '@/lib/query-options/employee';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface StatusCardProps { title: string, value: number, subtitle: string, icon: LucideIcon, color: string, trend: number }
@@ -55,46 +54,6 @@ const mockStats = {
     thisMonthSubmissions: 28,
     averageProcessingTime: '5.2 days'
 };
-
-const formStatusData = [
-    { name: 'Approved', value: 234, color: '#006633' },
-    { name: 'Pending Supervisor', value: 18, color: '#FF6B35' },
-    { name: 'Pending HOD', value: 15, color: '#0066CC' },
-    { name: 'Pending Admin', value: 10, color: '#7B1FA2' },
-    { name: 'Rejected', value: 12, color: '#D32F2F' }
-];
-
-const monthlyTrendData = [
-    { month: 'Jan', submissions: 45, approved: 42, rejected: 3 },
-    { month: 'Feb', submissions: 52, approved: 48, rejected: 4 },
-    { month: 'Mar', submissions: 38, approved: 35, rejected: 3 },
-    { month: 'Apr', submissions: 61, approved: 56, rejected: 5 },
-    { month: 'May', submissions: 49, approved: 44, rejected: 5 },
-    { month: 'Jun', submissions: 67, approved: 62, rejected: 5 },
-    { month: 'Jul', submissions: 54, approved: 51, rejected: 3 },
-    { month: 'Aug', submissions: 72, approved: 68, rejected: 4 },
-    { month: 'Sep', submissions: 58, approved: 55, rejected: 3 },
-    { month: 'Oct', submissions: 43, approved: 40, rejected: 3 },
-    { month: 'Nov', submissions: 36, approved: 34, rejected: 2 },
-    { month: 'Dec', submissions: 28, approved: 26, rejected: 2 }
-];
-
-const departmentData = [
-    { department: 'Maritime Safety', employees: 28, corpsMembers: 12, clearances: 34 },
-    { department: 'Marine Environment', employees: 22, corpsMembers: 8, clearances: 28 },
-    { department: 'Shipping Development', employees: 34, corpsMembers: 15, clearances: 42 },
-    { department: 'Maritime Security', employees: 19, corpsMembers: 9, clearances: 25 },
-    { department: 'Administration', employees: 31, corpsMembers: 18, clearances: 48 },
-    { department: 'Finance', employees: 22, corpsMembers: 6, clearances: 19 }
-];
-
-const recentActivities = [
-    { id: 1, type: 'approval', user: 'John Adebayo', action: 'approved clearance for', target: 'Mary Okafor', time: '2 minutes ago', status: 'approved' },
-    { id: 2, type: 'submission', user: 'Peter Nwankwo', action: 'submitted new clearance form', target: '', time: '15 minutes ago', status: 'pending' },
-    { id: 3, type: 'review', user: 'Dr. Sarah Ahmed', action: 'reviewed and forwarded clearance for', target: 'James Okonkwo', time: '1 hour ago', status: 'forwarded' },
-    { id: 4, type: 'rejection', user: 'Admin System', action: 'rejected clearance for', target: 'Alice Bello', time: '2 hours ago', status: 'rejected' },
-    { id: 5, type: 'employee', user: 'System', action: 'new employee added:', target: 'Michael Eze (Supervisor)', time: '3 hours ago', status: 'active' }
-];
 
 export default function AdminDashboard() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -206,69 +165,11 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Dashboard Tabs */}
-                <Tabs defaultValue="overview" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
-                        <TabsTrigger value="overview">Overview</TabsTrigger>
-                        <TabsTrigger value="forms">Forms Management</TabsTrigger>
-                        <TabsTrigger value="employees">Employee Management</TabsTrigger>
+                <Tabs defaultValue="forms" className="space-y-6">
+                    <TabsList className="grid w-full grid-cols-2 lg:w-[600px]">
+                        <TabsTrigger value="forms">Forms <span className='max-sm:hidden'>Management</span></TabsTrigger>
+                        <TabsTrigger value="employees">Employee <span className='max-sm:hidden'>Management</span></TabsTrigger>
                     </TabsList>
-
-                    {/* Overview Tab */}
-                    <TabsContent value="overview" className="space-y-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Form Status Distribution */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center space-x-2">
-                                        <FileText className="w-5 h-5" style={{ color: '#0066CC' }} />
-                                        <span>Clearance Status Distribution</span>
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent className="overflow-x">
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <PieChart>
-                                            <Pie
-                                                data={formStatusData}
-                                                cx="50%"
-                                                cy="50%"
-                                                outerRadius={100}
-                                                fill="#8884d8"
-                                                dataKey="value"
-                                                label={({ name, value }) => `${name}: ${value}`}
-                                            >
-                                                {formStatusData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={entry.color} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </CardContent>
-                            </Card>
-
-                            {/* Monthly Trends */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center space-x-2">
-                                        <TrendingUp className="w-5 h-5" style={{ color: '#006633' }} />
-                                        <span>Monthly Submission Trends</span>
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <AreaChart data={monthlyTrendData}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="month" />
-                                            <YAxis />
-                                            <Tooltip />
-                                            <Area type="monotone" dataKey="submissions" stackId="1" stroke="#0066CC" fill="#0066CC" fillOpacity={0.3} />
-                                            <Area type="monotone" dataKey="approved" stackId="2" stroke="#006633" fill="#006633" fillOpacity={0.3} />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </TabsContent>
 
                     {/* Forms Management Tab */}
                     <TabsContent value="forms" className="space-y-6">

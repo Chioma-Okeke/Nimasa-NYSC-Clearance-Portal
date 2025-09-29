@@ -33,7 +33,7 @@ import { getCurrentUserQueryOpt } from "@/lib/query-options/employee"
 import { Building2, Eye, EyeClosed, EyeOff, Shield, Users } from "lucide-react"
 import { useState } from "react"
 import { DEPARTMENTS, ROLE_SELECTION, ROLES } from "@/lib/constants"
-import { getRoleDisplayName } from "@/lib/utils"
+import { cn, getRoleDisplayName } from "@/lib/utils"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -192,7 +192,9 @@ export default function LoginPage() {
                           return (
                             <SelectItem key={value} value={value} className="group cursor-pointer">
                               <div className="flex items-center space-x-2">
-                                <Icon className="size-4 group-hover:text-white text-secondary" />
+                                <Icon className={cn("size-4 group-hover:text-white text-secondary", {
+                                  "text-secondary": field.value === value
+                                })} />
                                 <span>{roleName}</span>
                               </div>
                             </SelectItem>

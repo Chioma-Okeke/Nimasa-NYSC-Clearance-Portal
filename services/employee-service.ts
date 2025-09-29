@@ -51,6 +51,10 @@ class EmployeeService extends BaseService {
     public async getAdminStats() {
         return await this.get<AdminStatsResponse>("/admin/employees/stats")
     }
+
+    public async refreshToken() {
+        return await this.post("/refresh")
+    }
 }
 
 export default EmployeeService;

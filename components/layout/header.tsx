@@ -70,7 +70,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
 
         <div className="flex items-center space-x-4">
           {employee?.role === ROLES.ADMIN &&
-            <Button variant="outline" size="sm" onClick={exportData}>
+            <Button variant="outline" size="sm" onClick={exportData} className="hidden xl:flex">
               <Download className="w-4 h-4 mr-2" />
               {isLoading ? <LoadingSpinner /> : "Export Data"}
             </Button>}
@@ -93,7 +93,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
             </div>
           </div>
           <div className="xl:hidden">
-            {employee ? <UserProfileCard userName={employee.name} userRole={employee.role} handleLogout={logoutUser} refreshForms={refreshForms} /> : <User2 />}
+            {employee ? <UserProfileCard userName={employee.name} userRole={employee.role} handleLogout={logoutUser} refreshForms={refreshForms} exportData={exportData} isLoading={isLoading} /> : <User2 />}
           </div>
           <Button
             variant="outline"

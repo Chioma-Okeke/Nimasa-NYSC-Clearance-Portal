@@ -19,10 +19,10 @@ export function HeaderSkeleton() {
                 {/* Right side skeletons */}
                 <div className="flex items-center space-x-4">
                     {/* Export Data button skeleton */}
-                    <Skeleton className="h-8 w-28 rounded-md" />
+                    <Skeleton className="h-8 w-28 rounded-md hidden xl:block" />
 
                     {/* Notification button skeleton */}
-                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-8 w-8 rounded-md hidden" />
 
                     {/* Refresh button skeleton (hidden on small screens, so keep minimal) */}
                     <div className="hidden lg:block">
