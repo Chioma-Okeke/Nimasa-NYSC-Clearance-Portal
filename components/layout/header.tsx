@@ -1,13 +1,10 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Bell, Download, LogOut, RefreshCw, User, User2 } from "lucide-react"
 import UserProfileCard from "../shared/user-profile-card"
-import Image from "next/image"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import EmployeeService from "@/services/employee-service"
 import useAuth from "@/providers/use-auth"
 import LoadingSpinner from "../shared/loading-spinner"
 import Logo from "../shared/logo"
@@ -16,8 +13,7 @@ import { IEmployeeCreationResponse } from "@/types"
 import { ROLE_MAPPING, ROLES } from "@/lib/constants"
 import { SidebarTrigger } from "../ui/sidebar"
 import { ClearanceService } from "@/services/clearance-service"
-import { useEffect, useState } from "react"
-import { Skeleton } from "../ui/skeleton"
+import { useState } from "react"
 
 export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
   const { logoutUser, isLoggingOut } = useAuth()

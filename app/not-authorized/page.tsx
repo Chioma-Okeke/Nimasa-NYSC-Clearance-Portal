@@ -1,7 +1,4 @@
-"use client"
-
 import Logo from "@/components/shared/logo";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "@bprogress/next";
 import Link from "next/link";
 
