@@ -1,4 +1,8 @@
+import { z } from 'zod'
 import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { toast } from 'sonner'
 import {
     Dialog,
     DialogClose,
@@ -9,23 +13,19 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from '../ui/button'
-import { MessageSquare, RefreshCw, Send, Upload, UserCheck, X } from 'lucide-react'
-import { IClearanceFormResponse, IEmployeeCreationResponse, IHodReview } from '@/types'
-import { hodReviewSchema } from '@/lib/schema'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
-import { Textarea } from '../ui/textarea'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ClearanceService } from '@/services/clearance-service'
-import { toast } from 'sonner'
-import { FORM_STATUSES } from '@/lib/constants'
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import { Label } from '../ui/label'
+import { Button } from '../ui/button'
+import { Textarea } from '../ui/textarea'
+import { hodReviewSchema } from '@/lib/schema'
+import { zodResolver } from '@hookform/resolvers/zod'
 import SignaturePadComp from '../shared/signature-pad'
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
+import { ClearanceService } from '@/services/clearance-service'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { MessageSquare, RefreshCw, Send, Upload, X } from 'lucide-react'
+import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 
 type ReviewFormValues = z.infer<typeof hodReviewSchema>;
 
@@ -117,10 +117,6 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                             <div>
                                 <label className="text-sm font-medium text-gray-700">Department</label>
                                 <p className="text-sm text-gray-900">{selectedForm.department}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-700">Form ID</label>
-                                <p className="text-sm text-gray-900">{selectedForm.id}</p>
                             </div>
                         </div>
 

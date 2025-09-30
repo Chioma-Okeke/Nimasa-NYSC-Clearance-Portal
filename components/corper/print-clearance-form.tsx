@@ -1,33 +1,13 @@
+import React from "react";
+
+import Logo from "../shared/logo";
 import { formatDate } from "@/lib/utils";
 import { PrintableFormResponse } from "@/types";
-import React from "react";
-import Logo from "../shared/logo";
 
 export const PrintableClearanceForm = React.forwardRef<
     HTMLDivElement,
     { form: PrintableFormResponse }
 >(({ form }, ref) => {
-    const splitTextIntoLines = (text: string, maxLines: number): string[] => {
-        if (!text) return [];
-        const words = text.split(" ");
-        const lines: string[] = [];
-        let currentLine = "";
-        const maxWordsPerLine = Math.ceil(words.length / maxLines);
-        let wordsInCurrentLine = 0;
-
-        for (let word of words) {
-            if (wordsInCurrentLine >= maxWordsPerLine && lines.length < maxLines - 1) {
-                lines.push(currentLine.trim());
-                currentLine = word + " ";
-                wordsInCurrentLine = 1;
-            } else {
-                currentLine += word + " ";
-                wordsInCurrentLine++;
-            }
-        }
-        if (currentLine.trim()) lines.push(currentLine.trim());
-        return lines;
-    };
 
     const getMonthYear = (dateString?: string): string => {
         const date = dateString ? new Date(dateString) : new Date();

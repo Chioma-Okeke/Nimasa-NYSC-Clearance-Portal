@@ -1,23 +1,12 @@
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { AlertCircle, CheckCircle, Clock, FileText, XCircle } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { IClearanceFormResponse } from '@/types'
 import DeleteClearanceForm from '../dialogs/delete-clearance-form'
 import StatusBadge from '../shared/status-badge'
-import { formatDate } from '@/lib/utils'
 import LoadingSpinner from '../shared/loading-spinner'
 import FromDetailsModal from '../supervisor/form-details-modal'
-
-const getStatusIcon = (status: string) => {
-    switch (status) {
-        case 'APPROVED': return <CheckCircle className="w-5 h-5 text-green-600" />;
-        case 'REJECTED': return <XCircle className="w-5 h-5 text-red-600" />;
-        case 'PENDING_SUPERVISOR':
-        case 'PENDING_HOD':
-        case 'PENDING_ADMIN': return <Clock className="w-5 h-5 text-orange-500" />;
-        default: return <AlertCircle className="w-5 h-5 text-gray-500" />;
-    }
-};
+import StatusIcon from '../shared/status-icon'
 
 function AllFormsCard({ isLoading, searchQuery, clearanceForms }: { isLoading: boolean, searchQuery: string, clearanceForms: IClearanceFormResponse[] | undefined }) {
 
@@ -48,7 +37,7 @@ function AllFormsCard({ isLoading, searchQuery, clearanceForms }: { isLoading: b
                                 <div className="flex flex-col lg:flex-row items-start justify-between">
                                     <div className="flex-1 ">
                                         <div className="flex items-center space-x-3 mb-2">
-                                            {getStatusIcon(formItem.status)}
+                                            <StatusIcon status={formItem.status}/>
                                             <div>
                                                 <h3 className="font-medium text-gray-900">{formItem.corpsName}</h3>
                                             </div>

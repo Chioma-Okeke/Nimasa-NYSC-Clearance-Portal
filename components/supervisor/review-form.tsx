@@ -1,25 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
-import { Button } from '../ui/button'
-import { Eye, MessageSquare, RefreshCw, Send, Upload, X } from 'lucide-react'
+import { z } from 'zod'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { supervisorReviewSchema } from '@/lib/schema'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { Input } from '../ui/input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ClearanceService } from '@/services/clearance-service'
-import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
+import type { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
+
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from '../ui/dialog'
 import { toast } from 'sonner'
-import { Textarea } from '../ui/textarea'
-import { FORM_STATUSES } from '@/lib/constants'
-import SignaturePadComp from '../shared/signature-pad'
+import { Input } from '../ui/input'
 import { Label } from '../ui/label'
+import { Button } from '../ui/button'
+import { Textarea } from '../ui/textarea'
+import { supervisorReviewSchema } from '@/lib/schema'
+import SignaturePadComp from '../shared/signature-pad'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
+import { ClearanceService } from '@/services/clearance-service'
+import { MessageSquare, RefreshCw, Send, Upload, X } from 'lucide-react'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 
 type FormValues = z.infer<typeof supervisorReviewSchema>;
-type UploadStyles = "attach" | "draw"
 
 function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormResponse, employee: IEmployeeCreationResponse }) {
     const [fileList, setFileList] = useState<File | null>(null)
@@ -114,10 +122,6 @@ function ReviewForm({ selectedForm, employee }: { selectedForm: IClearanceFormRe
                             <div>
                                 <label className="text-sm font-medium text-gray-700">Department</label>
                                 <p className="text-sm text-gray-900">{selectedForm.department}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-gray-700">Form ID</label>
-                                <p className="text-sm text-gray-900">{selectedForm.id}</p>
                             </div>
                         </div>
 

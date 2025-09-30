@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
 import {
     FileText,
     Search,
@@ -9,17 +11,16 @@ import {
     Briefcase,
     Star
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import useAuth from '@/providers/use-auth';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { AuthGuard } from '@/components/auth-guard';
+import { Card, CardContent } from '@/components/ui/card';
+import ReviewedForms from '@/components/supervisor/reviewed-forms';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import useAuth from '@/providers/use-auth';
 import PendingApprovalForms from '@/components/supervisor/pending-approval-forms';
 import { getPendingApprovalFormsQueryOpt, trackDepartmentFormsQueryOpt } from '@/lib/query-options/clearance';
-import { useQuery } from '@tanstack/react-query';
-import ReviewedForms from '@/components/supervisor/reviewed-forms';
-import { AuthGuard } from '@/components/auth-guard';
 
 export default function SupervisorDashboard() {
     const [searchQuery, setSearchQuery] = useState('');

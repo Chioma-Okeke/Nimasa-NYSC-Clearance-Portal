@@ -1,7 +1,8 @@
 import React from 'react'
+import type { IClearanceFormResponse } from '@/types'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, Clock } from 'lucide-react'
-import type { IClearanceFormResponse } from '@/types'
 import ReviewForm from './review-form'
 import FromDetailsModal from '../supervisor/form-details-modal'
 import LoadingSpinner from '../shared/loading-spinner'
@@ -15,6 +16,7 @@ type PendingApprovalFormsProps = {
 
 function PendingApprovalForms({ pendingForms, isLoading, searchQuery }: PendingApprovalFormsProps) {
     const { employee } = useAuth()
+
     return (
         <Card>
             <CardHeader>
@@ -59,18 +61,6 @@ function PendingApprovalForms({ pendingForms, isLoading, searchQuery }: PendingA
                                                 <span className="text-gray-500">Submitted:</span>
                                                 <p className="font-medium">{formItem.createdAt}</p>
                                             </div>
-                                            {/* <div>
-                                                <span className="text-gray-500">Waiting:</span>
-                                                <p className={`font-medium ${getDaysColor(formItem.submittedDays)}`}>
-                                                    {formItem.submittedDays} day{formItem.submittedDays !== 1 ? 's' : ''}
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <span className="text-gray-500">Priority:</span>
-                                                <p className={`font-medium ${formItem.submittedDays > 3 ? 'text-red-600' : formItem.submittedDays > 1 ? 'text-orange-600' : 'text-green-600'}`}>
-                                                    {formItem.submittedDays > 3 ? 'High' : formItem.submittedDays > 1 ? 'Medium' : 'Low'}
-                                                </p>
-                                            </div> */}
                                         </div>
                                     </div>
 

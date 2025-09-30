@@ -1,9 +1,19 @@
-import StatusBadge from '@/components/shared/status-badge'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { IClearanceFormResponse } from '@/types'
-import { Briefcase, CheckCircle, Eye, UserCheck } from 'lucide-react'
 import React, { useState } from 'react'
+
+import { 
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { IClearanceFormResponse } from '@/types'
+import StatusBadge from '@/components/shared/status-badge'
+import { Briefcase, CheckCircle, Eye, UserCheck } from 'lucide-react'
 
 function FromDetailsModal({ selectedForm }: { selectedForm: IClearanceFormResponse }) {
     const [isOpen, setIsOpen] = useState(false)
@@ -29,12 +39,7 @@ function FromDetailsModal({ selectedForm }: { selectedForm: IClearanceFormRespon
 
                 {selectedForm && (
                     <div className="space-y-6">
-                        {/* Basic Information */}
                         <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <label className="text-sm font-medium text-gray-700">Form ID</label>
-                                <p className="text-sm font-mono text-gray-900">{selectedForm.id}</p>
-                            </div>
                             <div>
                                 <label className="text-sm font-medium text-gray-700">Status</label>
                                 <div className="mt-1"><StatusBadge status={selectedForm.status} /></div>
@@ -57,7 +62,6 @@ function FromDetailsModal({ selectedForm }: { selectedForm: IClearanceFormRespon
                             </div>
                         </div>
 
-                        {/* Supervisor Review Section (if reviewed) */}
                         {selectedForm.supervisorName && (
                             <div className="p-4 border border-blue-200 bg-blue-50 rounded-lg">
                                 <h4 className="font-medium text-blue-900 mb-3 flex items-center">
@@ -85,7 +89,6 @@ function FromDetailsModal({ selectedForm }: { selectedForm: IClearanceFormRespon
                             </div>
                         )}
 
-                        {/* HOD Review Section (if applicable) */}
                         {selectedForm.hodName && (
                             <div className="p-4 border border-purple-200 bg-purple-50 rounded-lg">
                                 <h4 className="font-medium text-purple-900 mb-3 flex items-center">
@@ -113,7 +116,6 @@ function FromDetailsModal({ selectedForm }: { selectedForm: IClearanceFormRespon
                             </div>
                         )}
 
-                        {/* Admin Section (if applicable) */}
                         {selectedForm.adminName && (
                             <div className="p-4 border border-green-200 bg-green-50 rounded-lg">
                                 <h4 className="font-medium text-green-900 mb-3 flex items-center">

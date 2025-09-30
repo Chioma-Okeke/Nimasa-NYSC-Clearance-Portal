@@ -1,14 +1,15 @@
+import { toast } from 'sonner'
 import React, { useState } from 'react'
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import type { IClearanceFormResponse } from '@/types'
+
 import { Button } from '../ui/button'
 import { Trash2 } from 'lucide-react'
-import { IClearanceFormResponse } from '@/types'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ClearanceService } from '@/services/clearance-service'
-import { toast } from 'sonner'
-import { getClearanceFormsQueryOpt } from '@/lib/query-options/clearance'
-import LoadingSpinner from '../shared/loading-spinner'
 import useAuth from '@/providers/use-auth'
+import LoadingSpinner from '../shared/loading-spinner'
+import { ClearanceService } from '@/services/clearance-service'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { getClearanceFormsQueryOpt } from '@/lib/query-options/clearance'
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 
 function DeleteClearanceForm({ form }: { form: IClearanceFormResponse }) {
     const [isOpen, setIsOpen] = useState(false)

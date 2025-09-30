@@ -1,11 +1,12 @@
 import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, FileText } from "lucide-react"
-import StatusBadge from '../shared/status-badge'
-import { IClearanceFormResponse } from '@/types'
-import FromDetailsModal from './form-details-modal'
-import LoadingSpinner from '../shared/loading-spinner'
+import type { IClearanceFormResponse } from '@/types'
+
 import StatusIcon from '../shared/status-icon'
+import StatusBadge from '../shared/status-badge'
+import FromDetailsModal from './form-details-modal'
+import { CheckCircle, FileText } from "lucide-react"
+import LoadingSpinner from '../shared/loading-spinner'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 
 function ReviewedForms({ reviewedForms, isLoading, searchQuery }: { reviewedForms: IClearanceFormResponse[], isLoading: boolean, searchQuery: string }) {

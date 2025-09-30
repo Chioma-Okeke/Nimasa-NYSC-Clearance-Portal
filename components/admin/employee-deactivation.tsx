@@ -1,15 +1,16 @@
+import { toast } from 'sonner'
 import React, { useState } from 'react'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import type { EmployeeList } from '@/types'
+
 import { Button } from '../ui/button'
-import { EmployeeList } from '@/types'
-import { Alert, AlertDescription } from '../ui/alert'
-import { Shield, UserX } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
-import EmployeeService from '@/services/employee-service'
-import { toast } from 'sonner'
+import { Shield, UserX } from 'lucide-react'
+import { Alert, AlertDescription } from '../ui/alert'
 import LoadingSpinner from '../shared/loading-spinner'
+import EmployeeService from '@/services/employee-service'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 
 interface EmployeeDeactivationProp {
     selectedEmployee: EmployeeList

@@ -1,43 +1,22 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
-    Building2,
     FileText,
     Search,
-    Filter,
-    Calendar,
     Clock,
     CheckCircle,
     Briefcase,
     Star
 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form';
 import useAuth from '@/providers/use-auth';
-import StatusBadge from '@/components/shared/status-badge';
-import { IClearanceFormResponse } from '@/types';
-import { getClearanceFormsByStatusQueryOpt, getPendingApprovalFormsQueryOpt, trackDepartmentFormsQueryOpt } from '@/lib/query-options/clearance';
+import { getPendingApprovalFormsQueryOpt, trackDepartmentFormsQueryOpt } from '@/lib/query-options/clearance';
 import { useQuery } from '@tanstack/react-query';
-import { FORM_STATUSES } from '@/lib/constants';
 import PendingApprovalForms from '@/components/hod/pending-approval-forms';
 import ReviewedForms from '@/components/hod/reviewed-forms';
 import { AuthGuard } from '@/components/auth-guard';

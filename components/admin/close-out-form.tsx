@@ -1,15 +1,16 @@
-import React, { ReactElement, useState } from 'react'
-import { Dialog, DialogContent, DialogFooter, DialogTrigger } from '../ui/dialog'
-import { Button } from '../ui/button'
-import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ClearanceService } from '@/services/clearance-service'
-import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
-import LoadingSpinner from '../shared/loading-spinner'
-import { CheckCircle, LucideIcon } from 'lucide-react'
-import { Textarea } from '../ui/textarea'
+import React, { useState } from 'react'
+import type { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
+
+import { cn } from '@/lib/utils'
 import { Label } from '../ui/label'
+import { Button } from '../ui/button'
+import { LucideIcon } from 'lucide-react'
+import { Textarea } from '../ui/textarea'
+import LoadingSpinner from '../shared/loading-spinner'
+import { ClearanceService } from '@/services/clearance-service'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Dialog, DialogContent, DialogFooter, DialogTrigger } from '../ui/dialog'
 
 function CloseOutForm({ name, employee, form, Icon }: { name: string, employee: IEmployeeCreationResponse, form: IClearanceFormResponse, Icon: LucideIcon }) {
     const [reason, setReason] = useState("")

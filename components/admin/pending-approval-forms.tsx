@@ -1,10 +1,11 @@
 import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Clock, XCircle } from 'lucide-react'
-import type { IClearanceFormResponse } from '@/types'
-import LoadingSpinner from '../shared/loading-spinner'
+
 import useAuth from '@/providers/use-auth'
 import CloseOutForm from '../admin/close-out-form'
+import type { IClearanceFormResponse } from '@/types'
+import LoadingSpinner from '../shared/loading-spinner'
+import { CheckCircle, Clock, XCircle } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 type PendingApprovalFormsProps = {
     pendingForms: IClearanceFormResponse[]

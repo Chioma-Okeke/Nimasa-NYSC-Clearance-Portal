@@ -1,13 +1,14 @@
 "use client"
 
+import type { IEmployeeCreationResponse } from '@/types'
+import React, { ReactNode, useEffect, useState } from 'react'
+
+import { ROLES } from '@/lib/constants'
+import useAuth from '@/providers/use-auth'
+import { Calendar } from '@/components/ui/calendar'
 import { Header } from '@/components/layout/header'
 import { HeaderSkeleton } from '@/components/layout/header-skeleton'
 import { SideNavigation } from '@/components/shared/side-navigation'
-import { Calendar } from '@/components/ui/calendar'
-import { ROLES } from '@/lib/constants'
-import useAuth from '@/providers/use-auth'
-import { IEmployeeCreationResponse } from '@/types'
-import React, { ReactNode, useEffect, useState } from 'react'
 
 function ClientDashboardLayout({ children }: { children: ReactNode }) {
     const [corper, setCorper] = useState<IEmployeeCreationResponse>()

@@ -1,4 +1,11 @@
+import type {
+    IEmployeeCreationResponse,
+    PrintableFormResponse,
+} from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { useReactToPrint } from "react-to-print";
 import React, { useEffect, useRef, useState } from "react";
+
 import {
     Card,
     CardContent,
@@ -6,42 +13,21 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { AlertCircle, CheckCircle, Clock, FileText, Plus, Search, XCircle } from "lucide-react";
-import StatusBadge from "../shared/status-badge";
-import { cn, formatDate, getFormProgress } from "@/lib/utils";
 import { Input } from "../ui/input";
-import { useQuery } from "@tanstack/react-query";
-import {
-    getClearanceFormsQueryOpt,
-    getCorpersClearanceFormsQueryOpt,
-    trackCorperFormsQueryOpt,
-} from "@/lib/query-options/clearance";
-import {
-    IClearanceFormResponse,
-    IEmployeeCreationResponse,
-    PrintableFormResponse,
-} from "@/types";
 import { Button } from "../ui/button";
-import { ClearanceService } from "@/services/clearance-service";
-import { useReactToPrint } from "react-to-print";
-import { PrintableClearanceForm } from "./print-clearance-form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { FileText } from "lucide-react";
+import StatusIcon from "../shared/status-icon";
+import StatusBadge from "../shared/status-badge";
+import { cn, getFormProgress } from "@/lib/utils";
 import ClearanceForm from "@/forms/clearance-form";
 import LoadingSpinner from "../shared/loading-spinner";
+import { ClearanceService } from "@/services/clearance-service";
+import { PrintableClearanceForm } from "./print-clearance-form";
+import { trackCorperFormsQueryOpt } from "@/lib/query-options/clearance";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 type CoperFormListProps = {
     employee: IEmployeeCreationResponse | undefined;
-};
-
-const getStatusIcon = (status: string) => {
-    switch (status) {
-        case 'APPROVED': return <CheckCircle className="w-5 h-5 text-green-600" />;
-        case 'REJECTED': return <XCircle className="w-5 h-5 text-red-600" />;
-        case 'PENDING_SUPERVISOR':
-        case 'PENDING_HOD':
-        case 'PENDING_ADMIN': return <Clock className="w-5 h-5 text-orange-500" />;
-        default: return <AlertCircle className="w-5 h-5 text-gray-500" />;
-    }
 };
 
 function CorperFormList({ employee }: CoperFormListProps) {
@@ -61,7 +47,6 @@ function CorperFormList({ employee }: CoperFormListProps) {
         trackCorperFormsQueryOpt(employee?.id ?? "")
     );
 
-    // debounce search
     useEffect(() => {
         if (!employeeForms) return;
 
@@ -97,7 +82,6 @@ function CorperFormList({ employee }: CoperFormListProps) {
         setPrintData(data);
     };
 
-    // when printData changes, trigger print after DOM updates
     useEffect(() => {
         if (printData && handlePrint) {
             setTimeout(() => handlePrint(), 100);
@@ -165,7 +149,7 @@ function CorperFormList({ employee }: CoperFormListProps) {
                                     <div className="flex flex-col gap-4 items-start justify-between">
                                         <div className="flex-1 w-full">
                                             <div className="flex items-center space-x-3 mb-2">
-                                                {getStatusIcon(formItem.status ?? "")}
+                                                <StatusIcon status={formItem.status ?? ""} />
                                                 <div>
                                                     <p className="text-sm text-gray-600">
                                                         {formItem.department}
