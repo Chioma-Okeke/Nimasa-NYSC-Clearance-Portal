@@ -1,45 +1,34 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { toast } from 'sonner';
+import React, { useState } from 'react';
+import { useRouter } from '@bprogress/next';
+import { useQuery } from '@tanstack/react-query';
+
 import {
-    Building2,
     Users,
     FileText,
     Clock,
     CheckCircle,
     XCircle,
-    AlertCircle,
-    TrendingUp,
-    Calendar,
-    Search,
-    Filter,
     Download,
     UserCheck,
     UserX,
-    Eye,
     Settings,
-    Bell,
     LucideIcon
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import useAuth from '@/providers/use-auth';
-import { useRouter } from '@bprogress/next';
-import AddEmployeeForm from '@/forms/add-employee-form';
-import { ClearanceService } from '@/services/clearance-service';
-import { toast } from 'sonner';
-import LoadingSpinner from '@/components/shared/loading-spinner';
-import { useQuery } from '@tanstack/react-query';
-import { getAdminStatsQueryOpt } from '@/lib/query-options/employee';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AuthGuard } from '@/components/auth-guard';
-import Link from 'next/link';
+import AddEmployeeForm from '@/forms/add-employee-form';
+import { ClearanceService } from '@/services/clearance-service';
+import LoadingSpinner from '@/components/shared/loading-spinner';
+import { getAdminStatsQueryOpt } from '@/lib/query-options/employee';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface StatusCardProps { title: string, value: number, subtitle: string, icon: LucideIcon, color: string, trend: number }
 
