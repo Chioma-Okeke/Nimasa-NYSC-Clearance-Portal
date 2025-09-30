@@ -8,12 +8,12 @@ export default function NotAuthorized() {
     const router = useRouter();
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center px-4">
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 w-full">
             <motion.div
                 initial={{ y: -30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.7 }}
-                className="text-center"
+                className="text-center max-w-md"
             >
                 <div className="flex justify-center mb-6">
                     <motion.div
@@ -32,8 +32,9 @@ export default function NotAuthorized() {
 
                 <div className="flex gap-4 justify-center items-center">
                     <Button
+                        variant={"secondary"}
                         onClick={() => (router.push("/login"))}
-                        className="rounded-2xl bg-[#54ad77]"
+                        className="w-full py-4 text-lg"
                     >
                         Login
                     </Button>

@@ -30,16 +30,18 @@ import Logo from "@/components/shared/logo"
 import { useRouter } from "@bprogress/next"
 import LoadingSpinner from "@/components/shared/loading-spinner"
 import { getCurrentUserQueryOpt } from "@/lib/query-options/employee"
-import { Building2, Eye, EyeClosed, EyeOff, Shield, Users } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { DEPARTMENTS, ROLE_SELECTION, ROLES } from "@/lib/constants"
-import { cn, getRoleDisplayName } from "@/lib/utils"
+import { cn, getRoleDisplayName, roleRequiresDesktop } from "@/lib/utils"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export default function LoginPage() {
   const router = useRouter()
   const employeeService = new EmployeeService()
   const queryClient = useQueryClient()
   const [showPassword, setShowPassword] = useState(false)
+  const isMobile = useIsMobile()
 
   const { mutate: logUserIn, isPending } = useMutation({
     mutationFn: async (data: IEmployee) => {
@@ -88,6 +90,15 @@ export default function LoginPage() {
   const role = form.watch("role")
 
   const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
+    if (roleRequiresDesktop(values.role) && isMobile) {
+      toast.error("Access Restricted", {
+        description: "This role requires login from a company workstation."
+      })
+      router.push("/not-authorized")
+      form.reset()
+      return;
+    }
+
     const payload: any = {
       name: values.name,
       department: values.department,

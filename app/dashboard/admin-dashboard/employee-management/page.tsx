@@ -55,6 +55,7 @@ import EmployeeService from "@/services/employee-service";
 import { getCorpsListQueryOpt, getEmployeeListQueryOpt } from "@/lib/query-options/employee";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { AuthGuard } from "@/components/auth-guard";
 
 export default function EmployeeManagementTable() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -159,197 +160,199 @@ export default function EmployeeManagementTable() {
     }
 
     return (
-        <Card>
-            <CardHeader className="px-6">
-                <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    <p className="text-2xl">Manage People</p>
-                </CardTitle>
-                <CardDescription>Add supervisors, HODs, and other employees to the system</CardDescription>
-            </CardHeader>
+        <AuthGuard>
+            <Card>
+                <CardHeader className="px-6">
+                    <CardTitle className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-primary" />
+                        <p className="text-2xl">Manage People</p>
+                    </CardTitle>
+                    <CardDescription>Add supervisors, HODs, and other employees to the system</CardDescription>
+                </CardHeader>
 
-            <CardContent className="px-6">
-                <div className="space-y-6">
-                    <AddEmployeeForm>
-                        <Button className="bg-primary hover:bg-primary/90">
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Add Employee
-                        </Button>
-                    </AddEmployeeForm>
-                </div>
+                <CardContent className="px-6">
+                    <div className="space-y-6">
+                        <AddEmployeeForm>
+                            <Button className="bg-primary hover:bg-primary/90">
+                                <UserPlus className="h-4 w-4 mr-2" />
+                                Add Employee
+                            </Button>
+                        </AddEmployeeForm>
+                    </div>
 
-                {/* Search and Filter Controls */}
-                <div className="flex flex-col md:flex-row gap-4 my-6">
-                    <div className="flex-1">
-                        <div className="relative">
-                            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                            <Input
-                                placeholder="Search employees..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10"
-                            />
+                    {/* Search and Filter Controls */}
+                    <div className="flex flex-col md:flex-row gap-4 my-6">
+                        <div className="flex-1">
+                            <div className="relative">
+                                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                <Input
+                                    placeholder="Search employees..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="pl-10"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                <SelectTrigger className="w-[140px]">
+                                    <SelectValue placeholder="All Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="ALL">All Status</SelectItem>
+                                    <SelectItem value="ACTIVE">Active</SelectItem>
+                                    <SelectItem value="INACTIVE">Inactive</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            {activeTab === "staff" && <Select value={roleFilter} onValueChange={setRoleFilter}>
+                                <SelectTrigger className="w-[140px]">
+                                    <SelectValue placeholder="All Roles" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="ALL">All Roles</SelectItem>
+                                    <SelectItem value="ADMIN">Admin</SelectItem>
+                                    <SelectItem value="HOD">HOD</SelectItem>
+                                    <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
+                                </SelectContent>
+                            </Select>}
                         </div>
                     </div>
 
-                    <div className="flex gap-2">
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="w-[140px]">
-                                <SelectValue placeholder="All Status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="ALL">All Status</SelectItem>
-                                <SelectItem value="ACTIVE">Active</SelectItem>
-                                <SelectItem value="INACTIVE">Inactive</SelectItem>
-                            </SelectContent>
-                        </Select>
-
-                        {activeTab === "staff" && <Select value={roleFilter} onValueChange={setRoleFilter}>
-                            <SelectTrigger className="w-[140px]">
-                                <SelectValue placeholder="All Roles" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="ALL">All Roles</SelectItem>
-                                <SelectItem value="ADMIN">Admin</SelectItem>
-                                <SelectItem value="HOD">HOD</SelectItem>
-                                <SelectItem value="SUPERVISOR">Supervisor</SelectItem>
-                            </SelectContent>
-                        </Select>}
-                    </div>
-                </div>
-
-                <Tabs className="space-y-6" defaultValue="staff" onValueChange={(value) => setActiveTab(value)}>
-                    <TabsList className="grid grid-cols-2">
-                        <TabsTrigger value="staff">Staff</TabsTrigger>
-                        <TabsTrigger value="corpers">Copers</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="staff">
-                        <div className="border-2 border-input rounded-lg overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-gray-50">
-                                        <TableHead>Employee</TableHead>
-                                        <TableHead>Department</TableHead>
-                                        <TableHead>Role</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Created</TableHead>
-                                        <TableHead>Forms Pending</TableHead>
-                                        <TableHead className="text-center">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {queryLoading ? (
-                                        <TableRow>
-                                            <TableCell colSpan={7} className="text-center py-6">
-                                                <LoadingSpinner />
-                                            </TableCell>
+                    <Tabs className="space-y-6" defaultValue="staff" onValueChange={(value) => setActiveTab(value)}>
+                        <TabsList className="grid grid-cols-2">
+                            <TabsTrigger value="staff">Staff</TabsTrigger>
+                            <TabsTrigger value="corpers">Copers</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="staff">
+                            <div className="border-2 border-input rounded-lg overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-50">
+                                            <TableHead>Employee</TableHead>
+                                            <TableHead>Department</TableHead>
+                                            <TableHead>Role</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Created</TableHead>
+                                            <TableHead>Forms Pending</TableHead>
+                                            <TableHead className="text-center">Actions</TableHead>
                                         </TableRow>
-                                    ) : filteredEmployees.length > 0 ? (
-                                        filteredEmployees.map((employee) => (
-                                            <TableRow key={employee.id} className="hover:bg-gray-50">
-                                                <TableCell>
-                                                    <div>
-                                                        <p className="font-medium">{employee.name}</p>
-                                                        <p className="text-sm text-gray-500">
-                                                            ID: {employee.id}
-                                                        </p>
-                                                    </div>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {queryLoading ? (
+                                            <TableRow>
+                                                <TableCell colSpan={7} className="text-center py-6">
+                                                    <LoadingSpinner />
                                                 </TableCell>
-                                                <TableCell>{employee.department}</TableCell>
-                                                <TableCell>{getRoleBadge(employee.userRole)}</TableCell>
-                                                <TableCell>{getStatusBadge(employee.active)}</TableCell>
-                                                <TableCell>
-                                                    {formatDate(employee.createdAT)}
-                                                </TableCell>
-                                                <TableCell>{employee.formPendingReview}</TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center justify-center space-x-2">
-                                                        <EmployeeEdit selectedEmployee={employee} />
-                                                        {employee.active && <EmployeeDeactivation selectedEmployee={employee} />}
+                                            </TableRow>
+                                        ) : filteredEmployees.length > 0 ? (
+                                            filteredEmployees.map((employee) => (
+                                                <TableRow key={employee.id} className="hover:bg-gray-50">
+                                                    <TableCell>
+                                                        <div>
+                                                            <p className="font-medium">{employee.name}</p>
+                                                            <p className="text-sm text-gray-500">
+                                                                ID: {employee.id}
+                                                            </p>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>{employee.department}</TableCell>
+                                                    <TableCell>{getRoleBadge(employee.userRole)}</TableCell>
+                                                    <TableCell>{getStatusBadge(employee.active)}</TableCell>
+                                                    <TableCell>
+                                                        {formatDate(employee.createdAT)}
+                                                    </TableCell>
+                                                    <TableCell>{employee.formPendingReview}</TableCell>
+                                                    <TableCell>
+                                                        <div className="flex items-center justify-center space-x-2">
+                                                            <EmployeeEdit selectedEmployee={employee} />
+                                                            {employee.active && <EmployeeDeactivation selectedEmployee={employee} />}
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={7}>
+                                                    <div className="text-center py-6 flex items-center flex-col justify-center">
+                                                        <UserX />
+                                                        No employees found
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell colSpan={7}>
-                                                <div className="text-center py-6 flex items-center flex-col justify-center">
-                                                    <UserX />
-                                                    No employees found
-                                                </div>
-                                            </TableCell>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="corpers">
+                            <div className="border-2 border-input rounded-lg overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-gray-50">
+                                            <TableHead>Corpers</TableHead>
+                                            <TableHead>Department</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Created</TableHead>
+                                            <TableHead className="text-center">Actions</TableHead>
                                         </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="corpers">
-                        <div className="border-2 border-input rounded-lg overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-gray-50">
-                                        <TableHead>Corpers</TableHead>
-                                        <TableHead>Department</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Created</TableHead>
-                                        <TableHead className="text-center">Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {loadingCorperList ? (
-                                        <TableRow>
-                                            <TableCell colSpan={7} className="text-center py-6">
-                                                <LoadingSpinner />
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : filteredCorpers.length > 0 ? (
-                                        filteredCorpers.map((corper) => (
-                                            <TableRow key={corper.id} className="hover:bg-gray-50">
-                                                <TableCell>
-                                                    <div>
-                                                        <p className="font-medium">{corper.name}</p>
-                                                        <p className="text-sm text-gray-500">
-                                                            ID: {corper.id}
-                                                        </p>
-                                                    </div>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {loadingCorperList ? (
+                                            <TableRow>
+                                                <TableCell colSpan={7} className="text-center py-6">
+                                                    <LoadingSpinner />
                                                 </TableCell>
-                                                <TableCell>{corper.department}</TableCell>
-                                                <TableCell>{getStatusBadge(corper.active)}</TableCell>
-                                                <TableCell>
-                                                    {formatDate(corper.createdAT)}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center justify-center space-x-2">
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => deactivateCorper(corper)}
-                                                            className="text-red-600 hover:bg-red-700 border-red-200 hover:border-red-300 hover:text-white"
-                                                        >
-                                                            <UserX className="w-4 h-4 mr-1" />
-                                                            Deactivate
-                                                        </Button>
+                                            </TableRow>
+                                        ) : filteredCorpers.length > 0 ? (
+                                            filteredCorpers.map((corper) => (
+                                                <TableRow key={corper.id} className="hover:bg-gray-50">
+                                                    <TableCell>
+                                                        <div>
+                                                            <p className="font-medium">{corper.name}</p>
+                                                            <p className="text-sm text-gray-500">
+                                                                ID: {corper.id}
+                                                            </p>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>{corper.department}</TableCell>
+                                                    <TableCell>{getStatusBadge(corper.active)}</TableCell>
+                                                    <TableCell>
+                                                        {formatDate(corper.createdAT)}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex items-center justify-center space-x-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => deactivateCorper(corper)}
+                                                                className="text-red-600 hover:bg-red-700 border-red-200 hover:border-red-300 hover:text-white"
+                                                            >
+                                                                <UserX className="w-4 h-4 mr-1" />
+                                                                Deactivate
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell colSpan={7}>
+                                                    <div className="text-center py-6 flex items-center flex-col justify-center">
+                                                        <UserX />
+                                                        No employees found
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell colSpan={7}>
-                                                <div className="text-center py-6 flex items-center flex-col justify-center">
-                                                    <UserX />
-                                                    No employees found
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </CardContent>
-        </Card>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                </CardContent>
+            </Card>
+        </AuthGuard>
     );
 }

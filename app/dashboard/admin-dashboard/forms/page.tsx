@@ -51,6 +51,7 @@ import { FORM_STATUSES } from '@/lib/constants';
 import ReviewedForms from '@/components/hod/reviewed-forms';
 import PendingApprovalForms from '@/components/admin/pending-approval-forms';
 import AllFormsCard from '@/components/admin/all-forms-card';
+import { AuthGuard } from '@/components/auth-guard';
 
 export default function AdminFormsPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -83,110 +84,112 @@ export default function AdminFormsPage() {
     }, [allForms, searchQuery]);
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Welcome Section */}
-            <div className="px-6 py-4 border-b bg-white">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center justify-between">
-                    <div>
-                        <h2 className="text-xl md:text-2xl font-bold text-gray-900">Welcome, {employee?.name}</h2>
-                        <p className="text-gray-600 text-sm md:text-base">Review and manage corps member clearance forms</p>
-                    </div>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                        <div className="flex items-center space-x-1">
-                            <Briefcase className="w-4 h-4" />
-                            <span>Dept: {employee?.department}</span>
+        <AuthGuard>
+            <div className="min-h-screen bg-gray-50">
+                {/* Welcome Section */}
+                <div className="px-6 py-4 border-b bg-white">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center justify-between">
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-bold text-gray-900">Welcome, {employee?.name}</h2>
+                            <p className="text-gray-600 text-sm md:text-base">Review and manage corps member clearance forms</p>
+                        </div>
+                        <div className="flex items-center space-x-4 text-sm text-gray-600">
+                            <div className="flex items-center space-x-1">
+                                <Briefcase className="w-4 h-4" />
+                                <span>Dept: {employee?.department}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Main Content */}
+                <main className="py-6 px-6 relative">
+
+                    {/* Quick Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="flex items-center space-x-3">
+                                    <Clock className="w-8 h-8 text-orange-500" />
+                                    <div>
+                                        <p className="text-2xl font-bold">{pendingForms?.length ?? 0}</p>
+                                        <p className="text-sm text-gray-600">Pending Approval</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="flex items-center space-x-3">
+                                    <Star className="w-8 h-8" style={{ color: '#0066CC' }} />
+                                    <div>
+                                        <p className="text-2xl font-bold">{allForms.filter(f => f.status === 'APPROVED').length}</p>
+                                        <p className="text-sm text-gray-600">Approved</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardContent className="p-4">
+                                <div className="flex items-center space-x-3">
+                                    <FileText className="w-8 h-8" style={{ color: '#7B1FA2' }} />
+                                    <div>
+                                        <p className="text-2xl font-bold">{allForms.length}</p>
+                                        <p className="text-sm text-gray-600">Total Forms</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Main Tabs */}
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+                        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                            <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+                                <TabsTrigger value="pending" className="relative">
+                                    Pending Approvals
+                                    {pendingForms && pendingForms?.length > 0 && (
+                                        <Badge className="ml-2 bg-orange-100 text-orange-800">
+                                            {pendingForms?.length}
+                                        </Badge>
+                                    )}
+                                </TabsTrigger>
+                                <TabsTrigger value="reviewed">All Forms</TabsTrigger>
+                            </TabsList>
+
+                            {/* Search */}
+                            <div className="flex items-center space-x-2">
+                                <Input
+                                    placeholder="Search forms..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-64"
+                                />
+                                <Button variant="outline" size="sm">
+                                    <Search className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Pending Reviews Tab */}
+                        <TabsContent value="pending">
+                            <PendingApprovalForms pendingForms={filteredPending ?? []} isLoading={isLoadingPendingForms} searchQuery={searchQuery} />
+                        </TabsContent>
+
+                        {/* Reviewed Forms Tab */}
+                        <TabsContent value="reviewed">
+                            <AllFormsCard clearanceForms={filteredForms ?? []} searchQuery={searchQuery} isLoading={isLoadingReviewedForms} />
+                        </TabsContent>
+                    </Tabs>
+
+                    {/* Footer with subtle hint */}
+                    <footer className="mt-12 text-center text-xs text-gray-400">
+                        <p>NIMASA NYSC Clearance System v1.0 </p>
+                    </footer>
+                </main>
             </div>
-
-            {/* Main Content */}
-            <main className="py-6 px-6 relative">
-
-                {/* Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <Card>
-                        <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                                <Clock className="w-8 h-8 text-orange-500" />
-                                <div>
-                                    <p className="text-2xl font-bold">{pendingForms?.length ?? 0}</p>
-                                    <p className="text-sm text-gray-600">Pending Approval</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                                <Star className="w-8 h-8" style={{ color: '#0066CC' }} />
-                                <div>
-                                    <p className="text-2xl font-bold">{allForms.filter(f => f.status === 'APPROVED').length}</p>
-                                    <p className="text-sm text-gray-600">Approved</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardContent className="p-4">
-                            <div className="flex items-center space-x-3">
-                                <FileText className="w-8 h-8" style={{ color: '#7B1FA2' }} />
-                                <div>
-                                    <p className="text-2xl font-bold">{allForms.length}</p>
-                                    <p className="text-sm text-gray-600">Total Forms</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Main Tabs */}
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-                    <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
-                            <TabsTrigger value="pending" className="relative">
-                                Pending Approvals
-                                {pendingForms && pendingForms?.length > 0 && (
-                                    <Badge className="ml-2 bg-orange-100 text-orange-800">
-                                        {pendingForms?.length}
-                                    </Badge>
-                                )}
-                            </TabsTrigger>
-                            <TabsTrigger value="reviewed">All Forms</TabsTrigger>
-                        </TabsList>
-
-                        {/* Search */}
-                        <div className="flex items-center space-x-2">
-                            <Input
-                                placeholder="Search forms..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-64"
-                            />
-                            <Button variant="outline" size="sm">
-                                <Search className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Pending Reviews Tab */}
-                    <TabsContent value="pending">
-                        <PendingApprovalForms pendingForms={filteredPending ?? []} isLoading={isLoadingPendingForms} searchQuery={searchQuery} />
-                    </TabsContent>
-
-                    {/* Reviewed Forms Tab */}
-                    <TabsContent value="reviewed">
-                        <AllFormsCard clearanceForms={filteredForms ?? []} searchQuery={searchQuery} isLoading={isLoadingReviewedForms} />
-                    </TabsContent>
-                </Tabs>
-
-                {/* Footer with subtle hint */}
-                <footer className="mt-12 text-center text-xs text-gray-400">
-                    <p>NIMASA NYSC Clearance System v1.0 </p>
-                </footer>
-            </main>
-        </div>
+        </AuthGuard>
     );
 }

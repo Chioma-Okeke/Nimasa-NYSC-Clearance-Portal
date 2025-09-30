@@ -1,6 +1,7 @@
 import { StatusType } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { ROLES } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -69,4 +70,7 @@ export function dataURLtoFile(dataURL: string, filename: string) {
     u8arr[n] = bstr.charCodeAt(n);
   }
   return new File([u8arr], filename, { type: mime });
+}
+export const roleRequiresDesktop = (role: string) => {
+    return role != ROLES.CORPER
 }

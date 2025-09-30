@@ -38,6 +38,8 @@ import LoadingSpinner from '@/components/shared/loading-spinner';
 import { useQuery } from '@tanstack/react-query';
 import { getAdminStatsQueryOpt } from '@/lib/query-options/employee';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AuthGuard } from '@/components/auth-guard';
+import Link from 'next/link';
 
 interface StatusCardProps { title: string, value: number, subtitle: string, icon: LucideIcon, color: string, trend: number }
 
@@ -101,154 +103,156 @@ export default function AdminDashboard() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="px-6 py-4 border-b bg-white">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center justify-between">
-                    <div>
-                        <h2 className="text-xl md:text-2xl font-bold text-gray-900">Welcome, {employee?.name}</h2>
-                        <p className="text-gray-600 text-sm md:text-base">Review and manage corps member clearance forms</p>
+        <AuthGuard>
+            <div className="min-h-screen bg-gray-50">
+                <div className="px-6 py-4 border-b bg-white">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center justify-between">
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-bold text-gray-900">Welcome, {employee?.name}</h2>
+                            <p className="text-gray-600 text-sm md:text-base">Review and manage corps member clearance forms</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Main Content */}
-            <main className="p-6">
-                {/* Quick Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatCard
-                        title="Total Employees"
-                        value={adminStats?.totalEmployees ?? 0}
-                        subtitle={`${adminStats?.activeEmployees} active, ${adminStats?.inactiveEmployees} inactive`}
-                        icon={Users}
-                        color="#0066CC"
-                        trend={5.2}
-                    />
-                    <StatCard
-                        title="Corps Members"
-                        value={adminStats?.totalCorpsMembers ?? 0}
-                        subtitle={`${adminStats?.totalCorpsMembers} currently active`}
-                        icon={UserCheck}
-                        color="#006633"
-                        trend={12.1}
-                    />
-                    <StatCard
-                        title="Total Clearances"
-                        value={adminStats?.approvedForms ?? 0}
-                        subtitle="Completed this year"
-                        icon={FileText}
-                        color="#7B1FA2"
-                        trend={8.3}
-                    />
-                    <StatCard
-                        title="Pending Reviews"
-                        value={adminStats?.pendingForms ?? 0}
-                        subtitle="Awaiting action"
-                        icon={Clock}
-                        color="#FF6B35"
-                        trend={-15.2}
-                    />
-                </div>
+                {/* Main Content */}
+                <main className="p-6">
+                    {/* Quick Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <StatCard
+                            title="Total Employees"
+                            value={adminStats?.totalEmployees ?? 0}
+                            subtitle={`${adminStats?.activeEmployees} active, ${adminStats?.inactiveEmployees} inactive`}
+                            icon={Users}
+                            color="#0066CC"
+                            trend={5.2}
+                        />
+                        <StatCard
+                            title="Corps Members"
+                            value={adminStats?.totalCorpsMembers ?? 0}
+                            subtitle={`${adminStats?.totalCorpsMembers} currently active`}
+                            icon={UserCheck}
+                            color="#006633"
+                            trend={12.1}
+                        />
+                        <StatCard
+                            title="Total Clearances"
+                            value={adminStats?.approvedForms ?? 0}
+                            subtitle="Completed this year"
+                            icon={FileText}
+                            color="#7B1FA2"
+                            trend={8.3}
+                        />
+                        <StatCard
+                            title="Pending Reviews"
+                            value={adminStats?.pendingForms ?? 0}
+                            subtitle="Awaiting action"
+                            icon={Clock}
+                            color="#FF6B35"
+                            trend={-15.2}
+                        />
+                    </div>
 
-                {/* Dashboard Tabs */}
-                <Tabs defaultValue="forms" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-2 lg:w-[600px]">
-                        <TabsTrigger value="forms">Forms <span className='max-sm:hidden'>Management</span></TabsTrigger>
-                        <TabsTrigger value="employees">Employee <span className='max-sm:hidden'>Management</span></TabsTrigger>
-                    </TabsList>
+                    {/* Dashboard Tabs */}
+                    <Tabs defaultValue="forms" className="space-y-6">
+                        <TabsList className="grid w-full grid-cols-2 lg:w-[600px]">
+                            <TabsTrigger value="forms">Forms <span className='max-sm:hidden'>Management</span></TabsTrigger>
+                            <TabsTrigger value="employees">Employee <span className='max-sm:hidden'>Management</span></TabsTrigger>
+                        </TabsList>
 
-                    {/* Forms Management Tab */}
-                    <TabsContent value="forms" className="space-y-6">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Clearance Forms Overview</CardTitle>
-                                <CardDescription>Manage and monitor all clearance forms in the system</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                    <div className="bg-green-50 p-4 rounded-lg">
-                                        <div className="flex items-center space-x-2">
-                                            <CheckCircle className="w-5 h-5 text-green-600" />
-                                            <span className="font-medium text-green-900">Approved</span>
-                                        </div>
-                                        <p className="text-2xl font-bold text-green-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.approvedForms}</p>
-                                    </div>
-                                    <div className="bg-orange-50 p-4 rounded-lg">
-                                        <div className="flex items-center space-x-2">
-                                            <Clock className="w-5 h-5 text-orange-600" />
-                                            <span className="font-medium text-orange-900">Pending</span>
-                                        </div>
-                                        <p className="text-2xl font-bold text-orange-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.pendingForms}</p>
-                                    </div>
-                                    <div className="bg-red-50 p-4 rounded-lg">
-                                        <div className="flex items-center space-x-2">
-                                            <XCircle className="w-5 h-5 text-red-600" />
-                                            <span className="font-medium text-red-900">Rejected</span>
-                                        </div>
-                                        <p className="text-2xl font-bold text-red-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.rejectedForms}</p>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    {/* Employee Management Tab */}
-                    <TabsContent value="employees" className="space-y-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Forms Management Tab */}
+                        <TabsContent value="forms" className="space-y-6">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Employee Statistics</CardTitle>
+                                    <CardTitle>Clearance Forms Overview</CardTitle>
+                                    <CardDescription>Manage and monitor all clearance forms in the system</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                                            <div className="flex items-center space-x-3">
-                                                <Users className="w-5 h-5 text-blue-600" />
-                                                <span className="font-medium">Total Employees</span>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                        <div className="bg-green-50 p-4 rounded-lg">
+                                            <div className="flex items-center space-x-2">
+                                                <CheckCircle className="w-5 h-5 text-green-600" />
+                                                <span className="font-medium text-green-900">Approved</span>
                                             </div>
-                                            <span className="text-xl font-bold text-blue-900">{adminStats?.totalEmployees}</span>
+                                            <p className="text-2xl font-bold text-green-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.approvedForms}</p>
                                         </div>
-                                        <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                                            <div className="flex items-center space-x-3">
-                                                <UserCheck className="w-5 h-5 text-green-600" />
-                                                <span className="font-medium">Active</span>
+                                        <div className="bg-orange-50 p-4 rounded-lg">
+                                            <div className="flex items-center space-x-2">
+                                                <Clock className="w-5 h-5 text-orange-600" />
+                                                <Link href={"/dashboard/admin-dashboard/forms"} className="cursor-pointer font-medium text-orange-900">Pending</Link>
                                             </div>
-                                            <span className="text-xl font-bold text-green-900">{adminStats?.activeEmployees}</span>
+                                            <p className="text-2xl font-bold text-orange-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.pendingForms}</p>
                                         </div>
-                                        <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                                            <div className="flex items-center space-x-3">
-                                                <UserX className="w-5 h-5 text-red-600" />
-                                                <span className="font-medium">Inactive</span>
+                                        <div className="bg-red-50 p-4 rounded-lg">
+                                            <div className="flex items-center space-x-2">
+                                                <XCircle className="w-5 h-5 text-red-600" />
+                                                <span className="font-medium text-red-900">Rejected</span>
                                             </div>
-                                            <span className="text-xl font-bold text-red-900">{adminStats?.inactiveEmployees}</span>
+                                            <p className="text-2xl font-bold text-red-900 mt-2">{employeeLoading || statsLoading ? <Skeleton className='h-4 w-10 my-2'></Skeleton> : adminStats?.rejectedForms}</p>
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
+                        </TabsContent>
 
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Quick Actions</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    <AddEmployeeForm>
-                                        <Button variant="outline" className="w-full justify-start">
-                                            <Users className="w-4 h-4 mr-2" />
-                                            Add New Employee
+                        {/* Employee Management Tab */}
+                        <TabsContent value="employees" className="space-y-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Employee Statistics</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                                                <div className="flex items-center space-x-3">
+                                                    <Users className="w-5 h-5 text-blue-600" />
+                                                    <span className="font-medium">Total Employees</span>
+                                                </div>
+                                                <span className="text-xl font-bold text-blue-900">{adminStats?.totalEmployees}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                                                <div className="flex items-center space-x-3">
+                                                    <UserCheck className="w-5 h-5 text-green-600" />
+                                                    <span className="font-medium">Active</span>
+                                                </div>
+                                                <span className="text-xl font-bold text-green-900">{adminStats?.activeEmployees}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                                                <div className="flex items-center space-x-3">
+                                                    <UserX className="w-5 h-5 text-red-600" />
+                                                    <span className="font-medium">Inactive</span>
+                                                </div>
+                                                <span className="text-xl font-bold text-red-900">{adminStats?.inactiveEmployees}</span>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Quick Actions</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                        <AddEmployeeForm>
+                                            <Button variant="outline" className="w-full justify-start">
+                                                <Users className="w-4 h-4 mr-2" />
+                                                Add New Employee
+                                            </Button>
+                                        </AddEmployeeForm>
+                                        <Button onClick={navigateToEmployeePage} variant="outline" className="w-full justify-start">
+                                            <Settings className="w-4 h-4 mr-2" />
+                                            Manage Roles & Permissions
                                         </Button>
-                                    </AddEmployeeForm>
-                                    <Button onClick={navigateToEmployeePage} variant="outline" className="w-full justify-start">
-                                        <Settings className="w-4 h-4 mr-2" />
-                                        Manage Roles & Permissions
-                                    </Button>
-                                    <Button variant="outline" className="w-full justify-start" onClick={exportData}>
-                                        {isLoading ? <LoadingSpinner /> : (<><Download className="w-4 h-4 mr-2" /> Export Employee Data</>)}
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </main>
-        </div>
+                                        <Button variant="outline" className="w-full justify-start" onClick={exportData}>
+                                            {isLoading ? <LoadingSpinner /> : (<><Download className="w-4 h-4 mr-2" /> Export Employee Data</>)}
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                </main>
+            </div>
+        </AuthGuard>
     );
 }
