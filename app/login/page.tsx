@@ -113,7 +113,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="max-md:h-[80vh] md:min-h-screen flex items-center justify-center">
       <Card className="border-0 shadow-xl bg-white w-full max-w-md ">
         <CardHeader className="space-y-1 pb-6">
           <CardTitle className="text-2xl font-bold text-center" style={{ color: '#333333' }}>
