@@ -13,7 +13,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
 import {
   Select,
   SelectContent,
@@ -130,7 +136,6 @@ export default function LoginPage() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Name Field */}
               <FormField
                 control={form.control}
                 name="name"
@@ -151,7 +156,6 @@ export default function LoginPage() {
                 )}
               />
 
-              {/* Department Field */}
               <FormField
                 control={form.control}
                 name="department"
@@ -183,7 +187,6 @@ export default function LoginPage() {
                 )}
               />
 
-              {/* Role Selection */}
               <FormField
                 control={form.control}
                 name="role"
@@ -218,7 +221,6 @@ export default function LoginPage() {
                 )}
               />
 
-              {/* Password Field - Conditional */}
               {role && role !== "CORPS_MEMBER" && (
                 <FormField
                   control={form.control}
@@ -253,7 +255,6 @@ export default function LoginPage() {
                 />
               )}
 
-              {/* Role-specific Information */}
               {role && (
                 <div className="p-4 rounded-lg bg-[#F5F5F5]">
                   <p className="text-sm text-[#666666]">
@@ -267,7 +268,6 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Submit Button */}
               <Button
                 type="submit"
                 variant="secondary"
@@ -279,7 +279,6 @@ export default function LoginPage() {
             </form>
           </Form>
 
-          {/* Footer */}
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>
               Need technical assistance?{' '}
