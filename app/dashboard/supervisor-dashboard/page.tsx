@@ -76,7 +76,6 @@ export default function SupervisorDashboard() {
 
                 {/* Main Content */}
                 <main className="py-6 px-4 relative">
-
                     {/* Quick Stats */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                         <Card>
@@ -168,7 +167,6 @@ export default function SupervisorDashboard() {
                         </TabsContent>
                     </Tabs>
 
-                    {/* Footer with subtle hint */}
                     <footer className="mt-12 text-center text-xs text-gray-400">
                         <p>NIMASA NYSC Clearance System v1.0 </p>
                     </footer>

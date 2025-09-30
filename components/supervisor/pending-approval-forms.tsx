@@ -1,11 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { CheckCircle, Clock, Eye, FileText } from 'lucide-react'
+import { CheckCircle, Clock } from 'lucide-react'
 import ReviewForm from './review-form'
-import { IClearanceFormResponse, IEmployeeCreationResponse } from '@/types'
-import { formatDate } from '@/lib/utils'
-import StatusBadge from '../shared/status-badge'
-import { Button } from '../ui/button'
+import { IClearanceFormResponse } from '@/types'
 import FromDetailsModal from './form-details-modal'
 import useAuth from '@/providers/use-auth'
 import LoadingSpinner from '../shared/loading-spinner'
@@ -18,6 +15,7 @@ type PendingApprovalFormsProps = {
 
 function PendingApprovalForms({ pendingForms, isLoading, searchQuery }: PendingApprovalFormsProps) {
     const { employee } = useAuth()
+    
     return (
         <Card>
             <CardHeader>
