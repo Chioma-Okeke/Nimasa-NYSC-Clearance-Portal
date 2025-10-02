@@ -41,6 +41,7 @@ import { useState } from "react"
 import { DEPARTMENTS, ROLE_SELECTION, ROLES } from "@/lib/constants"
 import { cn, getRoleDisplayName, roleRequiresDesktop } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
+import Link from "next/link"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -282,9 +283,9 @@ export default function LoginPage() {
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>
               Need technical assistance?{' '}
-              <Button type="button" variant="link" className="p-0 h-auto text-sm" style={{ color: '#0066CC' }}>
+              <Link target="_blank" href={process.env.NEXT_SUPPORT_URL ?? ""} className="p-0 h-auto text-sm font-semibold" style={{ color: '#0066CC' }}>
                 Contact IT Support
-              </Button>
+              </Link>
             </p>
             <p className="mt-2 text-xs text-gray-500">
               © 2024 NIMASA - All rights reserved
