@@ -166,17 +166,14 @@ export const PrintableClearanceForm = React.forwardRef<
                     </div>
                     <div className="flex gap-8 mb-3">
                         <div>
-                            <div className="border rounded p-2 flex items-center justify-center min-h-[40px] min-w-[160px]">
-                                {form.adminSignatureUrl?.startsWith("http") ? (
-                                    <img
-                                        src={form.adminSignatureUrl}
-                                        alt="Admin Signature"
-                                        className="max-h-10"
-                                    />
-                                ) : (
-                                    <span>[Admin Signature]</span>
-                                )}
+                            <div className="flex items-center justify-center min-h-[40px] min-w-[160px]">
+                                <img
+                                    src="https://res.cloudinary.com/djrp3aaq9/image/upload/v1759415487/WhatsApp_Image_2025-10-02_at_07.30.50_94e3984a_v6evxm.jpg"
+                                    alt="Admin Signature"
+                                    className="max-h-10"
+                                />
                             </div>
+                            <hr />
                             <div className="text-center font-bold text-[9pt] mt-1">
                                 Signature:
                             </div>
