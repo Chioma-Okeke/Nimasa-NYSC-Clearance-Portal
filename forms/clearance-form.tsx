@@ -58,7 +58,6 @@ function ClearanceForm({ employee }: {
     })
 
     const handleSubmitForm = (values: FormValues) => {
-        //submission logic goes here
         submitClearance(values)
     }
 

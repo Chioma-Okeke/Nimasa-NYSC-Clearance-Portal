@@ -26,7 +26,7 @@ export default function SignaturePad({ setFileList }: { setFileList: (file: File
         setImageURL(data || null);
 
         if (data) {
-            convertImageToFile(data); // send immediately after saving
+            convertImageToFile(data);
         }
     };
 

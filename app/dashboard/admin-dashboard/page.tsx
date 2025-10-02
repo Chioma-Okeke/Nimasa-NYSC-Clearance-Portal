@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { toast } from 'sonner';
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from '@bprogress/next';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import {
     Users,
@@ -33,7 +33,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 interface StatusCardProps { title: string, value: number, subtitle: string, icon: LucideIcon, color: string, trend: number }
 
 export default function AdminDashboard() {
-    const [isLoading, setIsLoading] = useState(false)
+
     const { employee, isLoading: employeeLoading } = useAuth()
     const { data: adminStats, isLoading: statsLoading } = useQuery({
         ...getAdminStatsQueryOpt(employee?.id ?? ""),
@@ -45,31 +45,38 @@ export default function AdminDashboard() {
         router.push("/dashboard/admin-dashboard/employee-management")
     }
 
-    const exportData = async () => {
-        const clearanceService = new ClearanceService()
-        try {
-            setIsLoading(true)
-            const response = await clearanceService.exportEmployeeList()
-            if (!response) {
-                toast.warning("Nothing to download.")
-            }
+    const { mutate, isPending } = useMutation({
+        mutationFn: () => new ClearanceService().exportEmployeeList(),
+        mutationKey: ['export-employee-list'],
+        onSuccess: (blob) => {
+            const fileBlob = new Blob([blob], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            })
+
+            const url = window.URL.createObjectURL(fileBlob)
+
             const link = document.createElement("a")
-            link.href = response
-            link.download = "employee.csv"
+            link.href = url
+            link.setAttribute("download", "employee.xlsx")
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
 
+            window.URL.revokeObjectURL(url)
+
             toast.success("User Data Exported Successfully", {
-                description: "The CSV file was successfully downloaded"
+                description: "The Excel file was successfully downloaded",
             })
-        } catch (error) {
+        },
+        onError: (error: unknown) => {
             toast.error("User Data Export Failed", {
                 description: "An error occurred when exporting the file"
             })
-        } finally {
-            setIsLoading(false)
         }
+    })
+
+    const exportData = async () => {
+        mutate()
     }
 
     const StatCard = ({ title, value, subtitle, icon: Icon, color, trend }: StatusCardProps) => (
@@ -233,7 +240,7 @@ export default function AdminDashboard() {
                                             Manage Roles & Permissions
                                         </Button>
                                         <Button variant="outline" className="w-full justify-start" onClick={exportData}>
-                                            {isLoading ? <LoadingSpinner /> : (<><Download className="w-4 h-4 mr-2" /> Export Employee Data</>)}
+                                            {isPending ? <LoadingSpinner /> : (<><Download className="w-4 h-4 mr-2" /> Export Employee Data</>)}
                                         </Button>
                                     </CardContent>
                                 </Card>

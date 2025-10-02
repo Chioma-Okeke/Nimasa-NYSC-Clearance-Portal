@@ -5,6 +5,8 @@ import axios, {
     RawAxiosRequestHeaders,
 } from "axios";
 import { refreshAccessRefreshTokens } from "./refresh-service";
+import { toast } from "sonner";
+import EmployeeService from "./employee-service";
 
 let isRefreshing = false;
 
@@ -14,16 +16,6 @@ export const createAxiosInstance = (
     clientUrl: string,
     headers?: RawAxiosRequestHeaders
 ): AxiosInstance => {
-    const isServer = typeof window === "undefined";
-    const isProd = process.env.NODE_ENV === "production";
-
-    // Determine base domain
-    const productionDomain = process.env.NEXT_PUBLIC_PROD_DOMAIN;
-    const localDomain = "http://localhost:3000";
-
-    // const baseURL = isServer
-    //   ? `${isProd ? productionDomain : localDomain}/api${clientUrl}`
-    //   : `/api${clientUrl}`
     const baseURL =
         "https://nimasa-nysc-clearance-app1.onrender.com/api" + clientUrl;
 
@@ -32,51 +24,42 @@ export const createAxiosInstance = (
         timeout: 120000,
         withCredentials: true,
         headers: {
-            // "Content-Type": "application/json",
             ...headers,
         },
     });
 
-    // axiosInstance.interceptors.request.use((config) => {
-    //     async (error) => {
-    //         const originalRequest = error.config;
-    //         if (error.response?.status === 401 && !originalRequest._retry) {
-    //             const { refreshToken } = await getAccessRefreshTokens();
+    axiosInstance.interceptors.response.use((response) => {
+        return response;
+    },
+    async function (error) {
+        const originalRequest = error.config;
 
-    //             if (!refreshToken) {
-    //                 return Promise.reject(error);
-    //             }
+        if (error.response.status === 403 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            try {
+                console.log("I ran")
+                await generateRefreshToken()
+                return axiosInstance(originalRequest)
+            } catch (refreshError) {
+                console.error("Token refresh failed: ", refreshError)
+            } {
+                
+            }
+        }
+        return Promise.reject(error)
+    }
+    );
 
-    //             originalRequest._retry = true;
-
-    //             if (isRefreshing) {
-    //                 return failedQueue.push(originalRequest);
-    //             }
-    //             isRefreshing = true;
-
-    //             try {
-    //                 const { access_token, refresh_token } =
-    //                     await refreshAccessRefreshTokens(refreshToken);
-
-    //                 if (access_token) {
-    //                     await setAccessRefreshTokens(
-    //                         access_token,
-    //                         refresh_token
-    //                     );
-    //                     originalRequest.headers.Authorization = `Bearer ${access_token}`;
-
-    //                     processQueue(access_token, protectedBaseInstance);
-    //                     return protectedBaseInstance(originalRequest);
-    //                 }
-    //             } catch (refreshError) {
-    //                 // processQueue(refreshError as Error)
-    //                 return Promise.reject(refreshError);
-    //             } finally {
-    //                 isRefreshing = false;
-    //             }
-    //         }
-    //     };
-    // });
+    const generateRefreshToken = async() => {
+        try {
+            await new EmployeeService().refreshToken()
+        } catch (error: any) {
+            console.error(error)
+            toast.error("Error in authenticating", {
+                description: error?.response?.data?.error?.message ?? "You need to login again."
+            })
+        }
+    }
 
     return axiosInstance;
 };

@@ -7,14 +7,11 @@ export abstract class BaseService {
 
     constructor(
         url: string,
-        // version: 'v1' | 'v2' = 'v1',
         headers?: Record<string, string>
     ) {
         this.clientUrl = url;
         this.apiInstance = createAxiosInstance(this.clientUrl, headers);
     }
-
-    
 
     protected async handleRequest<TData>(
         request: Promise<AxiosResponse<TData>>
@@ -76,49 +73,52 @@ export abstract class BaseService {
     }
 
     protected async addAuthorizationHeader(config?: Record<string, unknown>) {
-    // const { accessToken } = await getAccessRefreshTokens()
+        // const { accessToken } = await getAccessRefreshTokens()
 
-    // if (!accessToken) {
-    //   return config
-    // }
+        // if (!accessToken) {
+        //   return config
+        // }
 
-    return {
-      ...config,
-      headers: {
-        ...(config?.headers as object),
-        // Authorization: `Bearer ${accessToken}`,
-      },
+        return {
+            ...config,
+            headers: {
+                ...(config?.headers as object),
+                // Authorization: `Bearer ${accessToken}`,
+            },
+        };
     }
-  }
 
     public async makeRawRequest<TData>(args: {
-    url: string
-    method: 'get' | 'post' | 'put' | 'delete' | 'patch'
-    params?: Record<string, unknown>
-    headers?: Record<string, unknown>
-    responseType?: 'json' | 'blob' | 'text' | 'arraybuffer'
-    data?: unknown
-  }): Promise<TData> {
-    const { url, params, headers, responseType, method, data } = args
-    try {
-      const newHeaders = await this.addAuthorizationHeader({
-        headers,
-        params,
-        responseType,
-      })
-      const response = await this.apiInstance.request({
-        url,
-        method,
-        data,
-        // ...newHeaders,
-      })
-      return response.data
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        // Logger.log(e.response?.data)
-        throw new Error(e.response?.data?.message || e.message)
-      }
-      throw new Error('Something went wrong while processing your request')
+        url: string;
+        method: "get" | "post" | "put" | "delete" | "patch";
+        params?: Record<string, unknown>;
+        headers?: Record<string, unknown>;
+        responseType?: "json" | "blob" | "text" | "arraybuffer";
+        data?: unknown;
+    }): Promise<TData> {
+        const { url, params, headers, responseType, method, data } = args;
+        try {
+            const newHeaders = await this.addAuthorizationHeader({
+                headers,
+                params,
+                responseType,
+            });
+            const response = await this.apiInstance.request({
+                url,
+                method,
+                data,
+                ...newHeaders,
+                responseType: responseType ?? "json",
+            });
+            return response.data;
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                // Logger.log(e.response?.data)
+                throw new Error(e.response?.data?.message || e.message);
+            }
+            throw new Error(
+                "Something went wrong while processing your request"
+            );
+        }
     }
-  }
 }

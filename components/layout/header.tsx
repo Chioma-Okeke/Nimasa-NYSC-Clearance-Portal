@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Bell, Download, LogOut, RefreshCw, User, User2 } from "lucide-react"
 import UserProfileCard from "../shared/user-profile-card"
-import { useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import useAuth from "@/providers/use-auth"
 import LoadingSpinner from "../shared/loading-spinner"
@@ -13,42 +13,47 @@ import { IEmployeeCreationResponse } from "@/types"
 import { ROLE_MAPPING, ROLES } from "@/lib/constants"
 import { SidebarTrigger } from "../ui/sidebar"
 import { ClearanceService } from "@/services/clearance-service"
-import { useState } from "react"
 
 export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
   const { logoutUser, isLoggingOut } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
   const queryClient = useQueryClient()
 
   const refreshForms = () => {
     queryClient.invalidateQueries({ queryKey: ["corper", employee?.id] })
   }
 
-  const exportData = async () => {
-    const clearanceService = new ClearanceService()
-    try {
-      setIsLoading(true)
-      const response = await clearanceService.exportEmployeeList()
-      if (!response) {
-        toast.warning("Nothing to download.")
-      }
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => new ClearanceService().exportEmployeeList(),
+    mutationKey: ['export-employee-list'],
+    onSuccess: (blob) => {
+      const fileBlob = new Blob([blob], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      })
+
+      const url = window.URL.createObjectURL(fileBlob)
+
       const link = document.createElement("a")
-      link.href = response
-      link.download = "employee.csv"
+      link.href = url
+      link.setAttribute("download", "employee.xlsx")
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
 
+      window.URL.revokeObjectURL(url)
+
       toast.success("User Data Exported Successfully", {
-        description: "The CSV file was successfully downloaded"
+        description: "The Excel file was successfully downloaded",
       })
-    } catch (error) {
+    },
+    onError: (error: unknown) => {
       toast.error("User Data Export Failed", {
         description: "An error occurred when exporting the file"
       })
-    } finally {
-      setIsLoading(false)
     }
+  })
+
+  const exportData = async () => {
+    mutate()
   }
 
   return (
@@ -68,7 +73,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
           {employee?.role === ROLES.ADMIN &&
             <Button variant="outline" size="sm" onClick={exportData} className="hidden xl:flex">
               <Download className="w-4 h-4 mr-2" />
-              {isLoading ? <LoadingSpinner /> : "Export Data"}
+              {isPending ? <LoadingSpinner /> : "Export Data"}
             </Button>}
           <Button variant="outline" size="sm" className="hidden">
             <Bell className="w-4 h-4" />
@@ -89,7 +94,7 @@ export function Header({ employee }: { employee: IEmployeeCreationResponse }) {
             </div>
           </div>
           <div className="xl:hidden">
-            {employee ? <UserProfileCard userName={employee.name} userRole={employee.role} handleLogout={logoutUser} refreshForms={refreshForms} exportData={exportData} isLoading={isLoading} /> : <User2 />}
+            {employee ? <UserProfileCard userName={employee.name} userRole={employee.role} handleLogout={logoutUser} refreshForms={refreshForms} exportData={exportData} isLoading={isPending} /> : <User2 />}
           </div>
           <Button
             variant="outline"

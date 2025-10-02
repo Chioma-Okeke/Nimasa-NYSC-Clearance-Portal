@@ -2,8 +2,6 @@ import {
     IClearanceFormResponse,
     ICorperForm,
     ICorperPrintableForm,
-    IHodReview,
-    ISupervisorReview,
     PrintableFormResponse,
 } from "@/types";
 import { BaseService } from "./base-service";
@@ -31,7 +29,7 @@ export class ClearanceService extends BaseService {
 
     public async deleteClearanceForm(id: number) {
         return this.delete(`/${id}`);
-    } // he need to explain what the request body is for. And if it is to confirm if that ia an admin, teach him how to better do it
+    }
 
     public async printClearanceForm(id: number, corpsName: string) {
         return this.get<PrintableFormResponse>(`/${id}/printable`, {
@@ -43,17 +41,13 @@ export class ClearanceService extends BaseService {
         return this.post<ICorperForm, ICorperForm>("/submission", data);
     }
 
-    // public async supervisorReview(id: number, data: FormData, role?: string) {
-    //     return this.post(`/${id}/supervisor-review?${role}`, data);
-    // }
-
     public async supervisorReview(id: number, data: FormData, role?: string) {
         return this.makeRawRequest({
             url: `/${id}/supervisor-review?role=${role}`,
             method: "post",
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+            // headers: {
+            //     'Content-Type': 'multipart/form-data',
+            // },
             data
         })
     }
@@ -71,16 +65,16 @@ export class ClearanceService extends BaseService {
     }
 
     public async supervisorsList() {
-        this.get("/admin/supervisors");
-    } //teach Ebus how to handle this better
+        return this.get("/admin/supervisors");
+    }
 
     public async hodsList() {
-        this.get("/admin/hod");
-    } //teach Ebus how to handle this better
+        return this.get("/admin/hod");
+    }
 
     public async pendingApproval(role: string) {
         return this.get<IClearanceFormResponse[]>("/pending", { role });
-    } //teach him how to better handle this that he wont all these separate end points
+    }
 
     public async getClearanceFormsByStatus(role: string, status: string) {
         return this.get<IClearanceFormResponse[]>(`/status/${status}`, { role });
@@ -95,7 +89,11 @@ export class ClearanceService extends BaseService {
     }
 
     public async exportEmployeeList() {
-        return this.get<string>("/admin/export/excel")
+        return this.makeRawRequest<Blob>({
+            url: "/admin/export/excel",
+            method: "get",
+            responseType: "blob",
+        })
     }
 
     public async trackDepartmentalForms() {
