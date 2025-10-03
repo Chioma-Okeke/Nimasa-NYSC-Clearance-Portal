@@ -1,23 +1,16 @@
-import { getAccessRefreshTokens } from "@/actions/utils-actions";
 import axios, {
     AxiosInstance,
-    AxiosRequestConfig,
     RawAxiosRequestHeaders,
 } from "axios";
-import { refreshAccessRefreshTokens } from "./refresh-service";
 import { toast } from "sonner";
 import EmployeeService from "./employee-service";
-
-let isRefreshing = false;
-
-let failedQueue: AxiosRequestConfig[] = [];
 
 export const createAxiosInstance = (
     clientUrl: string,
     headers?: RawAxiosRequestHeaders
 ): AxiosInstance => {
     const baseURL =
-        "https://nimasa-nysc-clearance-app1.onrender.com/api" + clientUrl;
+        process.env.NEXT_PUBLIC_API_BASE + clientUrl;
 
     const axiosInstance = axios.create({
         baseURL,
@@ -37,14 +30,11 @@ export const createAxiosInstance = (
         if (error.response.status === 403 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
-                console.log("I ran")
                 await generateRefreshToken()
                 return axiosInstance(originalRequest)
             } catch (refreshError) {
                 console.error("Token refresh failed: ", refreshError)
-            } {
-                
-            }
+            } 
         }
         return Promise.reject(error)
     }
