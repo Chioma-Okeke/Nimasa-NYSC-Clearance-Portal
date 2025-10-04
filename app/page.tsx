@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Calendar, Clock } from 'lucide-react';
-import { useRouter } from '@bprogress/next';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { useRouter } from '@bprogress/next';
+import React, { useState, useEffect } from 'react';
+
+import { ArrowRight, Calendar, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function Page() {
   const router = useRouter();
